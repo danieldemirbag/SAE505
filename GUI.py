@@ -68,13 +68,10 @@ class LoginWindow(QWidget):
         self.fenetreaccueil.setGeometry(x, y, self.fenetreaccueil.width(), self.fenetreaccueil.height())
         self.fenetreaccueil.show()
 
-
-
 class FenetreAccueil(QWidget):
     def __init__(self, cursor):
         super().__init__()
         self.cursor = cursor
-
         self.fenetreaccueil()
 
     def fenetreaccueil(self):
@@ -86,17 +83,10 @@ class FenetreAccueil(QWidget):
         self.cursor.execute("SELECT * FROM ToDoLists")
         ToDoLists = self.cursor.fetchall()
 
-        # Afficher le contenu de l'index 3 de chaque tâche dans un QLabel empilé
         for ToDoList in ToDoLists:
             label = QLabel("Nom de ToDolist : " + ToDoList[1])
             label2 = QLabel("Description : " + ToDoList[2])
             label3 = QLabel("")
-
-            # Définir la politique de redimensionnement pour les labels
-            label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
-            label2.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
-            label3.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
-
             layout.addWidget(label)
             layout.addWidget(label2)
             layout.addWidget(label3)
@@ -134,7 +124,43 @@ class FenetreAddTodolist(QWidget):
         self.desc.setPlaceholderText("Description")
         layout.addWidget(self.desc, 1, 0)
 
+        self.users = QLineEdit(self)
+        self.users.setPlaceholderText("Utilisateurs")
+        layout.addWidget(self.users, 2, 0)
+
+        bouton = QPushButton("Créer la ToDoList")
+        bouton.clicked.connect(lambda: self.create_todo_list())
+
+        layout.addWidget(bouton)
         self.setLayout(layout)
+
+    def create_todo_list(self):
+        nom = self.name.text()
+        desc = self.desc.text()
+        users = self.users.text()
+        self.close()
+        try:
+            conn = mysql.connector.connect(
+                host='sql11.freesqldatabase.com',
+                user='sql11647744',
+                password='A4cneZjfnM',
+                database='sql11647744'
+            )
+            cursor = conn.cursor()
+
+            # Utilisation de %s comme paramètres dans la requête
+            cursor.execute("INSERT INTO `ToDoLists`(`Nom`, `Description`, `AuthorizedUsers`) VALUES (%s, %s, %s)",
+                           (nom, desc, users))
+
+            # Commit pour sauvegarder les changements
+            conn.commit()
+            cursor.close()
+            conn.close()
+
+            print("ToDoList ajoutée avec succès.")
+
+        except mysql.connector.Error as err:
+            print("Erreur MySQL :", err)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
