@@ -87,7 +87,7 @@ class FenetreAccueil(QWidget):
         self.layout = QVBoxLayout()
         self.cursor.execute("SELECT * FROM ToDoLists")
         ToDoLists = self.cursor.fetchall()
-        self.todo_widgets = []  # Liste pour conserver les widgets ToDoList
+        self.todo_widgets = []
         self.todo_widgets2 = []
         for ToDoList in ToDoLists:
             todo_layout = QHBoxLayout()
@@ -125,6 +125,8 @@ class FenetreAccueil(QWidget):
 
     def show_only_selected(self, selected_widget):
         self.bouton.hide()
+        idlabel = selected_widget.itemAt(0).widget()
+        idlabtxt = idlabel.text()
         for widget in self.todo_widgets:
             widget.itemAt(1).widget().hide()
             widget.itemAt(2).widget().hide()
@@ -133,6 +135,23 @@ class FenetreAccueil(QWidget):
                 widget.itemAt(1).widget().hide()
                 widget.itemAt(2).widget().hide()
 
+        try:
+            conn = mysql.connector.connect(
+                host='sql11.freesqldatabase.com',
+                user='sql11647744',
+                password='A4cneZjfnM',
+                database='sql11647744'
+            )
+            cursor = conn.cursor()
+
+            cursor.execute("SELECT * FROM Taches WHERE ToDoLists_idToDoLists = %s", (idlabtxt,))
+            Taches = cursor.fetchall()
+            if Taches:
+                for task in Taches:
+                    descTask = QLabel('Tache : ' + task[3])
+                    self.layout.addWidget(descTask)
+        except:
+            pass
         backBtn = QPushButton("Retour")
         self.layout.addWidget(backBtn)
         backBtn.clicked.connect(self.show_all_elements)
