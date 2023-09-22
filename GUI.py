@@ -1,7 +1,9 @@
 import sys
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import Qt
 import mysql.connector
+from PyQt5.QtCore import *
+from PyQt5.QtWidgets import *
+from PyQt5.QtGui import *
+from PyQt5 import *
 
 class LoginWindow(QWidget):
     def __init__(self):
@@ -25,6 +27,11 @@ class LoginWindow(QWidget):
         self.password.setPlaceholderText("Mot de passe")
         self.password.setEchoMode(QLineEdit.Password)
         layout.addWidget(self.password, 1, 0)
+
+        self.shortcut_open = QShortcut(QKeySequence('Return'), self)
+        self.shortcut_open.activated.connect(self.login)
+        self.shortcut_open2 = QShortcut(QKeySequence('Enter'), self)
+        self.shortcut_open2.activated.connect(self.login)
 
         bouton_connexion = QPushButton("Connexion", self)
         bouton_connexion.clicked.connect(self.login)
