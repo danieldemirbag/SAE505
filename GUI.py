@@ -1,7 +1,9 @@
 import sys
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import Qt
 import mysql.connector
+from PyQt5.QtCore import *
+from PyQt5.QtWidgets import *
+from PyQt5.QtGui import *
+from PyQt5 import *
 
 class LoginWindow(QWidget):
     def __init__(self):
@@ -26,6 +28,11 @@ class LoginWindow(QWidget):
         self.password.setEchoMode(QLineEdit.Password)
         layout.addWidget(self.password, 1, 0)
 
+        self.shortcut_open = QShortcut(QKeySequence('Return'), self)
+        self.shortcut_open.activated.connect(self.login)
+        self.shortcut_open2 = QShortcut(QKeySequence('Enter'), self)
+        self.shortcut_open2.activated.connect(self.login)
+
         bouton_connexion = QPushButton("Connexion", self)
         bouton_connexion.clicked.connect(self.login)
         layout.addWidget(bouton_connexion, 2, 0)
@@ -39,9 +46,9 @@ class LoginWindow(QWidget):
         try:
             conn = mysql.connector.connect(
                 host='sql11.freesqldatabase.com',
-                user='sql11647744',
-                password='A4cneZjfnM',
-                database='sql11647744'
+                user='sql11647518',
+                password='LMHZDvz5me',
+                database='sql11647518'
             )
             cursor = conn.cursor()
 
@@ -76,26 +83,89 @@ class FenetreAccueil(QWidget):
 
     def fenetreaccueil(self):
         self.setWindowTitle("Accueil - TickTask")
-        self.setGeometry(500, 500, 500, 250)
-
-        layout = QVBoxLayout()
-
+        self.setGeometry(500, 500, 700, 900)
+        self.layout = QVBoxLayout()
         self.cursor.execute("SELECT * FROM ToDoLists")
         ToDoLists = self.cursor.fetchall()
-
+        self.todo_widgets = []
+        self.todo_widgets2 = []
         for ToDoList in ToDoLists:
+            todo_layout = QHBoxLayout()
+            idlabel = QLabel(str(ToDoList[0]))
             label = QLabel("Nom de ToDolist : " + ToDoList[1])
+            title_desc_layout = QVBoxLayout()
             label2 = QLabel("Description : " + ToDoList[2])
-            label3 = QLabel("")
-            layout.addWidget(label)
-            layout.addWidget(label2)
-            layout.addWidget(label3)
+            label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+            label2.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+            title_desc_layout.addWidget(idlabel)
+            idlabel.hide()
+            title_desc_layout.addWidget(label)
+            title_desc_layout.addWidget(label2)
+            todo_layout.addLayout(title_desc_layout)
 
-        bouton = QPushButton("Ajouter une ToDoList")
-        bouton.clicked.connect(self.fenetre_add_to_dolist)
-        layout.addWidget(bouton)
 
-        self.setLayout(layout)
+            openButton = QPushButton("Open")
+            openButton.clicked.connect(lambda checked, widget=title_desc_layout: self.show_only_selected(widget))
+            todo_layout.addWidget(openButton)
+
+            delete_btn = QPushButton("Supprimer")
+            delete_btn.clicked.connect(lambda checked, widget=title_desc_layout: self.delete_todo_list(widget))
+            todo_layout.addWidget(delete_btn)
+
+
+            self.layout.addLayout(todo_layout)
+            self.todo_widgets.append(todo_layout)
+            self.todo_widgets2.append(title_desc_layout)
+
+        self.bouton = QPushButton("Ajouter une ToDoList")
+        self.bouton.clicked.connect(self.fenetre_add_to_dolist)
+        self.layout.addWidget(self.bouton)
+        self.setLayout(self.layout)
+
+
+    def show_only_selected(self, selected_widget):
+        self.bouton.hide()
+        idlabel = selected_widget.itemAt(0).widget()
+        idlabtxt = idlabel.text()
+        for widget in self.todo_widgets:
+            widget.itemAt(1).widget().hide()
+            widget.itemAt(2).widget().hide()
+        for widget in self.todo_widgets2:
+            if widget != selected_widget:
+                widget.itemAt(1).widget().hide()
+                widget.itemAt(2).widget().hide()
+
+        try:
+            conn = mysql.connector.connect(
+                host='sql11.freesqldatabase.com',
+                user='sql11647518',
+                password='LMHZDvz5me',
+                database='sql11647518'
+            )
+            cursor = conn.cursor()
+
+            cursor.execute("SELECT * FROM Taches WHERE ToDoLists_idToDoLists = %s", (idlabtxt,))
+            Taches = cursor.fetchall()
+            if Taches:
+                for task in Taches:
+                    descTask = QLabel('Tache : ' + task[3])
+                    self.layout.addWidget(descTask)
+        except:
+            pass
+        backBtn = QPushButton("Retour")
+        self.layout.addWidget(backBtn)
+        backBtn.clicked.connect(self.show_all_elements)
+
+
+    def show_all_elements(self):
+        self.bouton.show()
+        for widget in self.todo_widgets:
+            widget.itemAt(1).widget().show()
+            widget.itemAt(2).widget().show()
+        for widget in self.todo_widgets2:
+            widget.itemAt(1).widget().show()
+            widget.itemAt(2).widget().show()
+        self.layout.removeWidget(self.sender())
 
     def fenetre_add_to_dolist(self):
         self.fenetreaddtodolist = FenetreAddTodolist()
@@ -104,6 +174,33 @@ class FenetreAccueil(QWidget):
         y = (geometry_ecran.height() - self.fenetreaddtodolist.height()) // 2
         self.fenetreaddtodolist.setGeometry(x, y, self.fenetreaddtodolist.width(), self.fenetreaddtodolist.height())
         self.fenetreaddtodolist.show()
+
+    def delete_todo_list(self, widget):
+        reply = QMessageBox.question(self, 'Confirmation', 'Êtes-vous sûr de vouloir supprimer cette ToDoList?',
+                                     QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+
+        if reply == QMessageBox.Yes:
+            try:
+                conn = mysql.connector.connect(
+                host='sql11.freesqldatabase.com',
+                user='sql11647518',
+                password='LMHZDvz5me',
+                database='sql11647518'
+                )
+                cursor = conn.cursor()
+                todo_id = widget.itemAt(0).widget()
+                todo_id = todo_id.text()
+                cursor.execute("DELETE FROM `ToDoLists` WHERE `idToDoLists` = %s", (todo_id,))
+                conn.commit()
+                cursor.close()
+                conn.close()
+
+                print("ToDoList supprimée avec succès.")
+
+
+            except mysql.connector.Error as err:
+                print("Erreur MySQL :", err)
+
 
 class FenetreAddTodolist(QWidget):
     def __init__(self):
@@ -142,9 +239,9 @@ class FenetreAddTodolist(QWidget):
         try:
             conn = mysql.connector.connect(
                 host='sql11.freesqldatabase.com',
-                user='sql11647744',
-                password='A4cneZjfnM',
-                database='sql11647744'
+                user='sql11647518',
+                password='LMHZDvz5me',
+                database='sql11647518'
             )
             cursor = conn.cursor()
 
@@ -158,9 +255,12 @@ class FenetreAddTodolist(QWidget):
             conn.close()
 
             print("ToDoList ajoutée avec succès.")
+            self.fenetreaddtodolist()
 
         except mysql.connector.Error as err:
             print("Erreur MySQL :", err)
+
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
