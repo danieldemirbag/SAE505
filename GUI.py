@@ -187,9 +187,9 @@ class FenetreAccueil(QWidget):
             confirmLayout.addStretch()
             self.confirmBtn.clicked.connect(self.sendModifications)
             self.layout.addLayout(confirmLayout)
-            backBtn = QPushButton("Retour")
-            self.layout.addWidget(backBtn)
-            backBtn.clicked.connect(self.show_all_elements)
+            self.backBtn = QPushButton("Retour")
+            self.layout.addWidget(self.backBtn)
+            self.backBtn.clicked.connect(self.show_all_elements)
         except:
             pass
 
@@ -204,7 +204,6 @@ class FenetreAccueil(QWidget):
         if not newTitle and not newDesc:
             QMessageBox.warning(self, 'Erreur', 'Les champs ne peuvent pas être vides.')
         else:
-            # Mettez à jour les informations dans la base de données
             try:
                 conn = mysql.connector.connect(
                     host='sql11.freesqldatabase.com',
@@ -217,7 +216,12 @@ class FenetreAccueil(QWidget):
                 conn.commit()
                 cursor.close()
                 conn.close()
-                QMessageBox.information(self, 'Succès', 'Les modifications ont été enregistrées avec succès.')
+                info_box = QMessageBox()
+                info_box.setWindowTitle('Succès')
+                info_box.setText('Les modifications ont été enregistrées avec succès.')
+                info_box.setStandardButtons(QMessageBox.Ok)
+                info_box.finished.connect(self.show_all_elements)
+                info_box.exec_()
 
             except mysql.connector.Error as err:
                 QMessageBox.warning(self, 'Erreur MySQL', str(err))
@@ -251,14 +255,15 @@ class FenetreAccueil(QWidget):
                 self.layout.addWidget(descTask)
         except:
             pass
-        backBtn = QPushButton("Retour")
-        self.layout.addWidget(backBtn)
-        backBtn.clicked.connect(self.show_all_elements)
+        self.backBtn = QPushButton("Retour")
+        self.layout.addWidget(self.backBtn)
+        self.backBtn.clicked.connect(self.show_all_elements)
 
 
     def show_all_elements(self):
         self.bouton.show()
         self.confirmBtn.hide()
+        self.backBtn.hide()
         for widget in self.todo_widgets:
             widget.itemAt(1).widget().show()
             widget.itemAt(2).widget().show()
