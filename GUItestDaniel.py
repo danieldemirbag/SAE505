@@ -67,7 +67,7 @@ class Ui_Login(object):
         self.lognomuser.setAutoFillBackground(False)
         self.lognomuser.setStyleSheet("border:none;\n"
 "border-bottom:2px solid rgba(105, 118, 132, 255);\n"
-"color: rgba(255, 255, 255, 0);\n"
+"color: rgba(255, 255, 255);\n"
 "padding-bottom:7px;\n"
 "background: rgba(255, 255, 255, 0);")
         self.lognomuser.setText("")
