@@ -46,9 +46,9 @@ class LoginWindow(QWidget):
         try:
             conn = mysql.connector.connect(
                 host='sql11.freesqldatabase.com',
-                user='sql11647744',
-                password='A4cneZjfnM',
-                database='sql11647744'
+                user='sql11647518',
+                password='LMHZDvz5me',
+                database='sql11647518'
             )
             cursor = conn.cursor()
 
@@ -138,9 +138,9 @@ class FenetreAccueil(QWidget):
         try:
             conn = mysql.connector.connect(
                 host='sql11.freesqldatabase.com',
-                user='sql11647744',
-                password='A4cneZjfnM',
-                database='sql11647744'
+                user='sql11647518',
+                password='LMHZDvz5me',
+                database='sql11647518'
             )
             cursor = conn.cursor()
 
@@ -182,10 +182,10 @@ class FenetreAccueil(QWidget):
         if reply == QMessageBox.Yes:
             try:
                 conn = mysql.connector.connect(
-                    host='sql11.freesqldatabase.com',
-                    user='sql11647744',
-                    password='A4cneZjfnM',
-                    database='sql11647744'
+                host='sql11.freesqldatabase.com',
+                user='sql11647518',
+                password='LMHZDvz5me',
+                database='sql11647518'
                 )
                 cursor = conn.cursor()
                 todo_id = widget.itemAt(0).widget()
@@ -239,9 +239,9 @@ class FenetreAddTodolist(QWidget):
         try:
             conn = mysql.connector.connect(
                 host='sql11.freesqldatabase.com',
-                user='sql11647744',
-                password='A4cneZjfnM',
-                database='sql11647744'
+                user='sql11647518',
+                password='LMHZDvz5me',
+                database='sql11647518'
             )
             cursor = conn.cursor()
 
