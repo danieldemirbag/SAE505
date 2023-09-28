@@ -93,6 +93,7 @@ class FenetreAccueil(QWidget):
         self.todo_widgets = []
         self.todo_widgets2 = []
         self.descTask_labels = []
+        self.TDLlabs = []
         for ToDoList in ToDoLists:
             todo_layout = QHBoxLayout()
             idlabel = QLabel(str(ToDoList[0]))
@@ -110,6 +111,10 @@ class FenetreAccueil(QWidget):
             openButton.clicked.connect(lambda checked, widget=title_desc_layout: self.show_only_selected(widget))
             todo_layout.addWidget(openButton)
 
+            modifyButton = QPushButton("Modifier")
+            modifyButton.clicked.connect(lambda checked, widget=title_desc_layout: self.modify_todo_list(widget))
+            todo_layout.addWidget(modifyButton)
+
             delete_btn = QPushButton("Supprimer")
             delete_btn.clicked.connect(lambda checked, widget=title_desc_layout: self.delete_todo_list(widget))
             todo_layout.addWidget(delete_btn)
@@ -126,6 +131,96 @@ class FenetreAccueil(QWidget):
         self.setLayout(self.layout)
 
 
+    def modify_todo_list(self, selected_widget):
+        self.bouton.hide()
+        idlabel = selected_widget.itemAt(0).widget()
+        self.idlab = idlabel.text()
+        for widget in self.todo_widgets:
+            widget.itemAt(1).widget().hide()
+            widget.itemAt(2).widget().hide()
+            widget.itemAt(3).widget().hide()
+        for widget in self.todo_widgets2:
+            widget.itemAt(1).widget().hide()
+            widget.itemAt(2).widget().hide()
+        try:
+            conn = mysql.connector.connect(
+                host='sql11.freesqldatabase.com',
+                user='sql11647518',
+                password='LMHZDvz5me',
+                database='sql11647518'
+            )
+            cursor = conn.cursor()
+
+            cursor.execute("SELECT * FROM ToDoLists WHERE idToDoLists = %s", (self.idlab,))
+            ToDoList = cursor.fetchall()
+            for tdl in ToDoList:
+                nameTDL = QLabel('Modifier le nom de la To-do list :', self)
+                self.modTDL = QLineEdit(tdl[1], self)
+                taskLayout = QHBoxLayout()
+                taskLayout.addWidget(nameTDL)
+                taskLayout.addWidget(self.modTDL)
+                self.modTDL.setMaxLength(100)
+                self.modTDL.setAlignment(Qt.AlignTop)
+                self.descTask_labels.append(nameTDL)
+                self.descTask_labels.append(self.modTDL)
+                self.layout.addLayout(taskLayout)
+                nameDTDL = QLabel('Modifier la description de la To-do list : ', self)
+                self.modDTDL = QTextEdit(tdl[2], self)
+                self.modDTDL.setWordWrapMode(QTextOption.WrapAtWordBoundaryOrAnywhere)
+                self.modDTDL.setLineWrapMode(QTextEdit.WidgetWidth)
+                self.modDTDL.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+                self.modDTDL.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+                self.modDTDL.setMaximumHeight(100)
+                self.modDTDL.textChanged.connect(self.check_max_chars)
+                self.max_chars = 1000
+                self.modDTDL.setAlignment(Qt.AlignTop)  # Aligner le texte vers le haut
+                dtasklayout = QHBoxLayout()
+                dtasklayout.addWidget(nameDTDL)
+                dtasklayout.addWidget(self.modDTDL)
+                self.descTask_labels.append(nameDTDL)
+                self.descTask_labels.append(self.modDTDL)
+                self.layout.addLayout(dtasklayout)
+            confirmLayout = QHBoxLayout()
+            confirmLayout.addStretch()
+            self.confirmBtn = QPushButton("Confirmer")
+            confirmLayout.addWidget(self.confirmBtn)
+            confirmLayout.addStretch()
+            self.confirmBtn.clicked.connect(self.sendModifications)
+            self.layout.addLayout(confirmLayout)
+            backBtn = QPushButton("Retour")
+            self.layout.addWidget(backBtn)
+            backBtn.clicked.connect(self.show_all_elements)
+        except:
+            pass
+
+    def check_max_chars(self):
+        if len(self.modDTDL.toPlainText()) > self.max_chars:
+            QMessageBox.warning(self, 'Erreur', '1000 caractères max')
+            truncated_text = self.modDTDL.toPlainText()[:self.max_chars]
+            self.modDTDL.setPlainText(truncated_text)
+    def sendModifications(self):
+        newTitle = self.modTDL.text()
+        newDesc = self.modDTDL.toPlainText()
+        if not newTitle and not newDesc:
+            QMessageBox.warning(self, 'Erreur', 'Les champs ne peuvent pas être vides.')
+        else:
+            # Mettez à jour les informations dans la base de données
+            try:
+                conn = mysql.connector.connect(
+                    host='sql11.freesqldatabase.com',
+                    user='sql11647518',
+                    password='LMHZDvz5me',
+                    database='sql11647518'
+                )
+                cursor = conn.cursor()
+                cursor.execute("UPDATE ToDoLists SET Nom = %s, Description = %s WHERE idToDoLists = %s", (newTitle, newDesc, self.idlab,))
+                conn.commit()
+                cursor.close()
+                conn.close()
+                QMessageBox.information(self, 'Succès', 'Les modifications ont été enregistrées avec succès.')
+
+            except mysql.connector.Error as err:
+                QMessageBox.warning(self, 'Erreur MySQL', str(err))
     def show_only_selected(self, selected_widget):
         self.bouton.hide()
         idlabel = selected_widget.itemAt(0).widget()
@@ -133,10 +228,12 @@ class FenetreAccueil(QWidget):
         for widget in self.todo_widgets:
             widget.itemAt(1).widget().hide()
             widget.itemAt(2).widget().hide()
+            widget.itemAt(3).widget().hide()
         for widget in self.todo_widgets2:
             if widget != selected_widget:
                 widget.itemAt(1).widget().hide()
                 widget.itemAt(2).widget().hide()
+
         try:
             conn = mysql.connector.connect(
                 host='sql11.freesqldatabase.com',
@@ -161,9 +258,11 @@ class FenetreAccueil(QWidget):
 
     def show_all_elements(self):
         self.bouton.show()
+        self.confirmBtn.hide()
         for widget in self.todo_widgets:
             widget.itemAt(1).widget().show()
             widget.itemAt(2).widget().show()
+            widget.itemAt(3).widget().show()
         for widget in self.todo_widgets2:
             widget.itemAt(1).widget().show()
             widget.itemAt(2).widget().show()
