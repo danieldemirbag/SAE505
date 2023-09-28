@@ -9,6 +9,7 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QVBoxLayout, QWidget
 import GUItestDanielrc, sys
 
 
@@ -17,6 +18,8 @@ class Ui_Login(object):
         Login.setObjectName("Login")
         Login.setEnabled(True)
         Login.resize(700, 900)
+        Login.setWindowFlags(QtCore.Qt.FramelessWindowHint)
+        Login.setAttribute(QtCore.Qt.WA_TranslucentBackground)
         self.widget = QtWidgets.QWidget(Login)
         self.widget.setGeometry(QtCore.QRect(25, 25, 650, 850))
         self.widget.setObjectName("widget")
@@ -125,6 +128,7 @@ class Ui_Login(object):
 "border-bottom:2px solid rgba(105, 118, 132, 255);\n"
 "color:rgba(255, 255, 255, .75);")
         self.logcroix.setObjectName("logcroix")
+        #self.logcroix.clicked.connect(QApplication.quit) (Permet de fermer l'application mais à voir si il fonctionne avec les autres fenetres)
         self.logpetit = QtWidgets.QToolButton(self.widget)
         self.logpetit.setGeometry(QtCore.QRect(540, 20, 40, 30))
         font = QtGui.QFont()
