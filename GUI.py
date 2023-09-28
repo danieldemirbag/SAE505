@@ -5,6 +5,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5 import *
 
+
 class LoginWindow(QWidget):
     def __init__(self):
         super().__init__()
@@ -75,6 +76,8 @@ class LoginWindow(QWidget):
         self.fenetreaccueil.setGeometry(x, y, self.fenetreaccueil.width(), self.fenetreaccueil.height())
         self.fenetreaccueil.show()
 
+
+
 class FenetreAccueil(QWidget):
     def __init__(self, cursor):
         super().__init__()
@@ -89,6 +92,7 @@ class FenetreAccueil(QWidget):
         ToDoLists = self.cursor.fetchall()
         self.todo_widgets = []
         self.todo_widgets2 = []
+        self.descTask_labels = []
         for ToDoList in ToDoLists:
             todo_layout = QHBoxLayout()
             idlabel = QLabel(str(ToDoList[0]))
@@ -102,8 +106,6 @@ class FenetreAccueil(QWidget):
             title_desc_layout.addWidget(label)
             title_desc_layout.addWidget(label2)
             todo_layout.addLayout(title_desc_layout)
-
-
             openButton = QPushButton("Open")
             openButton.clicked.connect(lambda checked, widget=title_desc_layout: self.show_only_selected(widget))
             todo_layout.addWidget(openButton)
@@ -116,6 +118,7 @@ class FenetreAccueil(QWidget):
             self.layout.addLayout(todo_layout)
             self.todo_widgets.append(todo_layout)
             self.todo_widgets2.append(title_desc_layout)
+
 
         self.bouton = QPushButton("Ajouter une ToDoList")
         self.bouton.clicked.connect(self.fenetre_add_to_dolist)
@@ -134,7 +137,6 @@ class FenetreAccueil(QWidget):
             if widget != selected_widget:
                 widget.itemAt(1).widget().hide()
                 widget.itemAt(2).widget().hide()
-
         try:
             conn = mysql.connector.connect(
                 host='sql11.freesqldatabase.com',
@@ -146,10 +148,10 @@ class FenetreAccueil(QWidget):
 
             cursor.execute("SELECT * FROM Taches WHERE ToDoLists_idToDoLists = %s", (idlabtxt,))
             Taches = cursor.fetchall()
-            if Taches:
-                for task in Taches:
-                    descTask = QLabel('Tache : ' + task[3])
-                    self.layout.addWidget(descTask)
+            for task in Taches:
+                descTask = QLabel('Tache : ' + task[3])
+                self.descTask_labels.append(descTask)
+                self.layout.addWidget(descTask)
         except:
             pass
         backBtn = QPushButton("Retour")
@@ -165,6 +167,8 @@ class FenetreAccueil(QWidget):
         for widget in self.todo_widgets2:
             widget.itemAt(1).widget().show()
             widget.itemAt(2).widget().show()
+        for label in self.descTask_labels:
+            label.hide()
         self.layout.removeWidget(self.sender())
 
     def fenetre_add_to_dolist(self):
