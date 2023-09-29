@@ -262,18 +262,31 @@ class FenetreAccueil(QWidget):
 
     def show_all_elements(self):
         self.bouton.show()
-        self.confirmBtn.hide()
-        self.backBtn.hide()
-        for widget in self.todo_widgets:
-            widget.itemAt(1).widget().show()
-            widget.itemAt(2).widget().show()
-            widget.itemAt(3).widget().show()
-        for widget in self.todo_widgets2:
-            widget.itemAt(1).widget().show()
-            widget.itemAt(2).widget().show()
-        for label in self.descTask_labels:
-            label.hide()
-        self.layout.removeWidget(self.sender())
+        try:
+            self.confirmBtn.hide()
+            self.backBtn.hide()
+            for widget in self.todo_widgets:
+                widget.itemAt(1).widget().show()
+                widget.itemAt(2).widget().show()
+                widget.itemAt(3).widget().show()
+            for widget in self.todo_widgets2:
+                widget.itemAt(1).widget().show()
+                widget.itemAt(2).widget().show()
+            for label in self.descTask_labels:
+                label.hide()
+            self.layout.removeWidget(self.sender())
+        except:
+            self.backBtn.hide()
+            for widget in self.todo_widgets:
+                widget.itemAt(1).widget().show()
+                widget.itemAt(2).widget().show()
+                widget.itemAt(3).widget().show()
+            for widget in self.todo_widgets2:
+                widget.itemAt(1).widget().show()
+                widget.itemAt(2).widget().show()
+            for label in self.descTask_labels:
+                label.hide()
+            self.layout.removeWidget(self.sender())
 
     def fenetre_add_to_dolist(self):
         self.fenetreaddtodolist = FenetreAddTodolist()
