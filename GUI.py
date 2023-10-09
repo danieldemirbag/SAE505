@@ -1,4 +1,4 @@
-	import sys
+import sys
 import mysql.connector
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
