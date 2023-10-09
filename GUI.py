@@ -102,7 +102,7 @@ class FenetreAccueil(QWidget):
         font.setPointSize(16)
         font.setBold(True)
         top_label.setFont(font)
-
+        self.todo_widgets = []
         # Créer un scroll area pour les ToDoList
         scroll_area = QScrollArea(self)
         scroll_area.setWidgetResizable(True)
@@ -129,15 +129,16 @@ class FenetreAccueil(QWidget):
         # Parcourir les ToDoLists et créer des widgets pour les afficher
             for ToDoList in ToDoLists:
                 todo_widget = QWidget()
-                todo_layout = QVBoxLayout(todo_widget)  # Utilisation d'un layout vertical
+                self.todo_layout = QVBoxLayout(todo_widget)  # Utilisation d'un layout vertical
 
                 # Layout horizontal pour le nom et les boutons
                 name_button_layout = QHBoxLayout()
 
                 # Label pour le nom
                 label = QLabel("Nom de ToDolist : " + ToDoList[1])
+                self.todo_widgets.append(label)
 
-                # Ajouter le nom à gauche
+                    # Ajouter le nom à gauche
                 name_button_layout.addWidget(label)
 
                 # Boutons pour "Open", "Modifier" et "Supprimer"
@@ -152,15 +153,15 @@ class FenetreAccueil(QWidget):
                 name_button_layout.addWidget(delete_button)
 
                 # Ajouter le layout horizontal du nom et des boutons au layout vertical
-                todo_layout.addLayout(name_button_layout)
+                self.todo_layout.addLayout(name_button_layout)
 
                 # Ajouter la description en dessous du nom
                 label2 = QLabel("Description : " + ToDoList[2])
-                todo_layout.addWidget(label2)
+                self.todo_layout.addWidget(label2)
 
                 # Connexions des boutons aux fonctions correspondantes
-                open_button.clicked.connect(lambda checked, id=ToDoList[0]: self.show_only_selected(id))
-                modify_button.clicked.connect(lambda checked, id=ToDoList[0]: self.modify_todo_list(id))
+                open_button.clicked.connect(lambda checked, id=ToDoList: self.show_only_selected(id))
+                modify_button.clicked.connect(lambda checked, id=ToDoList: self.modify_todo_list(id))
                 delete_button.clicked.connect(lambda checked, id=ToDoList[0]: self.delete_todo_list(id))
 
                 # Ajouter le widget de ToDoList au layout principal
@@ -177,69 +178,38 @@ class FenetreAccueil(QWidget):
         add_todo_list_button = QPushButton("Ajouter une ToDoList", self)
         add_todo_list_button.clicked.connect(self.fenetre_add_to_dolist)
         main_layout.addWidget(add_todo_list_button)
-
-
+        print(self.todo_widgets)
     def modify_todo_list(self, selected_widget):
-        self.bouton.hide()
-        idlabel = selected_widget.itemAt(0).widget()
-        self.idlab = idlabel.text()
-        for widget in self.todo_widgets:
-            widget.itemAt(1).widget().hide()
-            widget.itemAt(2).widget().hide()
-            widget.itemAt(3).widget().hide()
-        for widget in self.todo_widgets2:
-            widget.itemAt(1).widget().hide()
-            widget.itemAt(2).widget().hide()
-        try:
-            conn = mysql.connector.connect(
-                host='sql11.freesqldatabase.com',
-                user='sql11647518',
-                password='LMHZDvz5me',
-                database='sql11647518'
-            )
-            cursor = conn.cursor()
+        self.idlab = selected_widget[0]
+        self.selected_widget = selected_widget
+        for widget in self.findChildren(QWidget):
+            widget.hide()
+        nameTDL_label = QLabel("Nom de la ToDoList : " + selected_widget[1], self)
+        self.modTDL = QLineEdit(selected_widget[1], self)
+        taskLayout = QHBoxLayout()
+        taskLayout.addWidget(nameTDL_label)
+        taskLayout.addWidget(self.modTDL)
+        nameDTDL_label = QLabel('Modifier la description de la To-do list : ', self)
+        self.modDTDL = QTextEdit(self)
+        self.modDTDL.setText(self.selected_widget[2])  # Remplir avec la description de la ToDoList existante
+        dtasklayout = QHBoxLayout()
+        dtasklayout.addWidget(nameDTDL_label)
+        dtasklayout.addWidget(self.modDTDL)
 
-            cursor.execute("SELECT * FROM ToDoLists WHERE idToDoLists = %s", (self.idlab,))
-            ToDoList = cursor.fetchall()
-            for tdl in ToDoList:
-                nameTDL = QLabel('Modifier le nom de la To-do list :', self)
-                self.modTDL = QLineEdit(tdl[1], self)
-                taskLayout = QHBoxLayout()
-                taskLayout.addWidget(nameTDL)
-                taskLayout.addWidget(self.modTDL)
-                self.modTDL.setMaxLength(100)
-                self.modTDL.setAlignment(Qt.AlignTop)
-                self.descTask_labels.append(nameTDL)
-                self.descTask_labels.append(self.modTDL)
-                self.layout.addLayout(taskLayout)
-                nameDTDL = QLabel('Modifier la description de la To-do list : ', self)
-                self.modDTDL = QTextEdit(tdl[2], self)
-                self.modDTDL.setWordWrapMode(QTextOption.WrapAtWordBoundaryOrAnywhere)
-                self.modDTDL.setLineWrapMode(QTextEdit.WidgetWidth)
-                self.modDTDL.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-                self.modDTDL.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-                self.modDTDL.setMaximumHeight(100)
-                self.modDTDL.textChanged.connect(self.check_max_chars)
-                self.max_chars = 1000
-                self.modDTDL.setAlignment(Qt.AlignTop)  # Aligner le texte vers le haut
-                dtasklayout = QHBoxLayout()
-                dtasklayout.addWidget(nameDTDL)
-                dtasklayout.addWidget(self.modDTDL)
-                self.descTask_labels.append(nameDTDL)
-                self.descTask_labels.append(self.modDTDL)
-                self.layout.addLayout(dtasklayout)
-            confirmLayout = QHBoxLayout()
-            confirmLayout.addStretch()
-            self.confirmBtn = QPushButton("Confirmer")
-            confirmLayout.addWidget(self.confirmBtn)
-            confirmLayout.addStretch()
-            self.confirmBtn.clicked.connect(self.sendModifications)
-            self.layout.addLayout(confirmLayout)
-            self.backBtn = QPushButton("Retour")
-            self.layout.addWidget(self.backBtn)
-            self.backBtn.clicked.connect(self.show_all_elements)
-        except:
-            pass
+        confirmLayout = QHBoxLayout()
+        self.confirmBtn = QPushButton("Confirmer", self)
+        confirmLayout.addWidget(self.confirmBtn)
+
+        backLayout = QHBoxLayout()
+        self.backBtn = QPushButton("Retour", self)
+        backLayout.addWidget(self.backBtn)
+
+        layout = QVBoxLayout(self)
+        layout.addWidget(nameTDL_label)
+        layout.addWidget(nameDTDL_label)
+        self.confirmBtn.clicked.connect(self.sendModifications)
+        self.backBtn.clicked.connect(self.show_all_elements)
+        self.setLayout(layout)
 
     def check_max_chars(self):
         if len(self.modDTDL.toPlainText()) > self.max_chars:
@@ -274,7 +244,6 @@ class FenetreAccueil(QWidget):
             except mysql.connector.Error as err:
                 QMessageBox.warning(self, 'Erreur MySQL', str(err))
     def show_only_selected(self, selected_widget):
-        self.bouton.hide()
         idlabel = selected_widget.itemAt(0).widget()
         idlabtxt = idlabel.text()
         for widget in self.todo_widgets:
@@ -309,7 +278,6 @@ class FenetreAccueil(QWidget):
 
 
     def show_all_elements(self):
-        self.bouton.show()
         try:
             self.confirmBtn.hide()
             self.backBtn.hide()
