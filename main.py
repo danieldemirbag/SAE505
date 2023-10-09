@@ -133,6 +133,7 @@ class FenetreRegister(QWidget):
         if self.Passwordedit.text() == self.confirmPasswordedit.text():
             values = [self.Usernameedit.text(), self.Passwordedit.text(), self.confirmPasswordedit.text()]
             print(values)
+            print(feur)
             self.close()
         else:
             msg = QMessageBox.warning(None, "Erreur", "Les mots de passes ne correspondent pas")
