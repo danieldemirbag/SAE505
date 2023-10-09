@@ -1,4 +1,4 @@
-import sys
+	import sys
 import mysql.connector
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
@@ -9,6 +9,7 @@ from PyQt5 import *
 class LoginWindow(QWidget):
     def __init__(self):
         super().__init__()
+        self.username = ""
         self.FenetreConnexion()
 
     def FenetreConnexion(self):
@@ -57,6 +58,8 @@ class LoginWindow(QWidget):
             result = cursor.fetchone()
 
             if result:
+                # Récupérez le nom d'utilisateur depuis le résultat de la requête
+                self.username = result[1]
                 self.ouvrir_fenetre_accueil(cursor)
             else:
                 QMessageBox.warning(self, 'Erreur', 'Login incorrect. Veuillez réessayer.')
@@ -67,9 +70,12 @@ class LoginWindow(QWidget):
         except mysql.connector.Error as err:
             print("Erreur MySQL :", err)
 
+        except mysql.connector.Error as err:
+            print("Erreur MySQL :", err)
+
     def ouvrir_fenetre_accueil(self, cursor):
         self.close()
-        self.fenetreaccueil = FenetreAccueil(cursor)
+        self.fenetreaccueil = FenetreAccueil(cursor, self.username)  # Passez le nom d'utilisateur
         geometry_ecran = QDesktopWidget().screenGeometry()
         x = (geometry_ecran.width() - self.fenetreaccueil.width()) // 2
         y = (geometry_ecran.height() - self.fenetreaccueil.height()) // 2
@@ -79,56 +85,98 @@ class LoginWindow(QWidget):
 
 
 class FenetreAccueil(QWidget):
-    def __init__(self, cursor):
+    def __init__(self, cursor, username):
         super().__init__()
         self.cursor = cursor
+        self.username = username
         self.fenetreaccueil()
 
     def fenetreaccueil(self):
         self.setWindowTitle("Accueil - TickTask")
-        self.setGeometry(500, 500, 700, 900)
-        self.layout = QVBoxLayout()
-        self.cursor.execute("SELECT * FROM ToDoLists")
+        self.setGeometry(300, 300, 1000, 600)  # Ajustement des dimensions
+        self.setMinimumWidth(800)  # Largeur minimale de la fenêtre
+        # Ajout d'un QLabel pour le texte en haut au milieu
+        top_label = QLabel("Bienvenue " + self.username + " !", self)
+        top_label.setAlignment(Qt.AlignCenter)  # Alignement au centre
+        font = QFont()
+        font.setPointSize(16)
+        font.setBold(True)
+        top_label.setFont(font)
+
+        # Créer un scroll area pour les ToDoList
+        scroll_area = QScrollArea(self)
+        scroll_area.setWidgetResizable(True)
+
+        # Créer un widget pour contenir les ToDoList
+        content_widget = QWidget(scroll_area)
+        content_layout = QVBoxLayout(content_widget)
+        content_layout.setSpacing(50)  # Espacement entre chaque ToDoList
+
+        self.cursor.execute("SELECT * FROM ToDoLists WHERE AuthorizedUsers LIKE %s", ('%' + self.username + '%',))
         ToDoLists = self.cursor.fetchall()
-        self.todo_widgets = []
-        self.todo_widgets2 = []
-        self.descTask_labels = []
-        self.TDLlabs = []
-        for ToDoList in ToDoLists:
-            todo_layout = QHBoxLayout()
-            idlabel = QLabel(str(ToDoList[0]))
-            label = QLabel("Nom de ToDolist : " + ToDoList[1])
-            title_desc_layout = QVBoxLayout()
-            label2 = QLabel("Description : " + ToDoList[2])
-            label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
-            label2.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
-            title_desc_layout.addWidget(idlabel)
-            idlabel.hide()
-            title_desc_layout.addWidget(label)
-            title_desc_layout.addWidget(label2)
-            todo_layout.addLayout(title_desc_layout)
-            openButton = QPushButton("Open")
-            openButton.clicked.connect(lambda checked, widget=title_desc_layout: self.show_only_selected(widget))
-            todo_layout.addWidget(openButton)
+        if not ToDoLists:
+            # Si la liste est vide, afficher un label au centre du conteneur
+            empty_label = QLabel("Vous n'avez aucune ToDoList.", self)
+            empty_label.setAlignment(Qt.AlignCenter)
+            content_layout.addWidget(empty_label)
 
-            modifyButton = QPushButton("Modifier")
-            modifyButton.clicked.connect(lambda checked, widget=title_desc_layout: self.modify_todo_list(widget))
-            todo_layout.addWidget(modifyButton)
+            # Définir une taille de police plus grande
+            font = QFont()
+            font.setPointSize(20)  # Vous pouvez ajuster la taille comme vous le souhaitez
+            empty_label.setFont(font)
 
-            delete_btn = QPushButton("Supprimer")
-            delete_btn.clicked.connect(lambda checked, widget=title_desc_layout: self.delete_todo_list(widget))
-            todo_layout.addWidget(delete_btn)
+        else:
+        # Parcourir les ToDoLists et créer des widgets pour les afficher
+            for ToDoList in ToDoLists:
+                todo_widget = QWidget()
+                todo_layout = QVBoxLayout(todo_widget)  # Utilisation d'un layout vertical
 
+                # Layout horizontal pour le nom et les boutons
+                name_button_layout = QHBoxLayout()
 
-            self.layout.addLayout(todo_layout)
-            self.todo_widgets.append(todo_layout)
-            self.todo_widgets2.append(title_desc_layout)
+                # Label pour le nom
+                label = QLabel("Nom de ToDolist : " + ToDoList[1])
 
+                # Ajouter le nom à gauche
+                name_button_layout.addWidget(label)
 
-        self.bouton = QPushButton("Ajouter une ToDoList")
-        self.bouton.clicked.connect(self.fenetre_add_to_dolist)
-        self.layout.addWidget(self.bouton)
-        self.setLayout(self.layout)
+                # Boutons pour "Open", "Modifier" et "Supprimer"
+                open_button = QPushButton("Open", todo_widget)
+                modify_button = QPushButton("Modifier", todo_widget)
+                delete_button = QPushButton("Supprimer", todo_widget)
+
+                # Ajouter les boutons à droite
+                name_button_layout.addStretch(1)  # Pour pousser le nom à gauche
+                name_button_layout.addWidget(open_button)
+                name_button_layout.addWidget(modify_button)
+                name_button_layout.addWidget(delete_button)
+
+                # Ajouter le layout horizontal du nom et des boutons au layout vertical
+                todo_layout.addLayout(name_button_layout)
+
+                # Ajouter la description en dessous du nom
+                label2 = QLabel("Description : " + ToDoList[2])
+                todo_layout.addWidget(label2)
+
+                # Connexions des boutons aux fonctions correspondantes
+                open_button.clicked.connect(lambda checked, id=ToDoList[0]: self.show_only_selected(id))
+                modify_button.clicked.connect(lambda checked, id=ToDoList[0]: self.modify_todo_list(id))
+                delete_button.clicked.connect(lambda checked, id=ToDoList[0]: self.delete_todo_list(id))
+
+                # Ajouter le widget de ToDoList au layout principal
+                content_layout.addWidget(todo_widget)
+
+            # Définir le contenu du scroll area
+        scroll_area.setWidget(content_widget)
+
+        # Utilisation d'un layout vertical pour l'ensemble de la fenêtre
+        main_layout = QVBoxLayout(self)
+        main_layout.addWidget(top_label)
+        main_layout.addWidget(scroll_area)
+
+        add_todo_list_button = QPushButton("Ajouter une ToDoList", self)
+        add_todo_list_button.clicked.connect(self.fenetre_add_to_dolist)
+        main_layout.addWidget(add_todo_list_button)
 
 
     def modify_todo_list(self, selected_widget):
@@ -289,28 +337,27 @@ class FenetreAccueil(QWidget):
             self.layout.removeWidget(self.sender())
 
     def fenetre_add_to_dolist(self):
-        self.fenetreaddtodolist = FenetreAddTodolist()
+        self.fenetreaddtodolist = FenetreAddTodolist(username=self.username)
         geometry_ecran = QDesktopWidget().screenGeometry()
         x = (geometry_ecran.width() - self.fenetreaddtodolist.width()) // 2
         y = (geometry_ecran.height() - self.fenetreaddtodolist.height()) // 2
         self.fenetreaddtodolist.setGeometry(x, y, self.fenetreaddtodolist.width(), self.fenetreaddtodolist.height())
         self.fenetreaddtodolist.show()
 
-    def delete_todo_list(self, widget):
+    def delete_todo_list(self, todo_id):
         reply = QMessageBox.question(self, 'Confirmation', 'Êtes-vous sûr de vouloir supprimer cette ToDoList?',
                                      QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
 
         if reply == QMessageBox.Yes:
             try:
                 conn = mysql.connector.connect(
-                host='sql11.freesqldatabase.com',
-                user='sql11647518',
-                password='LMHZDvz5me',
-                database='sql11647518'
+                    host='sql11.freesqldatabase.com',
+                    user='sql11647518',
+                    password='LMHZDvz5me',
+                    database='sql11647518'
                 )
                 cursor = conn.cursor()
-                todo_id = widget.itemAt(0).widget()
-                todo_id = todo_id.text()
+
                 cursor.execute("DELETE FROM `ToDoLists` WHERE `idToDoLists` = %s", (todo_id,))
                 conn.commit()
                 cursor.close()
@@ -318,33 +365,62 @@ class FenetreAccueil(QWidget):
 
                 print("ToDoList supprimée avec succès.")
 
-
             except mysql.connector.Error as err:
                 print("Erreur MySQL :", err)
 
 
 class FenetreAddTodolist(QWidget):
-    def __init__(self):
+    def __init__(self, username):
         super().__init__()
+        self.username = username
         self.fenetreaddtodolist()
 
     def fenetreaddtodolist(self):
         self.setWindowTitle("Nouvelle ToDoList - TickTask")
         self.setGeometry(500, 500, 500, 250)
 
-        layout = QGridLayout()
+        layout = QVBoxLayout()
 
         self.name = QLineEdit(self)
         self.name.setPlaceholderText("Nom")
-        layout.addWidget(self.name, 0, 0)
+        layout.addWidget(self.name)
 
         self.desc = QLineEdit(self)
         self.desc.setPlaceholderText("Description")
-        layout.addWidget(self.desc, 1, 0)
+        layout.addWidget(self.desc)
 
-        self.users = QLineEdit(self)
-        self.users.setPlaceholderText("Utilisateurs")
-        layout.addWidget(self.users, 2, 0)
+        # Ajout de la section pour les utilisateurs
+        user_section = QWidget()
+        user_section_layout = QVBoxLayout()
+        self.user_checkboxes = []  # Liste pour stocker les cases à cocher des utilisateurs
+
+        try:
+            conn = mysql.connector.connect(
+                host='sql11.freesqldatabase.com',
+                user='sql11647518',
+                password='LMHZDvz5me',
+                database='sql11647518'
+            )
+            cursor = conn.cursor()
+
+            cursor.execute("SELECT Username FROM Users WHERE Username != %s", (self.username,))
+            users = cursor.fetchall()
+            for user in users:
+                checkbox = QCheckBox(user[0])
+                self.user_checkboxes.append(checkbox)
+                user_section_layout.addWidget(checkbox)
+            print(self.user_checkboxes)
+            cursor.close()
+            conn.close()
+
+        except mysql.connector.Error as err:
+            print("Erreur MySQL :", err)
+
+        user_scroll = QScrollArea()
+        user_scroll.setWidgetResizable(True)
+        user_section.setLayout(user_section_layout)
+        user_scroll.setWidget(user_section)
+        layout.addWidget(user_scroll)
 
         bouton = QPushButton("Créer la ToDoList")
         bouton.clicked.connect(lambda: self.create_todo_list())
@@ -355,7 +431,12 @@ class FenetreAddTodolist(QWidget):
     def create_todo_list(self):
         nom = self.name.text()
         desc = self.desc.text()
-        users = self.users.text()
+
+        # Collecte des utilisateurs cochés
+        selected_users = [checkbox.text() for checkbox in self.user_checkboxes if checkbox.isChecked()]
+        users = self.username + ","
+        users += ",".join(selected_users)  # Convertir la liste en une chaîne avec des virgules
+        print("Utilisateurs sélectionnés :", users)
         self.close()
         try:
             conn = mysql.connector.connect(
