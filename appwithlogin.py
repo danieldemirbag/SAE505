@@ -1,4 +1,4 @@
-import sys
+import sys, qrc
 import mysql.connector
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
@@ -156,6 +156,7 @@ class LoginWindow(QWidget):
 
         self.logboutoncon.clicked.connect(self.login)
         self.logcroix.clicked.connect(self.close)
+        self.logcreercompte.clicked.connect(self.fenetre_register)
 
 
         self.shortcut_open = QShortcut(QKeySequence('Return'), self)
@@ -190,6 +191,15 @@ class LoginWindow(QWidget):
         self.logpetit.setText(_translate("Login", "-"))
         self.logmdpoublie.setText(_translate("Login", "Mot de passe oublié ?"))
         self.logcreercompte.setText(_translate("Login", "Créer un compte."))
+
+    def fenetre_register(self):
+        self.close()
+        self.fenetre_register = Register()
+        geometry_ecran = QDesktopWidget().screenGeometry()
+        x = (geometry_ecran.width() - self.fenetre_register.width()) // 2
+        y = (geometry_ecran.height() - self.fenetre_register.height()) // 2
+        self.fenetre_register.setGeometry(x, y, self.fenetre_register.width(), self.fenetre_register.height())
+        self.fenetre_register.show()
 
     def login(self):
         username = self.lognomuser.text()
@@ -531,6 +541,194 @@ class FenetreAddTodolist(QWidget):
 
         except mysql.connector.Error as err:
             print("Erreur MySQL :", err)
+
+
+
+
+
+
+class Register(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.initUI()
+
+    def initUI(self):
+        self.setObjectName("Login")
+        self.setEnabled(True)
+        self.resize(700, 900)
+        self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
+        self.setAttribute(QtCore.Qt.WA_TranslucentBackground)
+        self.gridLayout = QtWidgets.QGridLayout(self)
+        self.gridLayout.setObjectName("gridLayout")
+        self.widget = QtWidgets.QWidget(self)
+        self.widget.setGeometry(QtCore.QRect(25, 25, 650, 850))
+        self.widget.setObjectName("widget")
+        self.inscrimgback = QtWidgets.QLabel(self.widget)
+        self.inscrimgback.setGeometry(QtCore.QRect(0, 0, 650, 850))
+        self.inscrimgback.setStyleSheet("border-image: url(:/img/img/cover.jpg);\n"
+"border-radius: 20px;")
+        self.inscrimgback.setText("")
+        self.inscrimgback.setObjectName("inscrimgback")
+        self.inscrtitre = QtWidgets.QLabel(self.widget)
+        self.inscrtitre.setGeometry(QtCore.QRect(150, 125, 350, 70))
+        font = QtGui.QFont()
+        font.setPointSize(30)
+        font.setBold(True)
+        font.setUnderline(False)
+        font.setWeight(75)
+        font.setStrikeOut(False)
+        font.setStyleStrategy(QtGui.QFont.PreferDefault)
+        self.inscrtitre.setFont(font)
+        self.inscrtitre.setStyleSheet("background: rgba(255, 255, 255, .5);\n"
+"border: 2px solid;\n"
+"border-radius: 10px;")
+        self.inscrtitre.setAlignment(QtCore.Qt.AlignCenter)
+        self.inscrtitre.setObjectName("inscrtitre")
+        self.inscrfondnoir = QtWidgets.QLabel(self.widget)
+        self.inscrfondnoir.setGeometry(QtCore.QRect(75, 225, 500, 525))
+        self.inscrfondnoir.setStyleSheet("background: rgba(0, 0, 0, .33);\n"
+"border-radius: 30px;")
+        self.inscrfondnoir.setText("")
+        self.inscrfondnoir.setObjectName("inscrfondnoir")
+        self.inscremail = QtWidgets.QLineEdit(self.widget)
+        self.inscremail.setGeometry(QtCore.QRect(125, 275, 400, 50))
+        font = QtGui.QFont()
+        font.setPointSize(16)
+        self.inscremail.setFont(font)
+        self.inscremail.setStyleSheet("border:none;\n"
+"border-bottom:2px solid rgba(105, 118, 132, 255);\n"
+"color: rgba(255, 255, 255);\n"
+"padding-bottom:7px;\n"
+"background: rgba(255, 255, 255, 0);\n"
+"")
+        self.inscremail.setObjectName("inscremail")
+        self.inscrusername = QtWidgets.QLineEdit(self.widget)
+        self.inscrusername.setGeometry(QtCore.QRect(125, 350, 400, 50))
+        font = QtGui.QFont()
+        font.setPointSize(16)
+        self.inscrusername.setFont(font)
+        self.inscrusername.setStyleSheet("border:none;\n"
+"border-bottom:2px solid rgba(105, 118, 132, 255);\n"
+"color: rgba(255, 255, 255);\n"
+"padding-bottom:7px;\n"
+"background: rgba(255, 255, 255, 0);\n"
+"")
+        self.inscrusername.setObjectName("inscrusername")
+        self.inscrMDP = QtWidgets.QLineEdit(self.widget)
+        self.inscrMDP.setGeometry(QtCore.QRect(125, 425, 400, 50))
+        font = QtGui.QFont()
+        font.setPointSize(16)
+        self.inscrMDP.setFont(font)
+        self.inscrMDP.setStyleSheet("border:none;\n"
+"border-bottom:2px solid rgba(105, 118, 132, 255);\n"
+"color: rgba(255, 255, 255);\n"
+"padding-bottom:7px;\n"
+"background: rgba(255, 255, 255, 0);\n"
+"")
+        self.inscrMDP.setEchoMode(QtWidgets.QLineEdit.Password)
+        self.inscrMDP.setObjectName("inscrMDP")
+        self.inscrMDP_2 = QtWidgets.QLineEdit(self.widget)
+        self.inscrMDP_2.setGeometry(QtCore.QRect(125, 500, 400, 50))
+        font = QtGui.QFont()
+        font.setPointSize(16)
+        self.inscrMDP_2.setFont(font)
+        self.inscrMDP_2.setStyleSheet("border:none;\n"
+"border-bottom:2px solid rgba(105, 118, 132, 255);\n"
+"color: rgba(255, 255, 255);\n"
+"padding-bottom:7px;\n"
+"background: rgba(255, 255, 255, 0);\n"
+"")
+        self.inscrMDP_2.setEchoMode(QtWidgets.QLineEdit.Password)
+        self.inscrMDP_2.setObjectName("inscrMDP_2")
+        self.inscrpetit = QtWidgets.QToolButton(self.widget)
+        self.inscrpetit.setGeometry(QtCore.QRect(540, 20, 40, 30))
+        font = QtGui.QFont()
+        font.setPointSize(30)
+        self.inscrpetit.setFont(font)
+        self.inscrpetit.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.inscrpetit.setStyleSheet("border:none;\n"
+"background: rgba(255, 255, 255, 0);\n"
+"border-bottom:2px solid rgba(105, 118, 132, 255);\n"
+"color:rgba(255, 255, 255, .75);")
+        self.inscrpetit.setObjectName("inscrpetit")
+        self.inscrcroix = QtWidgets.QToolButton(self.widget)
+        self.inscrcroix.setGeometry(QtCore.QRect(590, 20, 40, 30))
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        font.setBold(True)
+        font.setWeight(75)
+        self.inscrcroix.setFont(font)
+        self.inscrcroix.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.inscrcroix.setStyleSheet("border:none;\n"
+"background: rgba(255, 255, 255, 0);\n"
+"border-bottom:2px solid rgba(105, 118, 132, 255);\n"
+"color:rgba(255, 255, 255, .75);")
+        self.inscrcroix.setObjectName("inscrcroix")
+        self.inscrboutoninscrire = QtWidgets.QToolButton(self.widget)
+        self.inscrboutoninscrire.setGeometry(QtCore.QRect(200, 600, 250, 70))
+        font = QtGui.QFont()
+        font.setPointSize(16)
+        self.inscrboutoninscrire.setFont(font)
+        self.inscrboutoninscrire.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.inscrboutoninscrire.setAutoFillBackground(False)
+        self.inscrboutoninscrire.setStyleSheet("background: rgba(255, 255, 255, .5);\n"
+"border: 2px solid;\n"
+"border-radius: 10px;")
+        self.inscrboutoninscrire.setCheckable(False)
+        self.inscrboutoninscrire.setAutoExclusive(False)
+        self.inscrboutoninscrire.setAutoRepeatInterval(100)
+        self.inscrboutoninscrire.setObjectName("inscrboutoninscrire")
+        self.inscrboutonannule = QtWidgets.QToolButton(self.widget)
+        self.inscrboutonannule.setGeometry(QtCore.QRect(475, 775, 150, 50))
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        self.inscrboutonannule.setFont(font)
+        self.inscrboutonannule.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.inscrboutonannule.setAutoFillBackground(False)
+        self.inscrboutonannule.setStyleSheet("background: rgba(255, 255, 255, .5);\n"
+"border: 2px solid;\n"
+"border-radius: 10px;")
+        self.inscrboutonannule.setCheckable(False)
+        self.inscrboutonannule.setAutoExclusive(False)
+        self.inscrboutonannule.setAutoRepeatInterval(100)
+        self.inscrboutonannule.setObjectName("inscreboutonannule")
+
+        self.retranslateUi()
+        QtCore.QMetaObject.connectSlotsByName(self)
+
+
+        self.inscrboutonannule.clicked.connect(self.inscrannuler)
+        self.inscrcroix.clicked.connect(self.close)
+        self.inscrboutoninscrire.clicked.connect(self.createaccount)
+
+    def retranslateUi(self):
+        _translate = QtCore.QCoreApplication.translate
+        self.setWindowTitle(_translate("Login", "Dialog"))
+        self.inscrtitre.setText(_translate("Login", "Inscription"))
+        self.inscremail.setPlaceholderText(_translate("Login", "Adresse mail"))
+        self.inscrMDP.setPlaceholderText(_translate("Login", "Mot de passe"))
+        self.inscrboutoninscrire.setText(_translate("Login", "S\'inscrire"))
+        self.inscrcroix.setText(_translate("Login", "X"))
+        self.inscrpetit.setText(_translate("Login", "-"))
+        self.inscrusername.setPlaceholderText(_translate("Login", "Nom d\'utilisateur"))
+        self.inscrMDP_2.setPlaceholderText(_translate("Login", "Confirmer le mot de passe"))
+        self.inscrboutonannule.setText(_translate("Login", "Annuler"))
+
+    def createaccount(self):
+        print("En dev.")
+
+    def inscrannuler(self):
+        self.close()
+        self.retour_login = LoginWindow()
+        geometry_ecran = QDesktopWidget().screenGeometry()
+        x = (geometry_ecran.width() - self.retour_login.width()) // 2
+        y = (geometry_ecran.height() - self.retour_login.height()) // 2
+        self.retour_login.setGeometry(x, y, self.retour_login.width(), self.retour_login.height())
+        self.retour_login.show()
+
+
+
+
 
 
 
