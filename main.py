@@ -101,6 +101,7 @@ class FenetreRegister(QWidget):
         self.setFixedSize(300, 200)
         self.setWindowTitle("Créer un compte")
 
+        self.Email = QLineEdit()
         self.Usernameedit = QLineEdit()
         self.Passwordedit = QLineEdit()
         self.confirmPasswordedit = QLineEdit()
@@ -114,6 +115,7 @@ class FenetreRegister(QWidget):
 
         self.confirmButton.setText("Confirmer")
         self.cancelButton.setText("Annuler")
+        self.Email.setPlaceholderText("E-mail")
         self.Usernameedit.setPlaceholderText("Utilisateur")
         self.Passwordedit.setPlaceholderText("Mot de passe")
         self.confirmPasswordedit.setPlaceholderText("Confirmer mot de passe")
@@ -121,6 +123,7 @@ class FenetreRegister(QWidget):
 
         vbox = QVBoxLayout()
         hbox = QHBoxLayout()
+        vbox.addWidget(self.Email)
         vbox.addWidget(self.Usernameedit)
         vbox.addWidget(self.Passwordedit)
         vbox.addWidget(self.confirmPasswordedit)
@@ -131,9 +134,8 @@ class FenetreRegister(QWidget):
 
     def getValues(self):
         if self.Passwordedit.text() == self.confirmPasswordedit.text():
-            values = [self.Usernameedit.text(), self.Passwordedit.text(), self.confirmPasswordedit.text()]
+            values = [self.Email.text(), self.Usernameedit.text(), self.Passwordedit.text(), self.confirmPasswordedit.text()]
             print(values)
-            print(feur)
             self.close()
         else:
             msg = QMessageBox.warning(None, "Erreur", "Les mots de passes ne correspondent pas")
@@ -150,8 +152,9 @@ class FenetreRegister(QWidget):
                 database='sql11647518'
             )
             cursor = conn.cursor()
-
-            cursor.execute("SELECT * FROM Users WHERE Username = %s", (self.Usernameedit))
+            username = self.Usernameedit.text()
+            mail = self.Email.text()
+            cursor.execute("SELECT * FROM Users WHERE Username AND Email = %s", (username,mail,))
             result = cursor.fetchone()
 
             if result:
