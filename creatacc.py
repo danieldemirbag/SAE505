@@ -1,4 +1,6 @@
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import *
+from PyQt5.QtWidgets import *
+from PyQt5.QtCore import *
 import sys, qrc
 
 
@@ -157,6 +159,23 @@ class Ui_Login(object):
         self.inscrcroix.setText(_translate("Login", "X"))
         self.inscrboutoninscrire.setText(_translate("Login", "S\'inscrire"))
         self.inscreboutonannule.setText(_translate("Login", "Annuler"))
+
+    def minimize_window():
+        # Réduit la fenêtre principale
+        main_window.showMinimized()
+
+        app = QApplication(sys.argv)
+        main_window = QMainWindow()
+        main_window.setGeometry(100, 100, 800, 600)  # Définir les dimensions de la fenêtre
+        main_window.setWindowTitle("Réduire la fenêtre avec PyQt5")
+
+        minimize_button = QPushButton("Réduire la fenêtre", main_window)
+        minimize_button.clicked.connect(minimize_window)
+        minimize_button.setGeometry(10, 10, 150, 30)  # Définir les dimensions du bouton
+
+        main_window.show()
+        sys.exit(app.exec_())
+
 
 if __name__ == "__main__":
         app = QtWidgets.QApplication(sys.argv)
