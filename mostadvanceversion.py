@@ -536,7 +536,7 @@ class FenetreAccueil(QWidget):
             self.layout.removeWidget(self.sender())
 
     def fenetre_add_to_dolist(self):
-        self.fenetreaddtodolist = FenetreAddTodolist()
+        self.fenetreaddtodolist = FenetreAddTodolist(username=self.username)
         geometry_ecran = QDesktopWidget().screenGeometry()
         x = (geometry_ecran.width() - self.fenetreaddtodolist.width()) // 2
         y = (geometry_ecran.height() - self.fenetreaddtodolist.height()) // 2
@@ -571,27 +571,56 @@ class FenetreAccueil(QWidget):
 
 
 class FenetreAddTodolist(QWidget):
-    def __init__(self):
+    def __init__(self, username):
         super().__init__()
+        self.username = username
         self.fenetreaddtodolist()
 
     def fenetreaddtodolist(self):
         self.setWindowTitle("Nouvelle ToDoList - TickTask")
         self.setGeometry(500, 500, 500, 250)
 
-        layout = QGridLayout()
+        layout = QVBoxLayout()
 
         self.name = QLineEdit(self)
         self.name.setPlaceholderText("Nom")
-        layout.addWidget(self.name, 0, 0)
+        layout.addWidget(self.name)
 
         self.desc = QLineEdit(self)
         self.desc.setPlaceholderText("Description")
-        layout.addWidget(self.desc, 1, 0)
+        layout.addWidget(self.desc)
 
-        self.users = QLineEdit(self)
-        self.users.setPlaceholderText("Utilisateurs")
-        layout.addWidget(self.users, 2, 0)
+        # Ajout de la section pour les utilisateurs
+        user_section = QWidget()
+        user_section_layout = QVBoxLayout()
+        self.user_checkboxes = []  # Liste pour stocker les cases à cocher des utilisateurs
+
+        try:
+            conn = mysql.connector.connect(
+                host='sql11.freesqldatabase.com',
+                user='sql11647518',
+                password='LMHZDvz5me',
+                database='sql11647518'
+            )
+            cursor = conn.cursor()
+
+            cursor.execute("SELECT Username FROM Users WHERE Username != %s", (self.username,))
+            users = cursor.fetchall()
+            for user in users:
+                checkbox = QCheckBox(user[0])
+                self.user_checkboxes.append(checkbox)
+                user_section_layout.addWidget(checkbox)
+            cursor.close()
+            conn.close()
+
+        except mysql.connector.Error as err:
+            print("Erreur MySQL :", err)
+
+        user_scroll = QScrollArea()
+        user_scroll.setWidgetResizable(True)
+        user_section.setLayout(user_section_layout)
+        user_scroll.setWidget(user_section)
+        layout.addWidget(user_scroll)
 
         bouton = QPushButton("Créer la ToDoList")
         bouton.clicked.connect(lambda: self.create_todo_list())
@@ -602,7 +631,12 @@ class FenetreAddTodolist(QWidget):
     def create_todo_list(self):
         nom = self.name.text()
         desc = self.desc.text()
-        users = self.users.text()
+
+        # Collecte des utilisateurs cochés
+        selected_users = [checkbox.text() for checkbox in self.user_checkboxes if checkbox.isChecked()]
+        users = self.username + ","
+        users += ",".join(selected_users)  # Convertir la liste en une chaîne avec des virgules
+        print("Utilisateurs sélectionnés :", users)
         self.close()
         try:
             conn = mysql.connector.connect(
@@ -782,17 +816,15 @@ class Register(QWidget):
         self.retranslateUi()
         QtCore.QMetaObject.connectSlotsByName(self)
 
+
         self.inscrboutonannule.clicked.connect(self.inscrannuler)
         self.inscrcroix.clicked.connect(self.close)
         self.inscrboutoninscrire.clicked.connect(self.createaccount)
 
-    
         self.shortcut_open = QShortcut(QKeySequence('Return'), self)
         self.shortcut_open.activated.connect(self.createaccount)
         self.shortcut_open2 = QShortcut(QKeySequence('Enter'), self)
         self.shortcut_open2.activated.connect(self.createaccount)
-
-    
 
     def retranslateUi(self):
         _translate = QtCore.QCoreApplication.translate
