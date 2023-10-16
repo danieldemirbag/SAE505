@@ -657,7 +657,7 @@ class FenetreAddTodolist(QWidget):
 
     def create_todo_list(self):
         nom = self.name.text()
-        desc = self.desc.text()
+        desc = self.desc.toPlainText()
 
         if nom != "" and desc != "":
             # Collecte des utilisateurs cochés
