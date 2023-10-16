@@ -5,10 +5,14 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5 import *
 
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+from reportlab.lib.pagesizes import letter
+from reportlab.lib.styles import getSampleStyleSheet
 
 class LoginWindow(QWidget):
     def __init__(self):
         super().__init__()
+        self.username = ""
         self.initUI()
 
     def initUI(self):
@@ -218,6 +222,7 @@ class LoginWindow(QWidget):
             result = cursor.fetchone()
 
             if result:
+                self.username = result[1]
                 self.ouvrir_fenetre_accueil(cursor)
             else:
                 QMessageBox.warning(self, 'Erreur', 'Login incorrect. Veuillez réessayer.')
@@ -230,7 +235,7 @@ class LoginWindow(QWidget):
 
     def ouvrir_fenetre_accueil(self, cursor):
         self.close()
-        self.fenetreaccueil = FenetreAccueil(cursor)
+        self.fenetreaccueil = FenetreAccueil(cursor, self.username)
         geometry_ecran = QDesktopWidget().screenGeometry()
         x = (geometry_ecran.width() - self.fenetreaccueil.width()) // 2
         y = (geometry_ecran.height() - self.fenetreaccueil.height()) // 2
@@ -238,18 +243,21 @@ class LoginWindow(QWidget):
         self.fenetreaccueil.show()
 
 
-
 class FenetreAccueil(QWidget):
-    def __init__(self, cursor):
+    def __init__(self, cursor, username):
         super().__init__()
         self.cursor = cursor
+        self.username = username
         self.fenetreaccueil()
+
 
     def fenetreaccueil(self):
         self.setWindowTitle("Accueil - TickTask")
         self.setGeometry(500, 500, 700, 900)
+        top_label = QLabel("Bienvenue " + self.username + " !", self)
+        top_label.setAlignment(QtCore.Qt.AlignTop | QtCore.Qt.AlignHCenter)
         self.layout = QVBoxLayout()
-        self.cursor.execute("SELECT * FROM ToDoLists")
+        self.cursor.execute("SELECT * FROM ToDoLists WHERE AuthorizedUsers LIKE %s", ('%' + self.username + '%',))
         ToDoLists = self.cursor.fetchall()
         self.todo_widgets = []
         self.todo_widgets2 = []
@@ -280,7 +288,11 @@ class FenetreAccueil(QWidget):
             delete_btn.clicked.connect(lambda checked, widget=title_desc_layout: self.delete_todo_list(widget))
             todo_layout.addWidget(delete_btn)
 
+            download_pdf_btn = QPushButton("Télécharger en PDF")
+            download_pdf_btn.clicked.connect(lambda checked, todolist=ToDoList: self.download_todo_list_pdf(todolist))
+            todo_layout.addWidget(download_pdf_btn)
 
+            self.layout.addWidget(top_label)
             self.layout.addLayout(todo_layout)
             self.todo_widgets.append(todo_layout)
             self.todo_widgets2.append(title_desc_layout)
@@ -289,17 +301,86 @@ class FenetreAccueil(QWidget):
         self.bouton = QPushButton("Ajouter une ToDoList")
         self.bouton.clicked.connect(self.fenetre_add_to_dolist)
         self.layout.addWidget(self.bouton)
+
+        self.deconnexion = QPushButton("Deconnexion")
+        self.deconnexion.clicked.connect(self.fct_deconnexion)
+        self.layout.addWidget(self.deconnexion)
+
         self.setLayout(self.layout)
+
+    def download_todo_list_pdf(self, todolist):
+        todolist_id, todolist_name, todolist_description, todolist_taches = todolist[0], todolist[1], todolist[2], \
+        todolist[3]
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontUseNativeDialog
+        pdf_filename, _ = QFileDialog.getSaveFileName(self, "Enregistrer en PDF", f"ticktask_{todolist_name}.pdf",
+                                                      "PDF Files (*.pdf);;All Files (*)", options=options)
+
+        if pdf_filename:
+            # Création d'un objet SimpleDocTemplate
+            pdf = SimpleDocTemplate(pdf_filename, pagesize=letter)
+            pdf.title = f"TickTask - {todolist_name}"
+            story = []
+
+            # Ajout du nom de la ToDoList en haut, centré
+            styles = getSampleStyleSheet()
+            title = f"<u>TickTask - {todolist_name}</u>"
+            story.append(Paragraph(title, styles['Title']))
+
+            # Ajout de la description en sous-titre, centré
+            if todolist_description:
+                description = f"<i>{todolist_description}</i>"
+                story.append(Spacer(1, 12))
+                story.append(Paragraph("Description:", styles['Heading2']))
+                story.append(Paragraph(description, styles['Normal']))
+
+            conn = mysql.connector.connect(
+                host='sql11.freesqldatabase.com',
+                user='sql11647518',
+                password='LMHZDvz5me',
+                database='sql11647518'
+            )
+            cursor = conn.cursor()
+            # Récupération des tâches liées à la ToDoList depuis la base de données
+            cursor.execute("SELECT * FROM Taches WHERE ToDoLists_idToDoLists = %s", (todolist_id,))
+            tasks = cursor.fetchall()
+
+            # Ajout des tâches au PDF
+            story.append(Spacer(1, 12))
+            story.append(Paragraph("Tâches:", styles['Heading2']))
+            for task in tasks:
+                task_id, todo_id, task_datefin, task_name, task_assignation, task_etiquette, task_priorite  = task
+                task_info = f"<b>Nom:</b> {task_name}<br/><b>Date de fin:</b> {task_datefin}<br/><b>Assignation:</b> {task_assignation}<br/><b>Étiquette:</b> {task_etiquette}<br/><b>Priorité:</b> {task_priorite}"
+                story.append(Paragraph(task_info, styles['Normal']))
+                story.append(Spacer(1, 12))
+
+            # Construction du PDF
+            pdf.build(story)
+            cursor.close()
+            conn.close()
+
+
+
+    def fct_deconnexion(self):
+        self.close()
+        self.retour_login = LoginWindow()
+        geometry_ecran = QDesktopWidget().screenGeometry()
+        x = (geometry_ecran.width() - self.retour_login.width()) // 2
+        y = (geometry_ecran.height() - self.retour_login.height()) // 2
+        self.retour_login.setGeometry(x, y, self.retour_login.width(), self.retour_login.height())
+        self.retour_login.show()
 
 
     def modify_todo_list(self, selected_widget):
         self.bouton.hide()
+        self.deconnexion.hide()
         idlabel = selected_widget.itemAt(0).widget()
         self.idlab = idlabel.text()
         for widget in self.todo_widgets:
             widget.itemAt(1).widget().hide()
             widget.itemAt(2).widget().hide()
             widget.itemAt(3).widget().hide()
+            widget.itemAt(4).widget().hide()
         for widget in self.todo_widgets2:
             widget.itemAt(1).widget().hide()
             widget.itemAt(2).widget().hide()
@@ -388,12 +469,14 @@ class FenetreAccueil(QWidget):
                 QMessageBox.warning(self, 'Erreur MySQL', str(err))
     def show_only_selected(self, selected_widget):
         self.bouton.hide()
+        self.deconnexion.hide()
         idlabel = selected_widget.itemAt(0).widget()
         idlabtxt = idlabel.text()
         for widget in self.todo_widgets:
             widget.itemAt(1).widget().hide()
             widget.itemAt(2).widget().hide()
             widget.itemAt(3).widget().hide()
+            widget.itemAt(4).widget().hide()
         for widget in self.todo_widgets2:
             if widget != selected_widget:
                 widget.itemAt(1).widget().hide()
@@ -423,6 +506,7 @@ class FenetreAccueil(QWidget):
 
     def show_all_elements(self):
         self.bouton.show()
+        self.deconnexion.show()
         try:
             self.confirmBtn.hide()
             self.backBtn.hide()
@@ -430,6 +514,7 @@ class FenetreAccueil(QWidget):
                 widget.itemAt(1).widget().show()
                 widget.itemAt(2).widget().show()
                 widget.itemAt(3).widget().show()
+                widget.itemAt(4).widget().show()
             for widget in self.todo_widgets2:
                 widget.itemAt(1).widget().show()
                 widget.itemAt(2).widget().show()
@@ -442,6 +527,7 @@ class FenetreAccueil(QWidget):
                 widget.itemAt(1).widget().show()
                 widget.itemAt(2).widget().show()
                 widget.itemAt(3).widget().show()
+                widget.itemAt(4).widget().show()
             for widget in self.todo_widgets2:
                 widget.itemAt(1).widget().show()
                 widget.itemAt(2).widget().show()
