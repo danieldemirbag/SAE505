@@ -782,10 +782,17 @@ class Register(QWidget):
         self.retranslateUi()
         QtCore.QMetaObject.connectSlotsByName(self)
 
-
         self.inscrboutonannule.clicked.connect(self.inscrannuler)
         self.inscrcroix.clicked.connect(self.close)
         self.inscrboutoninscrire.clicked.connect(self.createaccount)
+
+    
+        self.shortcut_open = QShortcut(QKeySequence('Return'), self)
+        self.shortcut_open.activated.connect(self.createaccount)
+        self.shortcut_open2 = QShortcut(QKeySequence('Enter'), self)
+        self.shortcut_open2.activated.connect(self.createaccount)
+
+    
 
     def retranslateUi(self):
         _translate = QtCore.QCoreApplication.translate
