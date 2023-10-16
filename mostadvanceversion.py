@@ -1,4 +1,4 @@
-import sys, qrc, re
+import sys, qrc, re, os
 import mysql.connector
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
@@ -149,6 +149,7 @@ class LoginWindow(QWidget):
         self.logfondnoir.setText("")
 
         self.logmdpoublie = QtWidgets.QToolButton(self.widget)
+
         self.logmdpoublie.setGeometry(QtCore.QRect(180, 650, 300, 20))
         self.logmdpoublie.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.logmdpoublie.setStyleSheet("color:rgba(255, 255, 255, .75);\n"
@@ -186,6 +187,7 @@ class LoginWindow(QWidget):
 
         self.retranslateUi()
         QtCore.QMetaObject.connectSlotsByName(self)
+        self.logpetit.clicked.connect(self.showMinimized)
 
     def retranslateUi(self):
         _translate = QtCore.QCoreApplication.translate
@@ -806,6 +808,7 @@ class Register(QWidget):
         font = QtGui.QFont()
         font.setPointSize(30)
         self.inscrpetit.setFont(font)
+        self.inscrpetit.clicked.connect(self.showMinimized)
         self.inscrpetit.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.inscrpetit.setStyleSheet("border:none;\n"
 "background: rgba(255, 255, 255, 0);\n"
@@ -954,3 +957,4 @@ if __name__ == '__main__':
     login_window = LoginWindow()
     login_window.show()
     sys.exit(app.exec_())
+
