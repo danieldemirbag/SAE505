@@ -651,34 +651,47 @@ class FenetreAddTodolist(QWidget):
         nom = self.name.text()
         desc = self.desc.text()
 
-        # Collecte des utilisateurs cochés
-        selected_users = [checkbox.text() for checkbox in self.user_checkboxes if checkbox.isChecked()]
-        users = self.username + ","
-        users += ",".join(selected_users)  # Convertir la liste en une chaîne avec des virgules
-        self.close()
-        try:
-            conn = mysql.connector.connect(
-                host='sql11.freesqldatabase.com',
-                user='sql11647518',
-                password='LMHZDvz5me',
-                database='sql11647518'
-            )
-            cursor = conn.cursor()
+        if nom != "" and desc != "":
+            # Collecte des utilisateurs cochés
+            selected_users = [checkbox.text() for checkbox in self.user_checkboxes if checkbox.isChecked()]
+            users = self.username + ","
+            users += ",".join(selected_users)  # Convertir la liste en une chaîne avec des virgules
 
-            # Utilisation de %s comme paramètres dans la requête
-            cursor.execute("INSERT INTO `ToDoLists`(`Nom`, `Description`, `AuthorizedUsers`) VALUES (%s, %s, %s)",
-                           (nom, desc, users))
+            try:
+                conn = mysql.connector.connect(
+                    host='sql11.freesqldatabase.com',
+                    user='sql11647518',
+                    password='LMHZDvz5me',
+                    database='sql11647518'
+                )
+                cursor = conn.cursor()
 
-            # Commit pour sauvegarder les changements
-            conn.commit()
-            cursor.close()
-            conn.close()
+                # Check if the 'Nom' already exists in the database
+                cursor.execute("SELECT COUNT(*) FROM `ToDoLists` WHERE `Nom` = %s", (nom,))
+                result = cursor.fetchone()
+                count = result[0]
 
-            print("ToDoList ajoutée avec succès.")
-            self.fenetreaddtodolist()
+                if count > 0:
+                    QtWidgets.QMessageBox.critical(self, "Erreur",
+                                                   "Ce nom de ToDoList existe déjà dans la base de données.")
+                else:
+                    # Utilisation de %s comme paramètres dans la requête
+                    cursor.execute("INSERT INTO `ToDoLists`(`Nom`, `Description`, `AuthorizedUsers`) VALUES (%s, %s, %s)",
+                                   (nom, desc, users))
 
-        except mysql.connector.Error as err:
-            print("Erreur MySQL :", err)
+                    # Commit pour sauvegarder les changements
+                    conn.commit()
+                    cursor.close()
+                    conn.close()
+                    self.close()
+                    print("ToDoList ajoutée avec succès.")
+                    self.fenetreaddtodolist()
+
+            except mysql.connector.Error as err:
+                print("Erreur MySQL :", err)
+        else:
+            QtWidgets.QMessageBox.critical(self, "Erreur",
+                                           "Le nom ou la description de la ToDoList ne peut pas être vide.")
 
 
 
