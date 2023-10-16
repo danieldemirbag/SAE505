@@ -28,6 +28,8 @@ class LoginWindow(QWidget):
         self.logimgback.setGeometry(QtCore.QRect(0, 0, 650, 850))
         self.logimgback.setStyleSheet("border-image: url(./img/cover.jpg);\n"
                                       "border-radius: 20px;")
+        self.logimgback.setStyleSheet("border-image: url(:/img/img/cover.jpg);\n"
+                                      "border-radius: 20px;")
         self.logimgback.setText("")
         self.logtitre = QtWidgets.QLabel(self.widget)
         self.logtitre.setGeometry(QtCore.QRect(200, 125, 250, 70))
@@ -686,6 +688,8 @@ class Register(QWidget):
         self.inscrimgback = QtWidgets.QLabel(self.widget)
         self.inscrimgback.setGeometry(QtCore.QRect(0, 0, 650, 850))
         self.inscrimgback.setStyleSheet("border-image: url(./img/cover.jpg);\n"
+"border-radius: 20px;")
+        self.inscrimgback.setStyleSheet("border-image: url(:/img/img/cover.jpg);\n"
 "border-radius: 20px;")
         self.inscrimgback.setText("")
         self.inscrimgback.setObjectName("inscrimgback")
