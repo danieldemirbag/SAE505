@@ -685,7 +685,7 @@ class Register(QWidget):
         self.widget.setObjectName("widget")
         self.inscrimgback = QtWidgets.QLabel(self.widget)
         self.inscrimgback.setGeometry(QtCore.QRect(0, 0, 650, 850))
-        self.inscrimgback.setStyleSheet("border-image: url(:/img/img/cover.jpg);\n"
+        self.inscrimgback.setStyleSheet("border-image: url(./img/cover.jpg);\n"
 "border-radius: 20px;")
         self.inscrimgback.setText("")
         self.inscrimgback.setObjectName("inscrimgback")
