@@ -655,7 +655,6 @@ class FenetreAddTodolist(QWidget):
         selected_users = [checkbox.text() for checkbox in self.user_checkboxes if checkbox.isChecked()]
         users = self.username + ","
         users += ",".join(selected_users)  # Convertir la liste en une chaîne avec des virgules
-        print("Utilisateurs sélectionnés :", users)
         self.close()
         try:
             conn = mysql.connector.connect(
