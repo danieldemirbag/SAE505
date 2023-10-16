@@ -1,4 +1,4 @@
-import sys, qrc
+import sys, qrc, re
 import mysql.connector
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
@@ -456,7 +456,7 @@ class FenetreAccueil(QWidget):
 
     def check_max_chars(self):
         if len(self.modDTDL.toPlainText()) > self.max_chars:
-            QMessageBox.warning(self, 'Erreur', '1000 caractères max')
+            QMessageBox.warning(self, 'Erreur', '1000 caractères maximum')
             truncated_text = self.modDTDL.toPlainText()[:self.max_chars]
             self.modDTDL.setPlainText(truncated_text)
     def sendModifications(self):
@@ -605,7 +605,9 @@ class FenetreAddTodolist(QWidget):
         self.name.setPlaceholderText("Nom")
         layout.addWidget(self.name)
 
-        self.desc = QLineEdit(self)
+        self.desc = QTextEdit(self)
+        self.desc.textChanged.connect(self.check_max_chars)
+        self.max_chars = 1000
         self.desc.setPlaceholderText("Description")
         layout.addWidget(self.desc)
 
@@ -646,6 +648,12 @@ class FenetreAddTodolist(QWidget):
 
         layout.addWidget(bouton)
         self.setLayout(layout)
+
+    def check_max_chars(self):
+        if len(self.desc.toPlainText()) > self.max_chars:
+            QMessageBox.warning(self, 'Erreur', '1000 caractères maximum')
+            truncated_text = self.desc.toPlainText()[:self.max_chars]
+            self.desc.setPlainText(truncated_text)
 
     def create_todo_list(self):
         nom = self.name.text()
@@ -872,6 +880,11 @@ class Register(QWidget):
         self.inscrMDP_2.setPlaceholderText(_translate("Login", "Confirmer le mot de passe"))
         self.inscrboutonannule.setText(_translate("Login", "Annuler"))
 
+    def is_valid_email(self, email):
+        # Expression régulière pour valider un email
+        regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+        return re.match(regex, email) is not None
+
     def createaccount(self):
         if self.inscrMDP.text() == self.inscrMDP_2.text():
             email = self.inscremail.text()
@@ -880,8 +893,8 @@ class Register(QWidget):
 
             if len(password) < 8:
                 QMessageBox.warning(self, "Erreur", "Mot de passe trop court (8 caractères minimum)")
-            elif '@' not in email or '.' not in email:
-                QMessageBox.warning(self, 'Erreur', 'L\'adresse e-mail doit contenir un "@" et un "."')
+            elif self.is_valid_email(email) == False:
+                QMessageBox.warning(self, 'Erreur', "Format d'email invalide (exemple@domaine.fr)")
             else:
                 try:
                     conn = mysql.connector.connect(
