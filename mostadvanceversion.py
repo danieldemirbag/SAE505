@@ -5,9 +5,10 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5 import *
 
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+from reportlab.platypus import *
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib.units import inch
 
 class LoginWindow(QWidget):
     def __init__(self):
@@ -312,7 +313,7 @@ class FenetreAccueil(QWidget):
 
     def download_todo_list_pdf(self, todolist):
         todolist_id, todolist_name, todolist_description, todolist_taches = todolist[0], todolist[1], todolist[2], \
-        todolist[3]
+            todolist[3]
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
         pdf_filename, _ = QFileDialog.getSaveFileName(self, "Enregistrer en PDF", f"ticktask_{todolist_name}.pdf",
@@ -331,10 +332,12 @@ class FenetreAccueil(QWidget):
 
             # Ajout de la description en sous-titre, centré
             if todolist_description:
-                description = f"<i>{todolist_description}</i>"
                 story.append(Spacer(1, 12))
-                story.append(Paragraph("Description:", styles['Heading2']))
-                story.append(Paragraph(description, styles['Normal']))
+                story.append(Paragraph("<b>Description:</b>", styles['Heading2']))
+                story.append(Paragraph(f"<i>{todolist_description}</i>", styles['Normal']))
+
+            # Add space between description and table
+            story.append(Spacer(1, 24))  # Increased space
 
             conn = mysql.connector.connect(
                 host='sql11.freesqldatabase.com',
@@ -347,14 +350,28 @@ class FenetreAccueil(QWidget):
             cursor.execute("SELECT * FROM Taches WHERE ToDoLists_idToDoLists = %s", (todolist_id,))
             tasks = cursor.fetchall()
 
-            # Ajout des tâches au PDF
-            story.append(Spacer(1, 12))
-            story.append(Paragraph("Tâches:", styles['Heading2']))
+            # Création de la structure du tableau
+            data = [['Nom', 'Date de fin', 'Assignation', 'Étiquette', 'Priorité']]
             for task in tasks:
-                task_id, todo_id, task_datefin, task_name, task_assignation, task_etiquette, task_priorite  = task
-                task_info = f"<b>Nom:</b> {task_name}<br/><b>Date de fin:</b> {task_datefin}<br/><b>Assignation:</b> {task_assignation}<br/><b>Étiquette:</b> {task_etiquette}<br/><b>Priorité:</b> {task_priorite}"
-                story.append(Paragraph(task_info, styles['Normal']))
-                story.append(Spacer(1, 12))
+                task_id, todo_id, task_datefin, task_name, task_assignation, task_etiquette, task_priorite = task
+                data.append([task_name, task_datefin, task_assignation, task_etiquette, task_priorite])
+
+            # Calculate the width of the table to span the whole page
+            table_width = len(data[0]) * 1.5 * inch  # Assuming 1.5 inches per column
+
+            # Création du tableau et définition du style
+            table = Table(data, colWidths=[table_width / len(data[0])] * len(data[0]))
+            table.setStyle(TableStyle([
+                ('BACKGROUND', (0, 0), (-1, 0), (0.8, 0.8, 0.8)),
+                ('TEXTCOLOR', (0, 0), (-1, 0), (0, 0, 0)),
+                ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+                ('BACKGROUND', (0, 1), (-1, -1), (0.9, 0.9, 0.9)),
+                ('GRID', (0, 0), (-1, -1), 1, (0.8, 0.8, 0.8))
+            ]))
+
+            story.append(table)
 
             # Construction du PDF
             pdf.build(story)
