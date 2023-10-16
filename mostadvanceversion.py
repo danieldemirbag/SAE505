@@ -801,7 +801,53 @@ class Register(QWidget):
         self.inscrboutonannule.setText(_translate("Login", "Annuler"))
 
     def createaccount(self):
-        print("En dev.")
+        if self.inscrMDP.text() == self.inscrMDP_2.text():
+            email = self.inscremail.text()
+            username = self.inscrusername.text()
+            password = self.inscrMDP.text()
+
+            if len(password) < 8:
+                QMessageBox.warning(self, "Erreur", "Mot de passe trop court (8 caractères minimum)")
+            elif '@' not in email or '.' not in email:
+                QMessageBox.warning(self, 'Erreur', 'L\'adresse e-mail doit contenir un "@" et un "."')
+            else:
+                try:
+                    conn = mysql.connector.connect(
+                        host='sql11.freesqldatabase.com',
+                        user='sql11647518',
+                        password='LMHZDvz5me',
+                        database='sql11647518'
+                    )
+                    cursor = conn.cursor()
+
+                    # Vérifier si l'utilisateur existe déjà
+                    cursor.execute("SELECT * FROM Users WHERE Username = %s", (username,))
+                    result = cursor.fetchone()
+
+                    if result:
+                        QMessageBox.warning(self, 'Erreur',
+                                            'Nom d\'utilisateur déjà utilisé. Veuillez en choisir un autre.')
+                    else:
+                        # Insérer les données du nouvel utilisateur dans la base de données
+                        cursor.execute("INSERT INTO Users (Email, Username, Password) VALUES (%s, %s, %s)",
+                                       (email, username, password))
+                        conn.commit()
+
+                        self.close()
+                        self.login = LoginWindow()
+                        self.login.show()
+                        QMessageBox.information(self, 'Succès', 'Compte créé avec succès.')
+
+
+                except mysql.connector.Error as err:
+                    print("Erreur MySQL :", err)
+        else:
+            QMessageBox.warning(self, "Erreur", "Les mots de passe ne correspondent pas")
+
+    def annuler(self):
+        self.close()
+        self.login = LoginWindow()
+        self.login.show()
 
     def inscrannuler(self):
         self.close()
