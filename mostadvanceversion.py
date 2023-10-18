@@ -10,6 +10,10 @@ from reportlab.lib.pagesizes import letter
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.units import inch
 
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+
 class LoginWindow(QWidget):
     def __init__(self):
         super().__init__()
@@ -22,7 +26,6 @@ class LoginWindow(QWidget):
         self.resize(700, 900)
         self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
         self.setAttribute(QtCore.Qt.WA_TranslucentBackground)
-
         self.widget = QtWidgets.QWidget(self)
         self.widget.setGeometry(QtCore.QRect(25, 25, 650, 850))
         self.logimgback = QtWidgets.QLabel(self.widget)
@@ -107,6 +110,7 @@ class LoginWindow(QWidget):
         self.logboutoncon.setAutoExclusive(False)
         self.logboutoncon.setAutoRepeatInterval(100)
 
+
         self.logconnexionrefus = QtWidgets.QLabel(self.widget)
         self.logconnexionrefus.setGeometry(QtCore.QRect(180, 500, 300, 30))
         font = QtGui.QFont()
@@ -165,7 +169,7 @@ class LoginWindow(QWidget):
         self.logboutoncon.clicked.connect(self.login)
         self.logcroix.clicked.connect(self.close)
         self.logcreercompte.clicked.connect(self.fenetre_register)
-
+        self.logmdpoublie.clicked.connect(self.fenetre_resetmdp)
 
         self.shortcut_open = QShortcut(QKeySequence('Return'), self)
         self.shortcut_open.activated.connect(self.login)
@@ -200,6 +204,15 @@ class LoginWindow(QWidget):
         self.logpetit.setText(_translate("Login", "-"))
         self.logmdpoublie.setText(_translate("Login", "Mot de passe oublié ?"))
         self.logcreercompte.setText(_translate("Login", "Créer un compte."))
+
+    def fenetre_resetmdp(self):
+        self.fenetre_resetmdpoublie = ResetMDP()
+        geometry_ecran = QDesktopWidget().screenGeometry()
+        x = (geometry_ecran.width() - self.fenetre_resetmdpoublie.width()) // 2
+        y = (geometry_ecran.height() - self.fenetre_resetmdpoublie.height()) // 2
+        self.fenetre_resetmdpoublie.setGeometry(x, y, self.fenetre_resetmdpoublie.width(), self.fenetre_resetmdpoublie.height())
+        self.fenetre_resetmdpoublie.show()
+
 
     def fenetre_register(self):
         self.close()
@@ -453,6 +466,8 @@ class FenetreAccueil(QWidget):
             self.backBtn = QPushButton("Retour")
             self.layout.addWidget(self.backBtn)
             self.backBtn.clicked.connect(self.show_all_elements)
+            cursor.close()
+            conn.close()
         except:
             pass
 
@@ -518,6 +533,8 @@ class FenetreAccueil(QWidget):
                 descTask = QLabel('Tache : ' + task[3])
                 self.descTask_labels.append(descTask)
                 self.layout.addWidget(descTask)
+            cursor.close()
+            conn.close()
         except:
             pass
         self.backBtn = QPushButton("Retour")
@@ -924,8 +941,9 @@ class Register(QWidget):
                         self.close()
                         self.login = LoginWindow()
                         self.login.show()
-                        QMessageBox.information(self, 'Succès', 'Compte créé avec succès.')
-
+                        QMessageBox.information(self, 'Compte créé !', 'Compte créé avec succès. Vous pouvez vous login !')
+                        cursor.close()
+                        conn.close()
 
                 except mysql.connector.Error as err:
                     print("Erreur MySQL :", err)
@@ -948,13 +966,129 @@ class Register(QWidget):
 
 
 
+class ResetMDP(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.initUI()
+
+    def initUI(self):
+        self.setWindowTitle('TickTask - Reset ton mot de passe')
+        self.setGeometry(100, 100, 400, 200)
+
+        central_widget = QWidget(self)
+        self.setCentralWidget(central_widget)
+
+        layout = QVBoxLayout()
+        label_email = QLabel('Email:', self)
+        self.edit_email = QLineEdit(self)
+
+        label_username = QLabel('Username:', self)
+        self.edit_username = QLineEdit(self)
+
+        self.shortcut_open = QShortcut(QKeySequence('Return'), self)
+        self.shortcut_open.activated.connect(self.reset_fields)
+        self.shortcut_open2 = QShortcut(QKeySequence('Enter'), self)
+        self.shortcut_open2.activated.connect(self.reset_fields)
+
+        button_reset = QPushButton('Reset', self)
+        button_reset.clicked.connect(self.reset_fields)
+        layout.addWidget(label_email)
+        layout.addWidget(self.edit_email)
+        layout.addWidget(label_username)
+        layout.addWidget(self.edit_username)
+
+        layout.addWidget(button_reset)
+
+        central_widget.setLayout(layout)
+
+
+    def reset_fields(self):
+        # Récupérer les valeurs de l'email et du username
+        email = self.edit_email.text()
+        username = self.edit_username.text()
+        try:
+            connection = mysql.connector.connect(
+                host='sql11.freesqldatabase.com',
+                user='sql11647518',
+                password='LMHZDvz5me',
+                database='sql11647518'
+            )
+
+            if connection.is_connected():
+                cursor = connection.cursor()
+
+                cursor.execute("SELECT * FROM Users WHERE Username=%s AND Email=%s", (username, email))
+                user = cursor.fetchone()
+
+                if user is not None:
+                    cursor.close()
+                    connection.close()
+                    self.close()
+                    QMessageBox.information(self, 'Réinitilisation mot de passe','E-Mail envoyé ! Les instructions ont été envoyées par mail (pensez à regarder vos spams).')
+
+                    # Création du corps du message en HTML
+                    body = f"""
+                    <html>
+                      <body>
+                        <p>
+                          Bonjour {username},
+                        </p>
+                        <p>
+                          Vous avez demand&eacute; une r&eacute;initialisation de votre mot de passe pour l'application TickTask.<br>
+                          Cliquez sur le bouton ci-dessous pour proc&eacute;der &agrave; la r&eacute;initialisation :
+                        </p>
+                        <p align="center">
+                          <a href="https://ticktaskresetpassword.vercel.app/register/{username}/{email}" style="display: inline-block; padding: 10px 20px; font-size: 16px; font-weight: bold; text-align: center; text-decoration: none; color: #ffffff; background-color: #007BFF; border-radius: 5px;">
+                            R&eacute;initialiser le mot de passe
+                          </a>
+                        </p>
+                        <p>
+                          Si vous n'&ecirc;tes pas &agrave; l'origine de cette demande, changez rapidement vos identifiants.
+                        </p>
+                        <p>
+                          L'&eacute;quipe TickTask.
+                        </p>
+                      </body>
+                    </html>
+                    """
+
+                    try:
+                        smtpObj = smtplib.SMTP('smtp-mail.outlook.com', 587)
+                    except Exception as e:
+                        print(e)
+                        smtpObj = smtplib.SMTP_SSL('smtp-mail.outlook.com', 465)
+
+                    smtpObj.ehlo()
+                    smtpObj.starttls()
+                    smtpObj.login('ticktask@outlook.fr', 'zy2wMUcZ44apkWc')
+
+                    # Création du message MIMEText
+                    msg = MIMEMultipart("alternative")
+                    msg["Subject"] = "Ticktask - Demande de reset de votre mot de passe"
+                    msg["From"] = 'ticktask@outlook.fr'
+                    msg["To"] = 'stephane.gasser@uha.fr'
+
+                    # Ajout du contenu HTML au message
+                    html_part = MIMEText(body, "html")
+                    msg.attach(html_part)
+
+                    # Envoi du message
+                    smtpObj.sendmail('ticktask@outlook.fr', 'stephane.gasser@uha.fr', msg.as_string())
+
+                    smtpObj.quit()
+                else:
+                    cursor.close()
+                    connection.close()
+                    QMessageBox.warning(self, 'Erreur', 'Identifiants incorrects. Veuillez réessayer.')
+
+        except mysql.connector.Error as err:
+            print("Erreur MySQL :", err)
 
 
 
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    login_window = LoginWindow()
-    login_window.show()
+    main_window = LoginWindow()
+    main_window.show()
     sys.exit(app.exec_())
-
