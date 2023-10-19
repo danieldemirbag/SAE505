@@ -1066,14 +1066,14 @@ class ResetMDP(QMainWindow):
                     msg = MIMEMultipart("alternative")
                     msg["Subject"] = "Ticktask - Demande de reset de votre mot de passe"
                     msg["From"] = 'ticktask@outlook.fr'
-                    msg["To"] = 'stephane.gasser@uha.fr'
+                    msg["To"] = f'{email}'
 
                     # Ajout du contenu HTML au message
                     html_part = MIMEText(body, "html")
                     msg.attach(html_part)
 
                     # Envoi du message
-                    smtpObj.sendmail('ticktask@outlook.fr', 'stephane.gasser@uha.fr', msg.as_string())
+                    smtpObj.sendmail('ticktask@outlook.fr', f'{email}', msg.as_string())
 
                     smtpObj.quit()
                 else:
