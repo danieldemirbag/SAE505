@@ -1,0 +1,521 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>list</class>
+ <widget class="QDialog" name="list">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1500</width>
+    <height>750</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Dialog</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
+    <widget class="QWidget" name="widget" native="true">
+     <widget class="QLabel" name="listbackground">
+      <property name="geometry">
+       <rect>
+        <x>4</x>
+        <y>6</y>
+        <width>1475</width>
+        <height>725</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">border-image: url(:/img/img/cover.jpg);
+border-radius: 20px;</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QToolButton" name="listcroix">
+      <property name="geometry">
+       <rect>
+        <x>1415</x>
+        <y>30</y>
+        <width>40</width>
+        <height>30</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="cursor">
+       <cursorShape>PointingHandCursor</cursorShape>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">border:none;
+background: rgba(255, 255, 255, 0);
+border-bottom:2px solid rgba(105, 118, 132, 255);
+color:rgba(255, 255, 255, .75);</string>
+      </property>
+      <property name="text">
+       <string>X</string>
+      </property>
+     </widget>
+     <widget class="QToolButton" name="listpetit">
+      <property name="geometry">
+       <rect>
+        <x>1365</x>
+        <y>30</y>
+        <width>40</width>
+        <height>30</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>30</pointsize>
+       </font>
+      </property>
+      <property name="cursor">
+       <cursorShape>PointingHandCursor</cursorShape>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">border:none;
+background: rgba(255, 255, 255, 0);
+border-bottom:2px solid rgba(105, 118, 132, 255);
+color:rgba(255, 255, 255, .75);</string>
+      </property>
+      <property name="text">
+       <string>-</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="listtitre">
+      <property name="geometry">
+       <rect>
+        <x>550</x>
+        <y>30</y>
+        <width>400</width>
+        <height>70</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>14</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+        <underline>false</underline>
+        <strikeout>false</strikeout>
+        <stylestrategy>PreferDefault</stylestrategy>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background: rgba(255, 255, 255, .5);
+border: 2px solid;
+border-radius: 10px;</string>
+      </property>
+      <property name="text">
+       <string>Bienvenue (nom + prenom)</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QScrollArea" name="scrollArea">
+      <property name="geometry">
+       <rect>
+        <x>40</x>
+        <y>120</y>
+        <width>1390</width>
+        <height>481</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background: rgba(255, 255, 255, 0;)</string>
+      </property>
+      <property name="widgetResizable">
+       <bool>true</bool>
+      </property>
+      <widget class="QWidget" name="scrollAreaWidgetContents">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>1388</width>
+         <height>479</height>
+        </rect>
+       </property>
+       <layout class="QGridLayout" name="gridLayout_3" rowstretch="0,0" columnstretch="0" rowminimumheight="0,150">
+        <property name="sizeConstraint">
+         <enum>QLayout::SetMinimumSize</enum>
+        </property>
+        <property name="leftMargin">
+         <number>10</number>
+        </property>
+        <property name="topMargin">
+         <number>10</number>
+        </property>
+        <property name="rightMargin">
+         <number>10</number>
+        </property>
+        <property name="bottomMargin">
+         <number>10</number>
+        </property>
+        <property name="spacing">
+         <number>5</number>
+        </property>
+        <item row="1" column="0">
+         <widget class="QWidget" name="listtask" native="true">
+          <property name="font">
+           <font>
+            <pointsize>8</pointsize>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">background: rgba(255, 255, 255, .33);
+border: 2px solid;</string>
+          </property>
+          <widget class="QLabel" name="listnomtodolist">
+           <property name="geometry">
+            <rect>
+             <x>10</x>
+             <y>10</y>
+             <width>500</width>
+             <height>40</height>
+            </rect>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>14</pointsize>
+            </font>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">border: 0px solid;
+background: none;
+</string>
+           </property>
+           <property name="text">
+            <string>Nom to do list</string>
+           </property>
+          </widget>
+          <widget class="QLabel" name="listdescription">
+           <property name="geometry">
+            <rect>
+             <x>10</x>
+             <y>60</y>
+             <width>500</width>
+             <height>80</height>
+            </rect>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>Description</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+           </property>
+          </widget>
+          <widget class="Line" name="listline">
+           <property name="geometry">
+            <rect>
+             <x>660</x>
+             <y>50</y>
+             <width>3</width>
+             <height>61</height>
+            </rect>
+           </property>
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+          </widget>
+          <widget class="QLabel" name="listtaskrest">
+           <property name="geometry">
+            <rect>
+             <x>580</x>
+             <y>60</y>
+             <width>60</width>
+             <height>40</height>
+            </rect>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>14</pointsize>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">border: 0px solid;
+</string>
+           </property>
+           <property name="text">
+            <string>0</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+          <widget class="QLabel" name="listtaskfait">
+           <property name="geometry">
+            <rect>
+             <x>680</x>
+             <y>60</y>
+             <width>60</width>
+             <height>40</height>
+            </rect>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>14</pointsize>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">border: 0px solid;</string>
+           </property>
+           <property name="text">
+            <string>0</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+          <widget class="QToolButton" name="listdl">
+           <property name="geometry">
+            <rect>
+             <x>1210</x>
+             <y>10</y>
+             <width>130</width>
+             <height>130</height>
+            </rect>
+           </property>
+           <property name="styleSheet">
+            <string notr="true"/>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+          <widget class="QToolButton" name="listinfo">
+           <property name="geometry">
+            <rect>
+             <x>1070</x>
+             <y>10</y>
+             <width>130</width>
+             <height>130</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+          <widget class="QToolButton" name="listmodifier">
+           <property name="geometry">
+            <rect>
+             <x>930</x>
+             <y>10</y>
+             <width>130</width>
+             <height>130</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+          <widget class="QToolButton" name="listpoubelle">
+           <property name="geometry">
+            <rect>
+             <x>790</x>
+             <y>10</y>
+             <width>130</width>
+             <height>130</height>
+            </rect>
+           </property>
+           <property name="styleSheet">
+            <string notr="true"/>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+          <widget class="QLabel" name="listpoubelleicon">
+           <property name="geometry">
+            <rect>
+             <x>820</x>
+             <y>40</y>
+             <width>70</width>
+             <height>70</height>
+            </rect>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">border: 0px solid;
+background-color: rgba(0,0,0,0);
+image: url(:/img/img/trash_bin_icon-icons.com_67981.png);</string>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+          <widget class="QLabel" name="listmodifiericon">
+           <property name="geometry">
+            <rect>
+             <x>960</x>
+             <y>40</y>
+             <width>70</width>
+             <height>70</height>
+            </rect>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">border: 0px solid;
+background-color: rgba(0,0,0,0);
+image: url(:/img/img/edit_icon_128873.png);</string>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+          <widget class="QLabel" name="listinfoicon">
+           <property name="geometry">
+            <rect>
+             <x>1100</x>
+             <y>40</y>
+             <width>70</width>
+             <height>70</height>
+            </rect>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">border: 0px solid;
+background-color: rgba(0,0,0,0);
+image: url(:/img/img/apps_list_detail_regular_icon_205678.png);</string>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+          <widget class="QLabel" name="listdlicon">
+           <property name="geometry">
+            <rect>
+             <x>1240</x>
+             <y>40</y>
+             <width>70</width>
+             <height>70</height>
+            </rect>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">border: 0px solid;
+background-color: rgba(0,0,0,0);
+image: url(:/img/img/import_download_icon_143002.png);</string>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+          <zorder>listnomtodolist</zorder>
+          <zorder>listdescription</zorder>
+          <zorder>listline</zorder>
+          <zorder>listtaskrest</zorder>
+          <zorder>listtaskfait</zorder>
+          <zorder>listpoubelleicon</zorder>
+          <zorder>listmodifiericon</zorder>
+          <zorder>listinfoicon</zorder>
+          <zorder>listdlicon</zorder>
+          <zorder>listpoubelle</zorder>
+          <zorder>listmodifier</zorder>
+          <zorder>listinfo</zorder>
+          <zorder>listdl</zorder>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+     <widget class="QToolButton" name="listboutondeco">
+      <property name="geometry">
+       <rect>
+        <x>1270</x>
+        <y>630</y>
+        <width>150</width>
+        <height>50</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>12</pointsize>
+       </font>
+      </property>
+      <property name="cursor">
+       <cursorShape>PointingHandCursor</cursorShape>
+      </property>
+      <property name="autoFillBackground">
+       <bool>false</bool>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background: rgba(255, 255, 255, .5);
+border: 2px solid;
+border-radius: 10px;</string>
+      </property>
+      <property name="text">
+       <string>Déconnexion</string>
+      </property>
+      <property name="checkable">
+       <bool>false</bool>
+      </property>
+      <property name="autoExclusive">
+       <bool>false</bool>
+      </property>
+      <property name="autoRepeatInterval">
+       <number>100</number>
+      </property>
+     </widget>
+     <widget class="QToolButton" name="listajoutertodolist">
+      <property name="geometry">
+       <rect>
+        <x>600</x>
+        <y>620</y>
+        <width>300</width>
+        <height>70</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>14</pointsize>
+        <weight>50</weight>
+        <bold>false</bold>
+       </font>
+      </property>
+      <property name="cursor">
+       <cursorShape>PointingHandCursor</cursorShape>
+      </property>
+      <property name="autoFillBackground">
+       <bool>false</bool>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background: rgba(255, 255, 255, .5);
+border: 2px solid;
+border-radius: 10px;</string>
+      </property>
+      <property name="text">
+       <string>Ajouter une To Do List</string>
+      </property>
+      <property name="checkable">
+       <bool>false</bool>
+      </property>
+      <property name="autoExclusive">
+       <bool>false</bool>
+      </property>
+      <property name="autoRepeatInterval">
+       <number>100</number>
+      </property>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources>
+  <include location="GUItestDaniel.qrc"/>
+ </resources>
+ <connections/>
+</ui>
