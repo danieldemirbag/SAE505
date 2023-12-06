@@ -45,15 +45,15 @@ border-radius: 20px;</string>
    <widget class="QLabel" name="resettitre">
     <property name="geometry">
      <rect>
-      <x>30</x>
+      <x>75</x>
       <y>125</y>
-      <width>591</width>
+      <width>500</width>
       <height>70</height>
      </rect>
     </property>
     <property name="font">
      <font>
-      <pointsize>30</pointsize>
+      <pointsize>20</pointsize>
       <weight>75</weight>
       <bold>true</bold>
       <underline>false</underline>
@@ -131,7 +131,7 @@ background: rgba(255, 255, 255, 0);</string>
      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
     </property>
     <property name="placeholderText">
-     <string>Email</string>
+     <string>Adresse mail</string>
     </property>
     <property name="cursorMoveStyle">
      <enum>Qt::LogicalMoveStyle</enum>
@@ -169,7 +169,7 @@ background: rgba(255, 255, 255, 0);</string>
      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
     </property>
     <property name="placeholderText">
-     <string>Utilisateur</string>
+     <string>Nom d'utilisateur</string>
     </property>
    </widget>
    <widget class="QToolButton" name="resetboutonreset">
@@ -333,7 +333,7 @@ border-radius: 10px;</string>
   </widget>
  </widget>
  <resources>
-  <include location="../Desktop/cours/SAE 5.05/GUItestDaniel.qrc"/>
+  <include location="GUItestDaniel.qrc"/>
  </resources>
  <connections/>
 </ui>

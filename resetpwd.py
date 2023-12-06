@@ -11,7 +11,6 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 import sys, qrc
 
-
 class Ui_reset(object):
     def setupUi(self, reset):
         reset.setObjectName("reset")
@@ -29,9 +28,9 @@ class Ui_reset(object):
         self.resetimgback.setText("")
         self.resetimgback.setObjectName("resetimgback")
         self.resettitre = QtWidgets.QLabel(self.widget)
-        self.resettitre.setGeometry(QtCore.QRect(30, 125, 591, 70))
+        self.resettitre.setGeometry(QtCore.QRect(75, 125, 500, 70))
         font = QtGui.QFont()
-        font.setPointSize(30)
+        font.setPointSize(20)
         font.setBold(True)
         font.setUnderline(False)
         font.setWeight(75)
@@ -164,8 +163,8 @@ class Ui_reset(object):
         _translate = QtCore.QCoreApplication.translate
         reset.setWindowTitle(_translate("reset", "Dialog"))
         self.resettitre.setText(_translate("reset", "Réinitialiser mot de passe"))
-        self.resetmail.setPlaceholderText(_translate("reset", "Email"))
-        self.resetuser.setPlaceholderText(_translate("reset", "Utilisateur"))
+        self.resetmail.setPlaceholderText(_translate("reset", "Adresse mail"))
+        self.resetuser.setPlaceholderText(_translate("reset", "Nom d\'utilisateur"))
         self.resetboutonreset.setText(_translate("reset", "Réinitialiser"))
         self.resetcroix.setText(_translate("reset", "X"))
         self.resetpetit.setText(_translate("reset", "-"))
