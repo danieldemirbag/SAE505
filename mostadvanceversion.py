@@ -206,7 +206,6 @@ class LoginWindow(QWidget):
         self.logcreercompte.setText(_translate("Login", "Créer un compte."))
 
     def fenetre_resetmdp(self):
-        self.close()
         self.fenetre_resetmdpoublie = ResetMDP()
         geometry_ecran = QDesktopWidget().screenGeometry()
         x = (geometry_ecran.width() - self.fenetre_resetmdpoublie.width()) // 2
@@ -254,7 +253,7 @@ class LoginWindow(QWidget):
 
     def ouvrir_fenetre_accueil(self, cursor):
         self.close()
-        self.fenetreaccueil = FenetreAccueil(cursor, self.username)
+        self.fenetreaccueil = MenuPrincipal(cursor, self.username)
         geometry_ecran = QDesktopWidget().screenGeometry()
         x = (geometry_ecran.width() - self.fenetreaccueil.width()) // 2
         y = (geometry_ecran.height() - self.fenetreaccueil.height()) // 2
@@ -973,181 +972,40 @@ class ResetMDP(QMainWindow):
         self.initUI()
 
     def initUI(self):
-        self.setObjectName("reset")
-        self.setEnabled(True)
-        self.resize(700, 900)
-        self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
-        self.setAttribute(QtCore.Qt.WA_TranslucentBackground)
-        self.widget = QtWidgets.QWidget(self)
-        self.widget.setGeometry(QtCore.QRect(25, 25, 650, 850))
-        self.widget.setObjectName("widget")
-        self.resetimgback = QtWidgets.QLabel(self.widget)
-        self.resetimgback.setGeometry(QtCore.QRect(0, 0, 650, 850))
-        self.resetimgback.setStyleSheet("border-image: url(:/img/img/cover.jpg);\n"
-"border-radius: 20px;")
-        self.resetimgback.setText("")
-        self.resetimgback.setObjectName("resetimgback")
-        self.resettitre = QtWidgets.QLabel(self.widget)
-        self.resettitre.setGeometry(QtCore.QRect(30, 125, 591, 70))
-        font = QtGui.QFont()
-        font.setPointSize(30)
-        font.setBold(True)
-        font.setUnderline(False)
-        font.setWeight(75)
-        font.setStrikeOut(False)
-        font.setStyleStrategy(QtGui.QFont.PreferDefault)
-        self.resettitre.setFont(font)
-        self.resettitre.setStyleSheet("background: rgba(255, 255, 255, .5);\n"
-"border: 2px solid;\n"
-"border-radius: 10px;")
-        self.resettitre.setAlignment(QtCore.Qt.AlignCenter)
-        self.resettitre.setObjectName("resettitre")
-        self.resetmail = QtWidgets.QLineEdit(self.widget)
-        self.resetmail.setGeometry(QtCore.QRect(125, 300, 400, 50))
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.resetmail.sizePolicy().hasHeightForWidth())
-        self.resetmail.setSizePolicy(sizePolicy)
-        font = QtGui.QFont()
-        font.setFamily("MS Shell Dlg 2")
-        font.setPointSize(16)
-        font.setBold(False)
-        font.setItalic(False)
-        font.setWeight(50)
-        font.setKerning(True)
-        font.setStyleStrategy(QtGui.QFont.PreferDefault)
-        self.resetmail.setFont(font)
-        self.resetmail.setCursor(QtGui.QCursor(QtCore.Qt.IBeamCursor))
-        self.resetmail.setFocusPolicy(QtCore.Qt.StrongFocus)
-        self.resetmail.setAcceptDrops(True)
-        self.resetmail.setLayoutDirection(QtCore.Qt.LeftToRight)
-        self.resetmail.setAutoFillBackground(False)
-        self.resetmail.setStyleSheet("border:none;\n"
-"border-bottom:2px solid rgba(105, 118, 132, 255);\n"
-"color: rgba(255, 255, 255);\n"
-"padding-bottom:7px;\n"
-"background: rgba(255, 255, 255, 0);")
-        self.resetmail.setText("")
-        self.resetmail.setCursorPosition(0)
-        self.resetmail.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
-        self.resetmail.setCursorMoveStyle(QtCore.Qt.LogicalMoveStyle)
-        self.resetmail.setObjectName("resetmail")
-        self.resetuser = QtWidgets.QLineEdit(self.widget)
-        self.resetuser.setGeometry(QtCore.QRect(125, 400, 400, 50))
-        font = QtGui.QFont()
-        font.setPointSize(16)
-        font.setItalic(False)
-        self.resetuser.setFont(font)
-        self.resetuser.setStyleSheet("border:none;\n"
-"border-bottom:2px solid rgba(105, 118, 132, 255);\n"
-"color:rgba(255, 255, 255, 230);\n"
-"padding-bottom:7px;\n"
-"background: rgba(255, 255, 255, 0);")
-        self.resetuser.setText("")
-        self.resetuser.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
-        self.resetuser.setObjectName("resetuser")
-        self.resetboutonreset = QtWidgets.QToolButton(self.widget)
-        self.resetboutonreset.setGeometry(QtCore.QRect(200, 550, 250, 70))
-        font = QtGui.QFont()
-        font.setPointSize(16)
-        self.resetboutonreset.setFont(font)
-        self.resetboutonreset.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-        self.resetboutonreset.setAutoFillBackground(False)
-        self.resetboutonreset.setStyleSheet("background: rgba(255, 255, 255, .5);\n"
-"border: 2px solid;\n"
-"border-radius: 10px;")
-        self.resetboutonreset.setCheckable(False)
-        self.resetboutonreset.setAutoExclusive(False)
-        self.resetboutonreset.setAutoRepeatInterval(100)
-        self.resetboutonreset.setObjectName("resetboutonreset")
-        self.resetcroix = QtWidgets.QToolButton(self.widget)
-        self.resetcroix.setGeometry(QtCore.QRect(590, 20, 40, 30))
-        font = QtGui.QFont()
-        font.setPointSize(12)
-        font.setBold(True)
-        font.setWeight(75)
-        self.resetcroix.setFont(font)
-        self.resetcroix.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-        self.resetcroix.setStyleSheet("border:none;\n"
-"background: rgba(255, 255, 255, 0);\n"
-"border-bottom:2px solid rgba(105, 118, 132, 255);\n"
-"color:rgba(255, 255, 255, .75);")
-        self.resetcroix.setObjectName("resetcroix")
-        self.resetpetit = QtWidgets.QToolButton(self.widget)
-        self.resetpetit.setGeometry(QtCore.QRect(540, 20, 40, 30))
-        font = QtGui.QFont()
-        font.setPointSize(30)
-        self.resetpetit.setFont(font)
-        self.resetpetit.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-        self.resetpetit.setStyleSheet("border:none;\n"
-"background: rgba(255, 255, 255, 0);\n"
-"border-bottom:2px solid rgba(105, 118, 132, 255);\n"
-"color:rgba(255, 255, 255, .75);")
-        self.resetpetit.setObjectName("resetpetit")
-        self.resetfondnoir = QtWidgets.QLabel(self.widget)
-        self.resetfondnoir.setGeometry(QtCore.QRect(75, 225, 500, 525))
-        self.resetfondnoir.setStyleSheet("background: rgba(0, 0, 0, .33);\n"
-"border-radius: 30px;")
-        self.resetfondnoir.setText("")
-        self.resetfondnoir.setObjectName("resetfondnoir")
-        self.resetboutonannule = QtWidgets.QToolButton(self.widget)
-        self.resetboutonannule.setGeometry(QtCore.QRect(475, 775, 150, 50))
-        font = QtGui.QFont()
-        font.setPointSize(12)
-        self.resetboutonannule.setFont(font)
-        self.resetboutonannule.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-        self.resetboutonannule.setAutoFillBackground(False)
-        self.resetboutonannule.setStyleSheet("background: rgba(255, 255, 255, .5);\n"
-"border: 2px solid;\n"
-"border-radius: 10px;")
-        self.resetboutonannule.setCheckable(False)
-        self.resetboutonannule.setAutoExclusive(False)
-        self.resetboutonannule.setAutoRepeatInterval(100)
-        self.resetboutonannule.setObjectName("resetboutonannule")
+        self.setWindowTitle('TickTask - Reset ton mot de passe')
+        self.setGeometry(100, 100, 400, 200)
 
+        central_widget = QWidget(self)
+        self.setCentralWidget(central_widget)
+
+        layout = QVBoxLayout()
+        label_email = QLabel('Email:', self)
+        self.edit_email = QLineEdit(self)
+
+        label_username = QLabel('Username:', self)
+        self.edit_username = QLineEdit(self)
 
         self.shortcut_open = QShortcut(QKeySequence('Return'), self)
         self.shortcut_open.activated.connect(self.reset_fields)
         self.shortcut_open2 = QShortcut(QKeySequence('Enter'), self)
         self.shortcut_open2.activated.connect(self.reset_fields)
 
-        self.resetboutonreset.clicked.connect(self.reset_fields)
-        self.resetboutonannule.clicked.connect(self.resetannuler)
-        self.resetcroix.clicked.connect(self.close)
-        self.resetpetit.clicked.connect(self.showMinimized)
+        button_reset = QPushButton('Reset', self)
+        button_reset.clicked.connect(self.reset_fields)
+        layout.addWidget(label_email)
+        layout.addWidget(self.edit_email)
+        layout.addWidget(label_username)
+        layout.addWidget(self.edit_username)
 
-        self.resetimgback.raise_()
-        self.resettitre.raise_()
-        self.resetcroix.raise_()
-        self.resetpetit.raise_()
-        self.resetfondnoir.raise_()
-        self.resetboutonreset.raise_()
-        self.resetuser.raise_()
-        self.resetmail.raise_()
-        self.resetboutonannule.raise_()
+        layout.addWidget(button_reset)
 
-
-
-        self.retranslateUi()
-        QtCore.QMetaObject.connectSlotsByName(self)
-
-    def retranslateUi(self):
-        _translate = QtCore.QCoreApplication.translate
-        self.setWindowTitle(_translate("reset", "Dialog"))
-        self.resettitre.setText(_translate("reset", "Réinitialiser mot de passe"))
-        self.resetmail.setPlaceholderText(_translate("reset", "Email"))
-        self.resetuser.setPlaceholderText(_translate("reset", "Utilisateur"))
-        self.resetboutonreset.setText(_translate("reset", "Réinitialiser"))
-        self.resetcroix.setText(_translate("reset", "X"))
-        self.resetpetit.setText(_translate("reset", "-"))
-        self.resetboutonannule.setText(_translate("reset", "Annuler"))
+        central_widget.setLayout(layout)
 
 
     def reset_fields(self):
         # Récupérer les valeurs de l'email et du username
-        email = self.resetmail.text()
-        username = self.resetuser.text()
+        email = self.edit_email.text()
+        username = self.edit_username.text()
         try:
             connection = mysql.connector.connect(
                 host='sql11.freesqldatabase.com',
@@ -1165,6 +1023,8 @@ class ResetMDP(QMainWindow):
                 if user is not None:
                     cursor.close()
                     connection.close()
+                    self.close()
+                    QMessageBox.information(self, 'Réinitilisation mot de passe','E-Mail envoyé ! Les instructions ont été envoyées par mail (pensez à regarder vos spams).')
 
                     # Création du corps du message en HTML
                     body = f"""
@@ -1206,20 +1066,16 @@ class ResetMDP(QMainWindow):
                     msg = MIMEMultipart("alternative")
                     msg["Subject"] = "Ticktask - Demande de reset de votre mot de passe"
                     msg["From"] = 'ticktask@outlook.fr'
-                    msg["To"] = f'{email}'
+                    msg["To"] = 'stephane.gasser@uha.fr'
 
                     # Ajout du contenu HTML au message
                     html_part = MIMEText(body, "html")
                     msg.attach(html_part)
 
                     # Envoi du message
-                    smtpObj.sendmail('ticktask@outlook.fr', f'{email}', msg.as_string())
+                    smtpObj.sendmail('ticktask@outlook.fr', 'stephane.gasser@uha.fr', msg.as_string())
 
                     smtpObj.quit()
-                    self.close()
-                    self.login = LoginWindow()
-                    self.login.show()
-                    QMessageBox.information(self, 'Compte créé !', 'Compte créé avec succès. Vous pouvez vous login !')
                 else:
                     cursor.close()
                     connection.close()
@@ -1232,14 +1088,280 @@ class ResetMDP(QMainWindow):
 
 
 
-    def resetannuler(self):
+
+
+class MenuPrincipal(QWidget):
+    def __init__(self, cursor, username):
+        super().__init__()
+        self.cursor = cursor
+        self.username = username
+        self.initUI()
+
+
+    def initUI(self):
+        self.setObjectName("list")
+        self.resize(1500, 750)
+        self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
+        self.setAttribute(QtCore.Qt.WA_TranslucentBackground)
+        self.gridLayout = QtWidgets.QGridLayout(self)
+        self.gridLayout.setObjectName("gridLayout")
+        self.widget = QtWidgets.QWidget(self)
+        self.widget.setObjectName("widget")
+        self.listbackground = QtWidgets.QLabel(self.widget)
+        self.listbackground.setGeometry(QtCore.QRect(4, 6, 1475, 725))
+        # Change the image path to your correct path
+        self.listbackground.setStyleSheet("border-image: url(./img/cover.jpg);\n"
+                                         "border-radius: 20px;")
+        self.listbackground.setText("")
+        self.listbackground.setObjectName("listbackground")
+        self.listcroix = QtWidgets.QToolButton(self.widget)
+        self.listcroix.clicked.connect(self.close)
+        self.listcroix.setGeometry(QtCore.QRect(1415, 30, 40, 30))
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        font.setBold(True)
+        font.setWeight(75)
+        self.listcroix.setFont(font)
+        self.listcroix.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.listcroix.setStyleSheet("border:none;\n"
+                                     "background: rgba(255, 255, 255, 0);\n"
+                                     "border-bottom:2px solid rgba(105, 118, 132, 255);\n"
+                                     "color:rgba(255, 255, 255, .75);")
+        self.listcroix.setObjectName("listcroix")
+        self.listpetit = QtWidgets.QToolButton(self.widget)
+        self.listpetit.clicked.connect(self.showMinimized)
+        self.listpetit.setGeometry(QtCore.QRect(1365, 30, 40, 30))
+        font = QtGui.QFont()
+        font.setPointSize(30)
+        self.listpetit.setFont(font)
+        self.listpetit.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.listpetit.setStyleSheet("border:none;\n"
+                                     "background: rgba(255, 255, 255, 0);\n"
+                                     "border-bottom:2px solid rgba(105, 118, 132, 255);\n"
+                                     "color:rgba(255, 255, 255, .75);")
+        self.listpetit.setObjectName("listpetit")
+        self.listtitre = QtWidgets.QLabel(self.widget)
+        self.listtitre.setGeometry(QtCore.QRect(550, 30, 400, 70))
+        font = QtGui.QFont()
+        font.setPointSize(14)
+        font.setBold(True)
+        font.setUnderline(False)
+        font.setWeight(75)
+        font.setStrikeOut(False)
+        font.setStyleStrategy(QtGui.QFont.PreferDefault)
+        self.listtitre.setFont(font)
+        self.listtitre.setStyleSheet("background: rgba(255, 255, 255, .5);\n"
+                                     "border: 2px solid;\n"
+                                     "border-radius: 10px;")
+        self.listtitre.setAlignment(QtCore.Qt.AlignCenter)
+        self.listtitre.setObjectName("listtitre")
+        self.scrollArea = QtWidgets.QScrollArea(self.widget)
+        self.scrollArea.setGeometry(QtCore.QRect(40, 120, 1390, 481))
+        self.scrollArea.setStyleSheet("background: rgba(255, 255, 255, 0;); border-radius: 0px; ")
+        self.scrollArea.setWidgetResizable(True)
+        self.scrollArea.setObjectName("scrollArea")
+        self.scrollAreaWidgetContents = QtWidgets.QWidget()
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 1388, 479))
+        self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
+        self.gridLayout_3 = QtWidgets.QGridLayout(self.scrollAreaWidgetContents)
+        self.gridLayout_3.setSizeConstraint(QtWidgets.QLayout.SetMinimumSize)
+        self.gridLayout_3.setContentsMargins(10, 10, 10, 10)
+        self.gridLayout_3.setSpacing(5)
+        self.gridLayout_3.setObjectName("gridLayout_3")
+
+        self.cursor.execute("SELECT * FROM ToDoLists WHERE AuthorizedUsers LIKE %s", ('%' + self.username + '%',))
+        ToDoLists = self.cursor.fetchall()
+        i=0
+        for ToDoList in ToDoLists:
+            i+=1
+            self.add_todo_list(f"{ToDoList[1]}", f"{ToDoList[2]}", row=i, task_rest=f"X", task_fait=f"X")
+
+
+
+        self.scrollArea.setWidget(self.scrollAreaWidgetContents)
+        self.listboutondeco = QtWidgets.QToolButton(self.widget)
+        self.listboutondeco.clicked.connect(self.principal_deco)
+        self.listboutondeco.setGeometry(QtCore.QRect(1270, 630, 150, 50))
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        self.listboutondeco.setFont(font)
+        self.listboutondeco.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.listboutondeco.setAutoFillBackground(False)
+        self.listboutondeco.setStyleSheet("background: rgba(255, 255, 255, .5);\n"
+                                          "border: 2px solid;\n"
+                                          "border-radius: 10px;")
+        self.listboutondeco.setCheckable(False)
+        self.listboutondeco.setAutoExclusive(False)
+        self.listboutondeco.setAutoRepeatInterval(100)
+        self.listboutondeco.setObjectName("listboutondeco")
+        self.listajoutertodolist = QtWidgets.QToolButton(self.widget)
+        self.listajoutertodolist.setGeometry(QtCore.QRect(600, 620, 300, 70))
+        font = QtGui.QFont()
+        font.setPointSize(14)
+        font.setBold(False)
+        font.setWeight(50)
+        self.listajoutertodolist.setFont(font)
+        self.listajoutertodolist.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.listajoutertodolist.setAutoFillBackground(False)
+        self.listajoutertodolist.setStyleSheet("background: rgba(255, 255, 255, .5);\n"
+                                               "border: 2px solid;\n"
+                                               "border-radius: 10px;")
+        self.listajoutertodolist.setCheckable(False)
+        self.listajoutertodolist.setAutoExclusive(False)
+        self.listajoutertodolist.setAutoRepeatInterval(100)
+        self.listajoutertodolist.setObjectName("listajoutertodolist")
+        self.gridLayout.addWidget(self.widget, 0, 0, 1, 1)
+        self.listajoutertodolist.clicked.connect(self.fenetre_add_to_dolist)
+
+        self.retranslateUi()
+        QtCore.QMetaObject.connectSlotsByName(self)
+
+    def add_todo_list(self, name, description, row, task_rest, task_fait):
+        self.listtask = QtWidgets.QWidget(self.scrollAreaWidgetContents)
+        font = QtGui.QFont()
+        font.setPointSize(8)
+        self.listtask.setFont(font)
+        self.listtask.setStyleSheet("background: rgba(255, 255, 255, .33);\n"
+                                    "border: 2px solid;")
+        self.listtask.setObjectName("listtask")
+        self.listnomtodolist = QtWidgets.QLabel(self.listtask)
+        self.listnomtodolist.setGeometry(QtCore.QRect(10, 10, 500, 40))
+        font = QtGui.QFont()
+        font.setPointSize(14)
+        self.listnomtodolist.setFont(font)
+        self.listnomtodolist.setStyleSheet("border: 0px solid;\n"
+                                           "background: none;\n"
+                                           "")
+        self.listnomtodolist.setObjectName("listnomtodolist")
+        self.listdescription = QtWidgets.QLabel(self.listtask)
+        self.listdescription.setGeometry(QtCore.QRect(10, 60, 500, 80))
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        self.listdescription.setFont(font)
+        self.listdescription.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
+        self.listdescription.setObjectName("listdescription")
+        self.listline = QtWidgets.QFrame(self.listtask)
+        self.listline.setGeometry(QtCore.QRect(660, 50, 3, 61))
+        self.listline.setFrameShape(QtWidgets.QFrame.VLine)
+        self.listline.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.listline.setObjectName("listline")
+        self.listtaskrest = QtWidgets.QLabel(self.listtask)
+        self.listtaskrest.setGeometry(QtCore.QRect(580, 60, 60, 40))
+        font = QtGui.QFont()
+        font.setPointSize(14)
+        font.setBold(True)
+        font.setWeight(75)
+        self.listtaskrest.setFont(font)
+        self.listtaskrest.setStyleSheet("border: 0px solid;\n"
+                                        "")
+        self.listtaskrest.setAlignment(QtCore.Qt.AlignCenter)
+        self.listtaskrest.setObjectName("listtaskrest")
+        self.listtaskfait = QtWidgets.QLabel(self.listtask)
+        self.listtaskfait.setGeometry(QtCore.QRect(680, 60, 60, 40))
+        font = QtGui.QFont()
+        font.setPointSize(14)
+        font.setBold(True)
+        font.setWeight(75)
+        self.listtaskfait.setFont(font)
+        self.listtaskfait.setStyleSheet("border: 0px solid;")
+        self.listtaskfait.setAlignment(QtCore.Qt.AlignCenter)
+        self.listtaskfait.setObjectName("listtaskfait")
+        self.listdl = QtWidgets.QToolButton(self.listtask)
+        self.listdl.setGeometry(QtCore.QRect(1210, 10, 130, 130))
+        self.listdl.setStyleSheet("")
+        self.listdl.setText("")
+        self.listdl.setObjectName("listdl")
+
+
+
+
+
+        # Créer un QPushButton pour chaque icône avec le logo
+        self.listpoubellebtn = QtWidgets.QPushButton(self.listtask)
+        self.listpoubellebtn.setGeometry(QtCore.QRect(820, 40, 70, 70))
+        self.listpoubellebtn.setStyleSheet("border: 0px solid;\n"
+                                           "background-color: rgba(0,0,0,0);\n"
+                                           "border-image: url(./img/img/poubelle.png);")
+        self.listpoubellebtn.clicked.connect(lambda: self.test_function("Poubelle"))
+        self.listpoubellebtn.raise_()
+
+        self.listmodifierbtn = QtWidgets.QPushButton(self.listtask)
+        self.listmodifierbtn.setGeometry(QtCore.QRect(960, 40, 70, 70))
+        self.listmodifierbtn.setStyleSheet("border: 0px solid;\n"
+                                           "background-color: rgba(0,0,0,0);\n"
+                                           "image: url(./img/img/edit.png);")
+        self.listmodifierbtn.clicked.connect(lambda: self.test_function("Modifier"))
+        self.listmodifierbtn.raise_()
+
+        self.listinfobtn = QtWidgets.QPushButton(self.listtask)
+        self.listinfobtn.setGeometry(QtCore.QRect(1100, 40, 70, 70))
+        self.listinfobtn.setStyleSheet("border: 0px solid;\n"
+                                       "background-color: rgba(0,0,0,0);\n"
+                                       "image: url(./img/img/detail.png);")
+        self.listinfobtn.clicked.connect(lambda: self.test_function("Info"))
+        self.listinfobtn.raise_()
+
+        self.listdlbtn = QtWidgets.QPushButton(self.listtask)
+        self.listdlbtn.setGeometry(QtCore.QRect(1240, 40, 70, 70))
+        self.listdlbtn.setStyleSheet("border: 0px solid;\n"
+                                     "background-color: rgba(0,0,0,0);\n"
+                                     "image: url(./img/img/download.png);")
+        self.listdlbtn.clicked.connect(lambda: self.test_function("Télécharger"))
+        self.listdlbtn.raise_()
+
+
+
+
+
+
+
+
+
+        self.listnomtodolist.raise_()
+        self.listdescription.raise_()
+        self.listtaskrest.raise_()
+        self.listtaskrest.setText(task_rest)
+        self.listtaskfait.setText(task_fait)
+        self.listtaskfait.raise_()
+
+
+        self.gridLayout_3.addWidget(self.listtask, row, 0, 1, 1)
+        self.gridLayout_3.setRowMinimumHeight(row, 150)
+        self.gridLayout_3.setAlignment(QtCore.Qt.AlignTop)
+        self.listnomtodolist.setText(name)
+        self.listdescription.setText(description)
+
+        # Définir une taille maximale pour listtask
+        self.listtask.setMaximumHeight(150)
+
+    def retranslateUi(self):
+        _translate = QtCore.QCoreApplication.translate
+        self.setWindowTitle(_translate("list", "Dialog"))
+        self.listcroix.setText(_translate("list", "X"))
+        self.listpetit.setText(_translate("list", "-"))
+        self.listtitre.setText(_translate("list", f"Bienvenue {self.username} !"))
+        self.listboutondeco.setText(_translate("list", "Déconnexion"))
+        self.listajoutertodolist.setText(_translate("list", "Ajouter une To Do List"))
+
+
+    def principal_deco(self):
         self.close()
-        self.retour_login = LoginWindow()
+        self.principal_deco = LoginWindow()
         geometry_ecran = QDesktopWidget().screenGeometry()
-        x = (geometry_ecran.width() - self.retour_login.width()) // 2
-        y = (geometry_ecran.height() - self.retour_login.height()) // 2
-        self.retour_login.setGeometry(x, y, self.retour_login.width(), self.retour_login.height())
-        self.retour_login.show()
+        x = (geometry_ecran.width() - self.principal_deco.width()) // 2
+        y = (geometry_ecran.height() - self.principal_deco.height()) // 2
+        self.principal_deco.setGeometry(x, y, self.principal_deco.width(), self.principal_deco.height())
+        self.principal_deco.show()
+
+
+
+    def fenetre_add_to_dolist(self):
+        self.fenetreaddtodolist = FenetreAddTodolist(username=self.username)
+        geometry_ecran = QDesktopWidget().screenGeometry()
+        x = (geometry_ecran.width() - self.fenetreaddtodolist.width()) // 2
+        y = (geometry_ecran.height() - self.fenetreaddtodolist.height()) // 2
+        self.fenetreaddtodolist.setGeometry(x, y, self.fenetreaddtodolist.width(), self.fenetreaddtodolist.height())
+        self.fenetreaddtodolist.show()
 
 
 if __name__ == '__main__':
