@@ -11,13 +11,12 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 import sys, qrc
 
-
 class Ui_addtodolist(object):
     def setupUi(self, addtodolist):
         addtodolist.setObjectName("addtodolist")
+        addtodolist.setEnabled(True)
         addtodolist.setWindowFlags(QtCore.Qt.FramelessWindowHint)
         addtodolist.setAttribute(QtCore.Qt.WA_TranslucentBackground)
-        addtodolist.setEnabled(True)
         addtodolist.resize(700, 900)
         self.widget = QtWidgets.QWidget(addtodolist)
         self.widget.setGeometry(QtCore.QRect(25, 25, 650, 850))
@@ -43,52 +42,6 @@ class Ui_addtodolist(object):
 "border-radius: 10px;")
         self.addtodotitre.setAlignment(QtCore.Qt.AlignCenter)
         self.addtodotitre.setObjectName("addtodotitre")
-        self.addtodonomuser = QtWidgets.QLineEdit(self.widget)
-        self.addtodonomuser.setGeometry(QtCore.QRect(75, 200, 500, 50))
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.addtodonomuser.sizePolicy().hasHeightForWidth())
-        self.addtodonomuser.setSizePolicy(sizePolicy)
-        font = QtGui.QFont()
-        font.setFamily("MS Shell Dlg 2")
-        font.setPointSize(16)
-        font.setBold(False)
-        font.setItalic(False)
-        font.setWeight(50)
-        font.setKerning(True)
-        font.setStyleStrategy(QtGui.QFont.PreferDefault)
-        self.addtodonomuser.setFont(font)
-        self.addtodonomuser.setCursor(QtGui.QCursor(QtCore.Qt.IBeamCursor))
-        self.addtodonomuser.setFocusPolicy(QtCore.Qt.StrongFocus)
-        self.addtodonomuser.setAcceptDrops(True)
-        self.addtodonomuser.setLayoutDirection(QtCore.Qt.LeftToRight)
-        self.addtodonomuser.setAutoFillBackground(False)
-        self.addtodonomuser.setStyleSheet("border:none;\n"
-"border-bottom:2px solid rgba(105, 118, 132, 255);\n"
-"color: rgba(255, 255, 255);\n"
-"padding-bottom:7px;\n"
-"background: rgba(255, 255, 255, 0);")
-        self.addtodonomuser.setText("")
-        self.addtodonomuser.setCursorPosition(0)
-        self.addtodonomuser.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
-        self.addtodonomuser.setCursorMoveStyle(QtCore.Qt.LogicalMoveStyle)
-        self.addtodonomuser.setObjectName("addtodonomuser")
-        self.addtodomdp = QtWidgets.QLineEdit(self.widget)
-        self.addtodomdp.setGeometry(QtCore.QRect(75, 275, 500, 100))
-        font = QtGui.QFont()
-        font.setPointSize(16)
-        font.setItalic(False)
-        self.addtodomdp.setFont(font)
-        self.addtodomdp.setStyleSheet("border:none;\n"
-"border-bottom:2px solid rgba(105, 118, 132, 255);\n"
-"color:rgba(255, 255, 255, 230);\n"
-"padding-bottom:7px;\n"
-"background: rgba(255, 255, 255, 0);")
-        self.addtodomdp.setText("")
-        self.addtodomdp.setEchoMode(QtWidgets.QLineEdit.Normal)
-        self.addtodomdp.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
-        self.addtodomdp.setObjectName("addtodomdp")
         self.addtodoboutoncon = QtWidgets.QToolButton(self.widget)
         self.addtodoboutoncon.setGeometry(QtCore.QRect(200, 675, 250, 75))
         font = QtGui.QFont()
@@ -180,15 +133,38 @@ class Ui_addtodolist(object):
         self.gridLayout_2.setColumnStretch(1, 1)
         self.addtodoscrollArea.setWidget(self.addtodoscrollAreaWidgetContents_2)
         self.gridLayout.addWidget(self.addtodoscrollArea, 0, 0, 1, 1)
+        self.addtodonom_3 = QtWidgets.QLineEdit(self.widget)
+        self.addtodonom_3.setGeometry(QtCore.QRect(75, 200, 500, 50))
+        font = QtGui.QFont()
+        font.setPointSize(16)
+        self.addtodonom_3.setFont(font)
+        self.addtodonom_3.setStyleSheet("border:none;\n"
+"border-bottom:2px solid rgba(105, 118, 132, 255);\n"
+"color: rgba(255, 255, 255);\n"
+"padding-bottom:7px;\n"
+"background: rgba(255, 255, 255, 0);")
+        self.addtodonom_3.setObjectName("addtodonom_3")
+        self.addtododescription = QtWidgets.QTextEdit(self.widget)
+        self.addtododescription.setGeometry(QtCore.QRect(75, 275, 500, 100))
+        font = QtGui.QFont()
+        font.setPointSize(16)
+        self.addtododescription.setFont(font)
+        self.addtododescription.setStyleSheet("\n"
+"border:none;\n"
+"border-bottom:2px solid rgba(105, 118, 132, 255);\n"
+"color: rgba(255, 255, 255);\n"
+"padding-bottom:7px;\n"
+"background: rgba(255, 255, 255, 0);")
+        self.addtododescription.setObjectName("addtododescription")
         self.addtodoimgback.raise_()
         self.addtodotitre.raise_()
         self.addtodocroix.raise_()
         self.addtodopetit.raise_()
         self.addtodoboutoncon.raise_()
         self.addtodofondnoir.raise_()
-        self.addtodonomuser.raise_()
-        self.addtodomdp.raise_()
         self.addtodowidgscroll.raise_()
+        self.addtodonom_3.raise_()
+        self.addtododescription.raise_()
 
         self.retranslateUi(addtodolist)
         QtCore.QMetaObject.connectSlotsByName(addtodolist)
@@ -197,13 +173,13 @@ class Ui_addtodolist(object):
         _translate = QtCore.QCoreApplication.translate
         addtodolist.setWindowTitle(_translate("addtodolist", "Dialog"))
         self.addtodotitre.setText(_translate("addtodolist", "Nouvelle ToDoList"))
-        self.addtodonomuser.setPlaceholderText(_translate("addtodolist", "Nom"))
-        self.addtodomdp.setPlaceholderText(_translate("addtodolist", "Description"))
         self.addtodoboutoncon.setText(_translate("addtodolist", "Créer la ToDoList"))
         self.addtodocroix.setText(_translate("addtodolist", "X"))
         self.addtodopetit.setText(_translate("addtodolist", "-"))
         self.addtodonom.setText(_translate("addtodolist", "TextLabel"))
         self.addtodonom_2.setText(_translate("addtodolist", "TextLabel"))
+        self.addtodonom_3.setPlaceholderText(_translate("addtodolist", "Nom"))
+        self.addtododescription.setPlaceholderText(_translate("addtodolist", "Description"))
 
 if __name__ == "__main__":
         app = QtWidgets.QApplication(sys.argv)
