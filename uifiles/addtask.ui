@@ -1,0 +1,556 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>addtask</class>
+ <widget class="QDialog" name="addtask">
+  <property name="enabled">
+   <bool>true</bool>
+  </property>
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>700</width>
+    <height>900</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Dialog</string>
+  </property>
+  <widget class="QWidget" name="addtaskmainwidget" native="true">
+   <property name="geometry">
+    <rect>
+     <x>25</x>
+     <y>25</y>
+     <width>650</width>
+     <height>850</height>
+    </rect>
+   </property>
+   <widget class="QLabel" name="addtaskimgback">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>650</width>
+      <height>850</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">border-image: url(:/img/img/cover.jpg);
+border-radius: 20px;</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="addtasktitre">
+    <property name="geometry">
+     <rect>
+      <x>125</x>
+      <y>60</y>
+      <width>400</width>
+      <height>70</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>17</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+      <underline>false</underline>
+      <strikeout>false</strikeout>
+      <stylestrategy>PreferDefault</stylestrategy>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background: rgba(255, 255, 255, .5);
+border: 2px solid;
+border-radius: 10px;</string>
+    </property>
+    <property name="text">
+     <string>Nouvelle tâche</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="addtasknomuser">
+    <property name="geometry">
+     <rect>
+      <x>75</x>
+      <y>175</y>
+      <width>500</width>
+      <height>50</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="font">
+     <font>
+      <family>MS Shell Dlg 2</family>
+      <pointsize>16</pointsize>
+      <weight>50</weight>
+      <italic>false</italic>
+      <bold>false</bold>
+      <stylestrategy>PreferDefault</stylestrategy>
+      <kerning>true</kerning>
+     </font>
+    </property>
+    <property name="cursor">
+     <cursorShape>IBeamCursor</cursorShape>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::StrongFocus</enum>
+    </property>
+    <property name="acceptDrops">
+     <bool>true</bool>
+    </property>
+    <property name="layoutDirection">
+     <enum>Qt::LeftToRight</enum>
+    </property>
+    <property name="autoFillBackground">
+     <bool>false</bool>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">border:none;
+border-bottom:2px solid rgba(105, 118, 132, 255);
+color: rgba(255, 255, 255);
+padding-bottom:7px;
+background: rgba(255, 255, 255, 0);</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="cursorPosition">
+     <number>0</number>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+    </property>
+    <property name="placeholderText">
+     <string>Nom</string>
+    </property>
+    <property name="cursorMoveStyle">
+     <enum>Qt::LogicalMoveStyle</enum>
+    </property>
+   </widget>
+   <widget class="QToolButton" name="addtaskboutoncon">
+    <property name="geometry">
+     <rect>
+      <x>200</x>
+      <y>750</y>
+      <width>250</width>
+      <height>75</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>16</pointsize>
+     </font>
+    </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
+    <property name="autoFillBackground">
+     <bool>false</bool>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background: rgba(255, 255, 255, .5);
+border: 2px solid;
+border-radius: 10px;</string>
+    </property>
+    <property name="text">
+     <string>Créer la tâche</string>
+    </property>
+    <property name="checkable">
+     <bool>false</bool>
+    </property>
+    <property name="autoExclusive">
+     <bool>false</bool>
+    </property>
+    <property name="autoRepeatInterval">
+     <number>100</number>
+    </property>
+   </widget>
+   <widget class="QToolButton" name="addtaskcroix">
+    <property name="geometry">
+     <rect>
+      <x>590</x>
+      <y>20</y>
+      <width>40</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>12</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">border:none;
+background: rgba(255, 255, 255, 0);
+border-bottom:2px solid rgba(105, 118, 132, 255);
+color:rgba(255, 255, 255, .75);</string>
+    </property>
+    <property name="text">
+     <string>X</string>
+    </property>
+   </widget>
+   <widget class="QToolButton" name="addtaskpetit">
+    <property name="geometry">
+     <rect>
+      <x>540</x>
+      <y>20</y>
+      <width>40</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>30</pointsize>
+     </font>
+    </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">border:none;
+background: rgba(255, 255, 255, 0);
+border-bottom:2px solid rgba(105, 118, 132, 255);
+color:rgba(255, 255, 255, .75);</string>
+    </property>
+    <property name="text">
+     <string>-</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="addtaskfondnoir">
+    <property name="geometry">
+     <rect>
+      <x>25</x>
+      <y>150</y>
+      <width>600</width>
+      <height>590</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background: rgba(0, 0, 0, .33);
+border-radius: 30px;</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QWidget" name="addtaskwidgscroll" native="true">
+    <property name="geometry">
+     <rect>
+      <x>60</x>
+      <y>540</y>
+      <width>525</width>
+      <height>200</height>
+     </rect>
+    </property>
+    <layout class="QGridLayout" name="gridLayout">
+     <property name="leftMargin">
+      <number>10</number>
+     </property>
+     <property name="topMargin">
+      <number>10</number>
+     </property>
+     <property name="rightMargin">
+      <number>10</number>
+     </property>
+     <property name="bottomMargin">
+      <number>10</number>
+     </property>
+     <property name="spacing">
+      <number>5</number>
+     </property>
+     <item row="0" column="0">
+      <widget class="QScrollArea" name="addtaskcrollArea">
+       <property name="styleSheet">
+        <string notr="true">background: rgb(255, 255, 255, 0;);
+border-radius: 0px;</string>
+       </property>
+       <property name="widgetResizable">
+        <bool>true</bool>
+       </property>
+       <widget class="QWidget" name="addtaskscrollAreaWidgetContents_2">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>505</width>
+          <height>180</height>
+         </rect>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_2" rowstretch="0,0,0,0,0" columnstretch="0,1">
+         <property name="leftMargin">
+          <number>10</number>
+         </property>
+         <property name="topMargin">
+          <number>10</number>
+         </property>
+         <property name="rightMargin">
+          <number>10</number>
+         </property>
+         <property name="bottomMargin">
+          <number>10</number>
+         </property>
+         <property name="spacing">
+          <number>5</number>
+         </property>
+         <item row="4" column="0">
+          <widget class="QCheckBox" name="addtaskcheckBox">
+           <property name="styleSheet">
+            <string notr="true"> height: 32px;</string>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="1">
+          <widget class="QLabel" name="addtasknom">
+           <property name="font">
+            <font>
+             <pointsize>16</pointsize>
+            </font>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">color: rgba(255, 255, 255, .60;);</string>
+           </property>
+           <property name="text">
+            <string>TextLabel</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="0">
+          <widget class="QCheckBox" name="addtaskcheckBox_2">
+           <property name="styleSheet">
+            <string notr="true"> height: 32px;</string>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>16</width>
+             <height>16</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1">
+          <widget class="QLabel" name="addtasknom_2">
+           <property name="font">
+            <font>
+             <pointsize>16</pointsize>
+            </font>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">color: rgba(255, 255, 255, .60;);</string>
+           </property>
+           <property name="text">
+            <string>TextLabel</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QComboBox" name="addtaskprio">
+    <property name="geometry">
+     <rect>
+      <x>75</x>
+      <y>325</y>
+      <width>500</width>
+      <height>50</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>14</pointsize>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">border:none;
+border-bottom:2px solid rgba(105, 118, 132, 255);
+color: rgba(255, 255, 255, .60;);
+padding-bottom:7px;
+background: rgba(255, 255, 255, 0);</string>
+    </property>
+    <item>
+     <property name="text">
+      <string>Selectionner une prioritée</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Haute</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Moyenne</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Basse</string>
+     </property>
+    </item>
+   </widget>
+   <widget class="QDateTimeEdit" name="addtasktime">
+    <property name="geometry">
+     <rect>
+      <x>75</x>
+      <y>400</y>
+      <width>500</width>
+      <height>50</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>14</pointsize>
+     </font>
+    </property>
+    <property name="layoutDirection">
+     <enum>Qt::LeftToRight</enum>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">border:none;
+border-bottom:2px solid rgba(105, 118, 132, 255);
+color: rgba(255, 255, 255, .60;);
+padding-bottom:7px;
+background: rgba(255, 255, 255, 0);</string>
+    </property>
+    <property name="locale">
+     <locale language="English" country="UnitedStates"/>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+    </property>
+    <property name="dateTime">
+     <datetime>
+      <hour>0</hour>
+      <minute>0</minute>
+      <second>0</second>
+      <year>2023</year>
+      <month>1</month>
+      <day>1</day>
+     </datetime>
+    </property>
+    <property name="currentSection">
+     <enum>QDateTimeEdit::YearSection</enum>
+    </property>
+    <property name="displayFormat">
+     <string>yyyy/MM/dd HH:mm:ss</string>
+    </property>
+    <property name="timeSpec">
+     <enum>Qt::LocalTime</enum>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="addtasktodolist">
+    <property name="geometry">
+     <rect>
+      <x>75</x>
+      <y>250</y>
+      <width>500</width>
+      <height>50</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>14</pointsize>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">border:none;
+border-bottom:2px solid rgba(105, 118, 132, 255);
+color: rgba(255, 255, 255, .60;);
+padding-bottom:7px;
+background: rgba(255, 255, 255, 0);</string>
+    </property>
+    <item>
+     <property name="text">
+      <string>Selectionner une ToDoList</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Nom ToDoList1</string>
+     </property>
+    </item>
+   </widget>
+   <widget class="QComboBox" name="addtasketiquette">
+    <property name="geometry">
+     <rect>
+      <x>70</x>
+      <y>475</y>
+      <width>500</width>
+      <height>50</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>14</pointsize>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">border:none;
+border-bottom:2px solid rgba(105, 118, 132, 255);
+color: rgba(255, 255, 255, .60;);
+padding-bottom:7px;
+background: rgba(255, 255, 255, 0);</string>
+    </property>
+    <item>
+     <property name="text">
+      <string>Selectionner une etiquette</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Etiquette A</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Etiquette B</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Etiquette C</string>
+     </property>
+    </item>
+   </widget>
+   <zorder>addtaskimgback</zorder>
+   <zorder>addtasktitre</zorder>
+   <zorder>addtaskcroix</zorder>
+   <zorder>addtaskpetit</zorder>
+   <zorder>addtaskboutoncon</zorder>
+   <zorder>addtaskfondnoir</zorder>
+   <zorder>addtasknomuser</zorder>
+   <zorder>addtaskwidgscroll</zorder>
+   <zorder>addtaskprio</zorder>
+   <zorder>addtasktime</zorder>
+   <zorder>addtasktodolist</zorder>
+   <zorder>addtasketiquette</zorder>
+  </widget>
+ </widget>
+ <resources>
+  <include location="GUItestDaniel.qrc"/>
+ </resources>
+ <connections/>
+</ui>
