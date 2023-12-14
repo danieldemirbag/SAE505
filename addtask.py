@@ -198,7 +198,7 @@ class Ui_addtask(object):
         self.addtasktime.setTimeSpec(QtCore.Qt.LocalTime)
         self.addtasktime.setObjectName("addtasktime")
         self.addtasketiquette = QtWidgets.QComboBox(self.addtaskmainwidget)
-        self.addtasketiquette.setGeometry(QtCore.QRect(70, 425, 500, 50))
+        self.addtasketiquette.setGeometry(QtCore.QRect(75, 425, 500, 50))
         font = QtGui.QFont()
         font.setPointSize(14)
         self.addtasketiquette.setFont(font)
