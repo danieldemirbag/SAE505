@@ -11,6 +11,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 import sys, qrc
 
+
 class Ui_addtask(object):
     def setupUi(self, addtask):
         addtask.setObjectName("addtask")
@@ -28,7 +29,7 @@ class Ui_addtask(object):
         self.addtaskimgback.setText("")
         self.addtaskimgback.setObjectName("addtaskimgback")
         self.addtasktitre = QtWidgets.QLabel(self.addtaskmainwidget)
-        self.addtasktitre.setGeometry(QtCore.QRect(125, 60, 400, 70))
+        self.addtasktitre.setGeometry(QtCore.QRect(125, 75, 400, 70))
         font = QtGui.QFont()
         font.setPointSize(17)
         font.setBold(True)
@@ -43,7 +44,7 @@ class Ui_addtask(object):
         self.addtasktitre.setAlignment(QtCore.Qt.AlignCenter)
         self.addtasktitre.setObjectName("addtasktitre")
         self.addtasknomuser = QtWidgets.QLineEdit(self.addtaskmainwidget)
-        self.addtasknomuser.setGeometry(QtCore.QRect(75, 175, 500, 50))
+        self.addtasknomuser.setGeometry(QtCore.QRect(75, 200, 500, 50))
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -112,13 +113,13 @@ class Ui_addtask(object):
 "color:rgba(255, 255, 255, .75);")
         self.addtaskpetit.setObjectName("addtaskpetit")
         self.addtaskfondnoir = QtWidgets.QLabel(self.addtaskmainwidget)
-        self.addtaskfondnoir.setGeometry(QtCore.QRect(25, 150, 600, 590))
+        self.addtaskfondnoir.setGeometry(QtCore.QRect(25, 175, 600, 550))
         self.addtaskfondnoir.setStyleSheet("background: rgba(0, 0, 0, .33);\n"
 "border-radius: 30px;")
         self.addtaskfondnoir.setText("")
         self.addtaskfondnoir.setObjectName("addtaskfondnoir")
         self.addtaskwidgscroll = QtWidgets.QWidget(self.addtaskmainwidget)
-        self.addtaskwidgscroll.setGeometry(QtCore.QRect(60, 540, 525, 200))
+        self.addtaskwidgscroll.setGeometry(QtCore.QRect(60, 500, 525, 200))
         self.addtaskwidgscroll.setObjectName("addtaskwidgscroll")
         self.gridLayout = QtWidgets.QGridLayout(self.addtaskwidgscroll)
         self.gridLayout.setContentsMargins(10, 10, 10, 10)
@@ -165,7 +166,7 @@ class Ui_addtask(object):
         self.addtaskcrollArea.setWidget(self.addtaskscrollAreaWidgetContents_2)
         self.gridLayout.addWidget(self.addtaskcrollArea, 0, 0, 1, 1)
         self.addtaskprio = QtWidgets.QComboBox(self.addtaskmainwidget)
-        self.addtaskprio.setGeometry(QtCore.QRect(75, 325, 500, 50))
+        self.addtaskprio.setGeometry(QtCore.QRect(75, 275, 500, 50))
         font = QtGui.QFont()
         font.setPointSize(14)
         self.addtaskprio.setFont(font)
@@ -180,7 +181,7 @@ class Ui_addtask(object):
         self.addtaskprio.addItem("")
         self.addtaskprio.addItem("")
         self.addtasktime = QtWidgets.QDateTimeEdit(self.addtaskmainwidget)
-        self.addtasktime.setGeometry(QtCore.QRect(75, 400, 500, 50))
+        self.addtasktime.setGeometry(QtCore.QRect(75, 350, 500, 50))
         font = QtGui.QFont()
         font.setPointSize(14)
         self.addtasktime.setFont(font)
@@ -196,21 +197,8 @@ class Ui_addtask(object):
         self.addtasktime.setCurrentSection(QtWidgets.QDateTimeEdit.YearSection)
         self.addtasktime.setTimeSpec(QtCore.Qt.LocalTime)
         self.addtasktime.setObjectName("addtasktime")
-        self.addtasktodolist = QtWidgets.QComboBox(self.addtaskmainwidget)
-        self.addtasktodolist.setGeometry(QtCore.QRect(75, 250, 500, 50))
-        font = QtGui.QFont()
-        font.setPointSize(14)
-        self.addtasktodolist.setFont(font)
-        self.addtasktodolist.setStyleSheet("border:none;\n"
-"border-bottom:2px solid rgba(105, 118, 132, 255);\n"
-"color: rgba(255, 255, 255, .60;);\n"
-"padding-bottom:7px;\n"
-"background: rgba(255, 255, 255, 0);")
-        self.addtasktodolist.setObjectName("addtasktodolist")
-        self.addtasktodolist.addItem("")
-        self.addtasktodolist.addItem("")
         self.addtasketiquette = QtWidgets.QComboBox(self.addtaskmainwidget)
-        self.addtasketiquette.setGeometry(QtCore.QRect(70, 475, 500, 50))
+        self.addtasketiquette.setGeometry(QtCore.QRect(70, 425, 500, 50))
         font = QtGui.QFont()
         font.setPointSize(14)
         self.addtasketiquette.setFont(font)
@@ -234,7 +222,6 @@ class Ui_addtask(object):
         self.addtaskwidgscroll.raise_()
         self.addtaskprio.raise_()
         self.addtasktime.raise_()
-        self.addtasktodolist.raise_()
         self.addtasketiquette.raise_()
 
         self.retranslateUi(addtask)
@@ -255,8 +242,6 @@ class Ui_addtask(object):
         self.addtaskprio.setItemText(2, _translate("addtask", "Moyenne"))
         self.addtaskprio.setItemText(3, _translate("addtask", "Basse"))
         self.addtasktime.setDisplayFormat(_translate("addtask", "yyyy/MM/dd HH:mm:ss"))
-        self.addtasktodolist.setItemText(0, _translate("addtask", "Selectionner une ToDoList"))
-        self.addtasktodolist.setItemText(1, _translate("addtask", "Nom ToDoList1"))
         self.addtasketiquette.setItemText(0, _translate("addtask", "Selectionner une etiquette"))
         self.addtasketiquette.setItemText(1, _translate("addtask", "Etiquette A"))
         self.addtasketiquette.setItemText(2, _translate("addtask", "Etiquette B"))
