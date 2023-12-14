@@ -608,31 +608,112 @@ class FenetreAccueil(QWidget):
                 print("Erreur MySQL :", err)
 
 
+
+
 class FenetreAddTodolist(QWidget):
-    def __init__(self, username):
+    def __init__(self, username, menu_principal):
         super().__init__()
         self.username = username
+        self.menu_principal = menu_principal
         self.fenetreaddtodolist()
 
     def fenetreaddtodolist(self):
-        self.setWindowTitle("Nouvelle ToDoList - TickTask")
-        self.setGeometry(500, 500, 500, 250)
+        self.setObjectName("addtodolist")
+        self.setEnabled(True)
+        self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
+        self.setAttribute(QtCore.Qt.WA_TranslucentBackground)
+        self.resize(700, 900)
+        self.widget = QtWidgets.QWidget(self)
+        self.widget.setGeometry(QtCore.QRect(25, 25, 650, 850))
+        self.widget.setObjectName("widget")
+        self.addtodoimgback = QtWidgets.QLabel(self.widget)
+        self.addtodoimgback.setGeometry(QtCore.QRect(0, 0, 650, 850))
+        self.addtodoimgback.setStyleSheet("border-image: url(:/img/img/cover.jpg);\n"
+                                          "border-radius: 20px;")
+        self.addtodoimgback.setStyleSheet("border-image: url(./img/cover.jpg);\n"
+                                         "border-radius: 20px;")
+        self.addtodoimgback.setText("")
+        self.addtodoimgback.setObjectName("addtodoimgback")
+        self.addtodotitre = QtWidgets.QLabel(self.widget)
+        self.addtodotitre.setGeometry(QtCore.QRect(125, 75, 400, 70))
+        font = QtGui.QFont()
+        font.setPointSize(18)
+        font.setBold(True)
+        font.setUnderline(False)
+        font.setWeight(75)
+        self.addtodotitre.setFont(font)
+        self.addtodotitre.setStyleSheet("background: rgba(255, 255, 255, .5);\n"
+"border: 2px solid;\n"
+"border-radius: 10px;")
+        self.addtodotitre.setAlignment(QtCore.Qt.AlignCenter)
+        self.addtodotitre.setObjectName("addtodotitre")
+        self.addtodoboutoncon = QtWidgets.QToolButton(self.widget)
+        self.addtodoboutoncon.setGeometry(QtCore.QRect(200, 675, 250, 75))
+        font = QtGui.QFont()
+        font.setPointSize(16)
+        self.addtodoboutoncon.setFont(font)
+        self.addtodoboutoncon.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.addtodoboutoncon.setAutoFillBackground(False)
+        self.addtodoboutoncon.setStyleSheet("background: rgba(255, 255, 255, .5);\n"
+"border: 2px solid;\n"
+"border-radius: 10px;")
+        self.addtodoboutoncon.setCheckable(False)
+        self.addtodoboutoncon.setAutoExclusive(False)
+        self.addtodoboutoncon.setAutoRepeatInterval(100)
+        self.addtodoboutoncon.setObjectName("addtodoboutoncon")
+        self.addtodoboutoncon.clicked.connect(lambda: self.create_todo_list())
 
-        layout = QVBoxLayout()
 
-        self.name = QLineEdit(self)
-        self.name.setPlaceholderText("Nom")
-        layout.addWidget(self.name)
+        self.addtodocroix = QtWidgets.QToolButton(self.widget)
+        self.addtodocroix.setGeometry(QtCore.QRect(590, 20, 40, 30))
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        font.setBold(True)
+        font.setWeight(75)
+        self.addtodocroix.setFont(font)
+        self.addtodocroix.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.addtodocroix.setStyleSheet("border:none;\n"
+"background: rgba(255, 255, 255, 0);\n"
+"border-bottom:2px solid rgba(105, 118, 132, 255);\n"
+"color:rgba(255, 255, 255, .75);")
+        self.addtodocroix.setObjectName("addtodocroix")
+        self.addtodopetit = QtWidgets.QToolButton(self.widget)
+        self.addtodopetit.setGeometry(QtCore.QRect(540, 20, 40, 30))
+        font = QtGui.QFont()
+        font.setPointSize(30)
+        self.addtodopetit.setFont(font)
+        self.addtodopetit.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.addtodopetit.setStyleSheet("border:none;\n"
+"background: rgba(255, 255, 255, 0);\n"
+"border-bottom:2px solid rgba(105, 118, 132, 255);\n"
+"color:rgba(255, 255, 255, .75);")
+        self.addtodopetit.setObjectName("addtodopetit")
+        self.addtodofondnoir = QtWidgets.QLabel(self.widget)
+        self.addtodofondnoir.setGeometry(QtCore.QRect(25, 175, 600, 450))
+        self.addtodofondnoir.setStyleSheet("background: rgba(0, 0, 0, .33);\n"
+"border-radius: 30px;")
+        self.addtodofondnoir.setText("")
+        self.addtodofondnoir.setObjectName("addtodofondnoir")
+        self.addtodowidgscroll = QtWidgets.QWidget(self.widget)
+        self.addtodowidgscroll.setGeometry(QtCore.QRect(60, 400, 525, 200))
+        self.addtodowidgscroll.setObjectName("addtodowidgscroll")
+        self.gridLayout = QtWidgets.QGridLayout(self.addtodowidgscroll)
+        self.gridLayout.setContentsMargins(10, 10, 10, 10)
+        self.gridLayout.setSpacing(5)
+        self.gridLayout.setObjectName("gridLayout")
+        self.addtodoscrollArea = QtWidgets.QScrollArea(self.addtodowidgscroll)
+        self.addtodoscrollArea.setStyleSheet("background: rgb(255, 255, 255, 0;);\n"
+"border-radius: 0px;")
+        self.addtodoscrollArea.setWidgetResizable(True)
+        self.addtodoscrollArea.setObjectName("addtodoscrollArea")
+        self.addtodoscrollAreaWidgetContents_2 = QtWidgets.QWidget()
+        self.addtodoscrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 505, 180))
+        self.addtodoscrollAreaWidgetContents_2.setObjectName("addtodoscrollAreaWidgetContents_2")
+        self.gridLayout_2 = QtWidgets.QGridLayout(self.addtodoscrollAreaWidgetContents_2)
+        self.gridLayout_2.setContentsMargins(10, 10, 10, 10)
+        self.gridLayout_2.setSpacing(5)
+        self.gridLayout_2.setObjectName("gridLayout_2")
 
-        self.desc = QTextEdit(self)
-        self.desc.textChanged.connect(self.check_max_chars)
-        self.max_chars = 1000
-        self.desc.setPlaceholderText("Description")
-        layout.addWidget(self.desc)
-
-        # Ajout de la section pour les utilisateurs
-        user_section = QWidget()
-        user_section_layout = QVBoxLayout()
         self.user_checkboxes = []  # Liste pour stocker les cases à cocher des utilisateurs
 
         try:
@@ -646,41 +727,103 @@ class FenetreAddTodolist(QWidget):
 
             cursor.execute("SELECT Username FROM Users WHERE Username != %s", (self.username,))
             users = cursor.fetchall()
-            for user in users:
-                checkbox = QCheckBox(user[0])
-                self.user_checkboxes.append(checkbox)
-                user_section_layout.addWidget(checkbox)
+            for index in range(len(users)):
+                user = str(users[index][0])  # Convertir en chaîne
+                checkbox = QtWidgets.QCheckBox(self.addtodoscrollAreaWidgetContents_2)
+                checkbox.setStyleSheet(" height: 32px;")
+                checkbox.setText("")
+                checkbox.setObjectName(f"addtodocheckBox_{user}")
+                self.user_checkboxes.append(checkbox)  # Ajouter la case à cocher à la liste
+                self.gridLayout_2.addWidget(checkbox, index, 0, 1, 1)
+
+                label = QtWidgets.QLabel(self.addtodoscrollAreaWidgetContents_2)
+                font = QtGui.QFont()
+                font.setPointSize(16)
+                label.setFont(font)
+                label.setStyleSheet("color: rgba(255, 255, 255, .60);")
+                label.setObjectName(f"addtodonom_{user}")
+                label.setText(f"{user}")
+                self.gridLayout_2.addWidget(label, index, 1, 1, 1)
             cursor.close()
             conn.close()
 
         except mysql.connector.Error as err:
             print("Erreur MySQL :", err)
 
-        user_scroll = QScrollArea()
-        user_scroll.setWidgetResizable(True)
-        user_section.setLayout(user_section_layout)
-        user_scroll.setWidget(user_section)
-        layout.addWidget(user_scroll)
 
-        bouton = QPushButton("Créer la ToDoList")
-        bouton.clicked.connect(lambda: self.create_todo_list())
+        self.gridLayout_2.setColumnStretch(1, 1)
+        self.addtodoscrollArea.setWidget(self.addtodoscrollAreaWidgetContents_2)
+        self.gridLayout.addWidget(self.addtodoscrollArea, 0, 0, 1, 1)
 
-        layout.addWidget(bouton)
-        self.setLayout(layout)
+        self.addtodonom_3 = QtWidgets.QLineEdit(self.widget)
+        self.addtodonom_3.setGeometry(QtCore.QRect(75, 200, 500, 50))
+        font = QtGui.QFont()
+        font.setPointSize(16)
+        self.addtodonom_3.setFont(font)
+        self.addtodonom_3.setStyleSheet("border:none;\n"
+"border-bottom:2px solid rgba(105, 118, 132, 255);\n"
+"color: rgba(255, 255, 255);\n"
+"padding-bottom:7px;\n"
+"background: rgba(255, 255, 255, 0);")
+        self.addtodonom_3.setObjectName("addtodonom_3")
+
+        self.addtododescription = QtWidgets.QTextEdit(self.widget)
+        self.addtododescription.setGeometry(QtCore.QRect(75, 275, 500, 100))
+        font = QtGui.QFont()
+        font.setPointSize(16)
+        self.addtododescription.setFont(font)
+        self.addtododescription.setStyleSheet("\n"
+"border:none;\n"
+"border-bottom:2px solid rgba(105, 118, 132, 255);\n"
+"color: rgba(255, 255, 255);\n"
+"padding-bottom:7px;\n"
+"background: rgba(255, 255, 255, 0);")
+        self.addtododescription.setObjectName("addtododescription")
+
+        self.addtodocroix.clicked.connect(self.close)
+        self.addtodopetit.clicked.connect(self.showMinimized)
+
+
+        self.addtodoimgback.raise_()
+        self.addtodotitre.raise_()
+        self.addtodocroix.raise_()
+        self.addtodopetit.raise_()
+        self.addtodoboutoncon.raise_()
+        self.addtodofondnoir.raise_()
+        self.addtodowidgscroll.raise_()
+        self.addtodonom_3.raise_()
+        self.addtododescription.raise_()
+
+        self.retranslateUi()
+        QtCore.QMetaObject.connectSlotsByName(self)
+
+
+
+
+    def retranslateUi(self):
+        _translate = QtCore.QCoreApplication.translate
+        self.setWindowTitle(_translate("addtodolist", "Dialog"))
+        self.addtodotitre.setText(_translate("addtodolist", "Nouvelle ToDoList"))
+        self.addtodoboutoncon.setText(_translate("addtodolist", "Créer la ToDoList"))
+        self.addtodocroix.setText(_translate("addtodolist", "X"))
+        self.addtodopetit.setText(_translate("addtodolist", "-"))
+        self.addtodonom_3.setPlaceholderText(_translate("addtodolist", "Nom"))
+        self.addtododescription.setPlaceholderText(_translate("addtodolist", "Description"))
+
 
     def check_max_chars(self):
-        if len(self.desc.toPlainText()) > self.max_chars:
+        if len(self.addtododescription.toPlainText()) > self.max_chars:
             QMessageBox.warning(self, 'Erreur', '1000 caractères maximum')
-            truncated_text = self.desc.toPlainText()[:self.max_chars]
-            self.desc.setPlainText(truncated_text)
+            truncated_text = self.addtododescription.toPlainText()[:self.max_chars]
+            self.addtododescription.setPlainText(truncated_text)
 
     def create_todo_list(self):
-        nom = self.name.text()
-        desc = self.desc.toPlainText()
+        nom = self.addtodonom_3.text()
+        desc = self.addtododescription.toPlainText()
 
         if nom != "" and desc != "":
             # Collecte des utilisateurs cochés
-            selected_users = [checkbox.text() for checkbox in self.user_checkboxes if checkbox.isChecked()]
+            selected_users = [checkbox.objectName().split("_")[1] for checkbox in self.user_checkboxes if checkbox.isChecked()]
             users = self.username + ","
             users += ",".join(selected_users)  # Convertir la liste en une chaîne avec des virgules
 
@@ -693,16 +836,13 @@ class FenetreAddTodolist(QWidget):
                 )
                 cursor = conn.cursor()
 
-                # Check if the 'Nom' already exists in the database
                 cursor.execute("SELECT COUNT(*) FROM `ToDoLists` WHERE `Nom` = %s", (nom,))
                 result = cursor.fetchone()
                 count = result[0]
-
                 if count > 0:
                     QtWidgets.QMessageBox.critical(self, "Erreur",
                                                    "Ce nom de ToDoList existe déjà dans la base de données.")
                 else:
-                    # Utilisation de %s comme paramètres dans la requête
                     cursor.execute("INSERT INTO `ToDoLists`(`Nom`, `Description`, `AuthorizedUsers`) VALUES (%s, %s, %s)",
                                    (nom, desc, users))
 
@@ -712,6 +852,7 @@ class FenetreAddTodolist(QWidget):
                     conn.close()
                     self.close()
                     print("ToDoList ajoutée avec succès.")
+                    self.menu_principal.refresh_interface()
                     self.fenetreaddtodolist()
 
             except mysql.connector.Error as err:
@@ -1217,7 +1358,7 @@ class ResetMDP(QWidget):
                     msg.attach(html_part)
 
                     # Envoi du message
-                    smtpObj.sendmail('ticktask@outlook.fr', 'stephane.gasser@uha.fr', msg.as_string())
+                    smtpObj.sendmail('ticktask@outlook.fr', f'{email}', msg.as_string())
 
                     smtpObj.quit()
                 else:
@@ -1466,7 +1607,7 @@ class MenuPrincipal(QWidget):
 
 
 
-        self.listpoubelle.clicked.connect(self.bouton_1)
+        self.listpoubelle.clicked.connect(lambda: self.delete_todo_list(name))
         self.listmodifier.clicked.connect(self.bouton_2)
         self.listinfo.clicked.connect(self.bouton_3)
         self.listdl.clicked.connect(self.bouton_4)
@@ -1524,6 +1665,96 @@ class MenuPrincipal(QWidget):
         self.principal_deco.setGeometry(x, y, self.principal_deco.width(), self.principal_deco.height())
         self.principal_deco.show()
 
+    def delete_todo_list(self, todo_list_name):
+        reply = QMessageBox.question(self, 'Confirmation',
+                                     f"Êtes-vous sûr de vouloir supprimer la ToDoList '{todo_list_name}'?",
+                                     QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+
+        if reply == QMessageBox.Yes:
+            try:
+                # Créer une nouvelle connexion
+                conn = mysql.connector.connect(
+                    host='sql11.freesqldatabase.com',
+                    user='sql11647518',
+                    password='LMHZDvz5me',
+                    database='sql11647518'
+                )
+
+                # Créer un nouveau curseur avec la nouvelle connexion
+                cursor = conn.cursor(buffered=True)
+
+                # Exécuter la requête de suppression
+                cursor.execute("DELETE FROM ToDoLists WHERE Nom = %s AND AuthorizedUsers LIKE %s",
+                               (todo_list_name, '%' + self.username + '%'))
+
+                # Commit pour sauvegarder les changements
+                conn.commit()
+
+                print(f"ToDoList '{todo_list_name}' supprimée avec succès.")
+                # Rafraîchir l'interface après la suppression
+                self.refresh_interface()
+
+            except mysql.connector.Error as err:
+                print("Erreur MySQL :", err)
+
+            finally:
+                # Fermer le curseur et la connexion, même en cas d'erreur
+                cursor.close()
+                conn.close()
+
+    def refresh_interface(self):
+        # Détruire le widget parent
+        sip.delete(self.scrollAreaWidgetContents)
+
+        # Créer un nouveau widget parent
+        self.scrollAreaWidgetContents = QtWidgets.QWidget()
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 1388, 479))
+        self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
+        self.gridLayout_3 = QtWidgets.QGridLayout(self.scrollAreaWidgetContents)
+        self.gridLayout_3.setSizeConstraint(QtWidgets.QLayout.SetMinimumSize)
+        self.gridLayout_3.setContentsMargins(10, 10, 10, 10)
+        self.gridLayout_3.setSpacing(5)
+        self.gridLayout_3.setObjectName("gridLayout_3")
+
+        # Réinitialiser la hauteur minimale de la QScrollArea
+
+        self.scrollAreaWidgetContents.setMinimumHeight(0)
+
+        try:
+            # Créer une nouvelle connexion
+            conn = mysql.connector.connect(
+                host='sql11.freesqldatabase.com',
+                user='sql11647518',
+                password='LMHZDvz5me',
+                database='sql11647518'
+            )
+
+            # Créer un nouveau curseur avec la nouvelle connexion
+            cursor = conn.cursor(buffered=True)
+
+            # Recharger les ToDoLists
+            cursor.execute("SELECT * FROM ToDoLists WHERE AuthorizedUsers LIKE %s", ('%' + self.username + '%',))
+            ToDoLists = cursor.fetchall()
+            i = 0
+            for ToDoList in ToDoLists:
+                i += 1
+                self.add_todo_list(f"{ToDoList[1]}", f"{ToDoList[2]}", row=i, task_rest=f"X", task_fait=f"X")
+
+            # Forcer la mise à jour du layout
+            self.gridLayout_3.update()
+
+        except mysql.connector.Error as err:
+            print("Erreur MySQL :", err)
+
+        finally:
+            # Fermer le curseur et la connexion, même en cas d'erreur
+            cursor.close()
+            conn.close()
+
+        # Définir le nouveau widget parent pour la QScrollArea
+        self.scrollArea.setWidget(self.scrollAreaWidgetContents)
+
+
 
     def bouton_1(self):
         print("Bouton1")
@@ -1538,7 +1769,7 @@ class MenuPrincipal(QWidget):
         print("Bouton4")
 
     def fenetre_add_to_dolist(self):
-        self.fenetreaddtodolist = FenetreAddTodolist(username=self.username)
+        self.fenetreaddtodolist = FenetreAddTodolist(username=self.username, menu_principal=self)
         geometry_ecran = QDesktopWidget().screenGeometry()
         x = (geometry_ecran.width() - self.fenetreaddtodolist.width()) // 2
         y = (geometry_ecran.height() - self.fenetreaddtodolist.height()) // 2
