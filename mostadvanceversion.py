@@ -326,75 +326,6 @@ class FenetreAccueil(QWidget):
 
         self.setLayout(self.layout)
 
-    def download_todo_list_pdf(self, todolist):
-        todolist_id, todolist_name, todolist_description, todolist_taches = todolist[0], todolist[1], todolist[2], \
-            todolist[3]
-        options = QFileDialog.Options()
-        options |= QFileDialog.DontUseNativeDialog
-        pdf_filename, _ = QFileDialog.getSaveFileName(self, "Enregistrer en PDF", f"ticktask_{todolist_name}.pdf",
-                                                      "PDF Files (*.pdf);;All Files (*)", options=options)
-
-        if pdf_filename:
-            # Création d'un objet SimpleDocTemplate
-            pdf = SimpleDocTemplate(pdf_filename, pagesize=letter)
-            pdf.title = f"TickTask - {todolist_name}"
-            story = []
-
-            # Ajout du nom de la ToDoList en haut, centré
-            styles = getSampleStyleSheet()
-            title = f"<u>TickTask - {todolist_name}</u>"
-            story.append(Paragraph(title, styles['Title']))
-
-            # Ajout de la description en sous-titre, centré
-            if todolist_description:
-                story.append(Spacer(1, 12))
-                story.append(Paragraph("<b>Description:</b>", styles['Heading2']))
-                story.append(Paragraph(f"<i>{todolist_description}</i>", styles['Normal']))
-
-            # Add space between description and table
-            story.append(Spacer(1, 24))  # Increased space
-
-            conn = mysql.connector.connect(
-                host='sql11.freesqldatabase.com',
-                user='sql11647518',
-                password='LMHZDvz5me',
-                database='sql11647518'
-            )
-            cursor = conn.cursor()
-            # Récupération des tâches liées à la ToDoList depuis la base de données
-            cursor.execute("SELECT * FROM Taches WHERE ToDoLists_idToDoLists = %s", (todolist_id,))
-            tasks = cursor.fetchall()
-
-            # Création de la structure du tableau
-            data = [['Nom', 'Date de fin', 'Assignation', 'Étiquette', 'Priorité']]
-            for task in tasks:
-                task_id, todo_id, task_datefin, task_name, task_assignation, task_etiquette, task_priorite = task
-                data.append([task_name, task_datefin, task_assignation, task_etiquette, task_priorite])
-
-            # Calculate the width of the table to span the whole page
-            table_width = len(data[0]) * 1.5 * inch  # Assuming 1.5 inches per column
-
-            # Création du tableau et définition du style
-            table = Table(data, colWidths=[table_width / len(data[0])] * len(data[0]))
-            table.setStyle(TableStyle([
-                ('BACKGROUND', (0, 0), (-1, 0), (0.8, 0.8, 0.8)),
-                ('TEXTCOLOR', (0, 0), (-1, 0), (0, 0, 0)),
-                ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-                ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-                ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-                ('BACKGROUND', (0, 1), (-1, -1), (0.9, 0.9, 0.9)),
-                ('GRID', (0, 0), (-1, -1), 1, (0.8, 0.8, 0.8))
-            ]))
-
-            story.append(table)
-
-            # Construction du PDF
-            pdf.build(story)
-            cursor.close()
-            conn.close()
-
-
-
     def fct_deconnexion(self):
         self.close()
         self.retour_login = LoginWindow()
@@ -661,8 +592,12 @@ class FenetreAddTodolist(QWidget):
         self.addtodoboutoncon.setAutoExclusive(False)
         self.addtodoboutoncon.setAutoRepeatInterval(100)
         self.addtodoboutoncon.setObjectName("addtodoboutoncon")
-        self.addtodoboutoncon.clicked.connect(lambda: self.create_todo_list())
+        self.addtodoboutoncon.clicked.connect(self.create_todo_list)
 
+        self.shortcut_open = QShortcut(QKeySequence('Return'), self)
+        self.shortcut_open.activated.connect(self.create_todo_list)
+        self.shortcut_open2 = QShortcut(QKeySequence('Enter'), self)
+        self.shortcut_open2.activated.connect(self.create_todo_list)
 
         self.addtodocroix = QtWidgets.QToolButton(self.widget)
         self.addtodocroix.setGeometry(QtCore.QRect(590, 20, 40, 30))
@@ -1459,7 +1394,7 @@ class MenuPrincipal(QWidget):
         i=0
         for ToDoList in ToDoLists:
             i+=1
-            self.add_todo_list(f"{ToDoList[1]}", f"{ToDoList[2]}", row=i, task_rest=f"X", task_fait=f"X")
+            self.add_todo_list(f"{ToDoList}",f"{ToDoList[0]}",f"{ToDoList[1]}", f"{ToDoList[2]}", row=i, task_rest=f"X", task_fait=f"X")
 
 
 
@@ -1505,7 +1440,7 @@ class MenuPrincipal(QWidget):
         self.retranslateUi()
         QtCore.QMetaObject.connectSlotsByName(self)
 
-    def add_todo_list(self, name, description, row, task_rest, task_fait):
+    def add_todo_list(self, Todolist, id, name, description, row, task_rest, task_fait):
         self.listtask = QtWidgets.QWidget(self.scrollAreaWidgetContents)
         font = QtGui.QFont()
         font.setPointSize(8)
@@ -1561,22 +1496,22 @@ class MenuPrincipal(QWidget):
 
 
         self.listdl = QtWidgets.QToolButton(self.listtask)
-        self.listdl.setGeometry(QtCore.QRect(1210, 10, 130, 130))
+        self.listdl.setGeometry(QtCore.QRect(1070, 10, 130, 130))
         self.listdl.setStyleSheet("")
-        self.listdl.setText("")
-        self.listdl.setObjectName("listdl")
+        self.listdl.setText("PDF")
+        self.listdl.setObjectName("listinfo")
         self.listinfo = QtWidgets.QToolButton(self.listtask)
-        self.listinfo.setGeometry(QtCore.QRect(1070, 10, 130, 130))
-        self.listinfo.setText("")
-        self.listinfo.setObjectName("listinfo")
+        self.listinfo.setGeometry(QtCore.QRect(790, 10, 130, 130))
+        self.listinfo.setText("Afficher")
+        self.listinfo.setObjectName("listdl")
         self.listmodifier = QtWidgets.QToolButton(self.listtask)
         self.listmodifier.setGeometry(QtCore.QRect(930, 10, 130, 130))
-        self.listmodifier.setText("")
+        self.listmodifier.setText("Modifier")
         self.listmodifier.setObjectName("listmodifier")
         self.listpoubelle = QtWidgets.QToolButton(self.listtask)
-        self.listpoubelle.setGeometry(QtCore.QRect(790, 10, 130, 130))
+        self.listpoubelle.setGeometry(QtCore.QRect(1210, 10, 130, 130))
         self.listpoubelle.setStyleSheet("")
-        self.listpoubelle.setText("")
+        self.listpoubelle.setText("Supprimer")
         self.listpoubelle.setObjectName("listpoubelle")
         self.listpoubelleicon = QtWidgets.QLabel(self.listtask)
         self.listpoubelleicon.setGeometry(QtCore.QRect(820, 40, 70, 70))
@@ -1608,9 +1543,9 @@ class MenuPrincipal(QWidget):
 
 
         self.listpoubelle.clicked.connect(lambda: self.delete_todo_list(name))
-        self.listmodifier.clicked.connect(self.bouton_2)
-        self.listinfo.clicked.connect(self.bouton_3)
-        self.listdl.clicked.connect(self.bouton_4)
+        self.listmodifier.clicked.connect(lambda: self.bouton_2(id))
+        self.listinfo.clicked.connect(self.bouton_afficher)
+        self.listdl.clicked.connect(lambda: self.bouton_pdf(Todolist))
 
         self.listdlicon.setText("")
         self.listdlicon.setObjectName("listdlicon")
@@ -1738,7 +1673,7 @@ class MenuPrincipal(QWidget):
             i = 0
             for ToDoList in ToDoLists:
                 i += 1
-                self.add_todo_list(f"{ToDoList[1]}", f"{ToDoList[2]}", row=i, task_rest=f"X", task_fait=f"X")
+                self.add_todo_list(f"{ToDoList}",f"{ToDoList[0]}",f"{ToDoList[1]}", f"{ToDoList[2]}", row=i, task_rest=f"X", task_fait=f"X")
 
             # Forcer la mise à jour du layout
             self.gridLayout_3.update()
@@ -1754,19 +1689,113 @@ class MenuPrincipal(QWidget):
         # Définir le nouveau widget parent pour la QScrollArea
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
 
+        # ...
+
+    def bouton_2(self, id):
+        try:
+            # Créer une nouvelle connexion
+            conn = mysql.connector.connect(
+                host='sql11.freesqldatabase.com',
+                user='sql11647518',
+                password='LMHZDvz5me',
+                database='sql11647518'
+            )
+
+            # Créer un nouveau curseur avec la nouvelle connexion
+            cursor = conn.cursor(buffered=True)
+
+            # Recharger les ToDoLists
+            cursor.execute("SELECT * FROM Taches WHERE ToDoLists_idToDoLists = %s", (id,))
+
+            Taches = cursor.fetchall()
+            for Tache in Taches:
+                print(f"{Tache} OK")
+
+        except mysql.connector.Error as err:
+            print("Erreur MySQL :", err)
+
+        finally:
+            # Fermer le curseur et la connexion, même en cas d'erreur
+            cursor.close()
+            conn.close()
 
 
-    def bouton_1(self):
-        print("Bouton1")
+    def bouton_pdf(self, todolist):
+        elements = todolist[1:-1].split(', ')
+        # Appliquer une transformation à chaque élément de la liste
+        todolist = [eval(element) if element.isdigit() else element.strip("'").capitalize() for element in elements]
 
-    def bouton_2(self):
-        print("Bouton2")
+        todolist_id, todolist_name, todolist_description, todolist_taches = todolist[0], todolist[1], todolist[2], \
+            todolist[3]
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontUseNativeDialog
+        pdf_filename, _ = QFileDialog.getSaveFileName(self, "Enregistrer en PDF", f"Ticktask_{todolist_name}.pdf",
+                                                      "PDF Files (*.pdf);;All Files (*)", options=options)
 
-    def bouton_3(self):
-        print("Bouton3")
+        if pdf_filename:
+            # Création d'un objet SimpleDocTemplate
+            pdf = SimpleDocTemplate(pdf_filename, pagesize=letter)
+            pdf.title = f"TickTask - {todolist_name}"
+            story = []
 
-    def bouton_4(self):
-        print("Bouton4")
+            # Ajout du nom de la ToDoList en haut, centré
+            styles = getSampleStyleSheet()
+            title = f"<u>TickTask - {todolist_name}</u>"
+            story.append(Paragraph(title, styles['Title']))
+
+            # Ajout de la description en sous-titre, centré
+            if todolist_description:
+                story.append(Spacer(1, 12))
+                story.append(Paragraph("<b>Description:</b>", styles['Heading2']))
+                story.append(Paragraph(f"<i>{todolist_description}</i>", styles['Normal']))
+
+            # Add space between description and table
+            story.append(Spacer(1, 24))  # Increased space
+
+            conn = mysql.connector.connect(
+                host='sql11.freesqldatabase.com',
+                user='sql11647518',
+                password='LMHZDvz5me',
+                database='sql11647518'
+            )
+            cursor = conn.cursor()
+            # Récupération des tâches liées à la ToDoList depuis la base de données
+            cursor.execute("SELECT * FROM Taches WHERE ToDoLists_idToDoLists = %s", (todolist_id,))
+            tasks = cursor.fetchall()
+
+            # Création de la structure du tableau
+            data = [['Nom', 'Date de fin', 'Assignation', 'Étiquette', 'Priorité']]
+            for task in tasks:
+                task_id, todo_id, task_datefin, task_name, task_assignation, task_etiquette, task_priorite = task
+                data.append([task_name, task_datefin, task_assignation, task_etiquette, task_priorite])
+
+            # Calculate the width of the table to span the whole page
+            table_width = len(data[0]) * 1.5 * inch  # Assuming 1.5 inches per column
+
+            # Création du tableau et définition du style
+            table = Table(data, colWidths=[table_width / len(data[0])] * len(data[0]))
+            table.setStyle(TableStyle([
+                ('BACKGROUND', (0, 0), (-1, 0), (0.8, 0.8, 0.8)),
+                ('TEXTCOLOR', (0, 0), (-1, 0), (0, 0, 0)),
+                ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+                ('BACKGROUND', (0, 1), (-1, -1), (0.9, 0.9, 0.9)),
+                ('GRID', (0, 0), (-1, -1), 1, (0.8, 0.8, 0.8))
+            ]))
+
+            story.append(table)
+
+            # Construction du PDF
+            pdf.build(story)
+            cursor.close()
+            conn.close()
+
+
+
+
+    def bouton_afficher(self):
+        print("Afficher soon")
 
     def fenetre_add_to_dolist(self):
         self.fenetreaddtodolist = FenetreAddTodolist(username=self.username, menu_principal=self)
