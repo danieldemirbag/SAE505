@@ -437,6 +437,32 @@ font-size: 14px;</string>
              <set>Qt::AlignCenter</set>
             </property>
            </widget>
+           <widget class="QToolButton" name="listtasksupprimertask_3">
+            <property name="geometry">
+             <rect>
+              <x>450</x>
+              <y>10</y>
+              <width>30</width>
+              <height>20</height>
+             </rect>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>12</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="cursor">
+             <cursorShape>PointingHandCursor</cursorShape>
+            </property>
+            <property name="styleSheet">
+             <string notr="true"/>
+            </property>
+            <property name="text">
+             <string>X</string>
+            </property>
+           </widget>
           </widget>
          </item>
          <item row="1" column="0">
@@ -650,6 +676,32 @@ font-size: 14px;</string>
              <set>Qt::AlignCenter</set>
             </property>
            </widget>
+           <widget class="QToolButton" name="listtasksupprimertask_2">
+            <property name="geometry">
+             <rect>
+              <x>450</x>
+              <y>10</y>
+              <width>30</width>
+              <height>20</height>
+             </rect>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>12</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="cursor">
+             <cursorShape>PointingHandCursor</cursorShape>
+            </property>
+            <property name="styleSheet">
+             <string notr="true"/>
+            </property>
+            <property name="text">
+             <string>X</string>
+            </property>
+           </widget>
           </widget>
          </item>
          <item row="2" column="0">
@@ -861,6 +913,32 @@ font-size: 14px;</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+           <widget class="QToolButton" name="listtasksupprimertask">
+            <property name="geometry">
+             <rect>
+              <x>450</x>
+              <y>10</y>
+              <width>30</width>
+              <height>20</height>
+             </rect>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>12</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="cursor">
+             <cursorShape>PointingHandCursor</cursorShape>
+            </property>
+            <property name="styleSheet">
+             <string notr="true"/>
+            </property>
+            <property name="text">
+             <string>X</string>
             </property>
            </widget>
           </widget>

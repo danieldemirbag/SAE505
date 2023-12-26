@@ -167,6 +167,16 @@ class Ui_listtask(object):
         self.listtasketiquettevalue.setStyleSheet("font-size: 14px;")
         self.listtasketiquettevalue.setAlignment(QtCore.Qt.AlignCenter)
         self.listtasketiquettevalue.setObjectName("listtasketiquettevalue")
+        self.listtasksupprimertask_3 = QtWidgets.QToolButton(self.listtasktache)
+        self.listtasksupprimertask_3.setGeometry(QtCore.QRect(450, 10, 30, 20))
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        font.setBold(True)
+        font.setWeight(75)
+        self.listtasksupprimertask_3.setFont(font)
+        self.listtasksupprimertask_3.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.listtasksupprimertask_3.setStyleSheet("")
+        self.listtasksupprimertask_3.setObjectName("listtasksupprimertask_3")
         self.gridLayout_2.addWidget(self.listtasktache, 0, 0, 1, 1)
         self.listtasktache_2 = QtWidgets.QWidget(self.alisttaskscrollAreaWidgetContents_2)
         self.listtasktache_2.setStyleSheet("background: rgba(255, 255, 255, .5);\n"
@@ -236,6 +246,16 @@ class Ui_listtask(object):
         self.listtasketiquettevalue_2.setStyleSheet("font-size: 14px;")
         self.listtasketiquettevalue_2.setAlignment(QtCore.Qt.AlignCenter)
         self.listtasketiquettevalue_2.setObjectName("listtasketiquettevalue_2")
+        self.listtasksupprimertask_2 = QtWidgets.QToolButton(self.listtasktache_2)
+        self.listtasksupprimertask_2.setGeometry(QtCore.QRect(450, 10, 30, 20))
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        font.setBold(True)
+        font.setWeight(75)
+        self.listtasksupprimertask_2.setFont(font)
+        self.listtasksupprimertask_2.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.listtasksupprimertask_2.setStyleSheet("")
+        self.listtasksupprimertask_2.setObjectName("listtasksupprimertask_2")
         self.gridLayout_2.addWidget(self.listtasktache_2, 1, 0, 1, 1)
         self.listtasktache_3 = QtWidgets.QWidget(self.alisttaskscrollAreaWidgetContents_2)
         self.listtasktache_3.setStyleSheet("background: rgba(255, 255, 255, .5);\n"
@@ -305,6 +325,16 @@ class Ui_listtask(object):
         self.listtasketiquettevalue_3.setStyleSheet("font-size: 14px;")
         self.listtasketiquettevalue_3.setAlignment(QtCore.Qt.AlignCenter)
         self.listtasketiquettevalue_3.setObjectName("listtasketiquettevalue_3")
+        self.listtasksupprimertask = QtWidgets.QToolButton(self.listtasktache_3)
+        self.listtasksupprimertask.setGeometry(QtCore.QRect(450, 10, 30, 20))
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        font.setBold(True)
+        font.setWeight(75)
+        self.listtasksupprimertask.setFont(font)
+        self.listtasksupprimertask.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.listtasksupprimertask.setStyleSheet("")
+        self.listtasksupprimertask.setObjectName("listtasksupprimertask")
         self.gridLayout_2.addWidget(self.listtasktache_3, 2, 0, 1, 1)
         self.gridLayout_2.setRowMinimumHeight(0, 200)
         self.gridLayout_2.setRowMinimumHeight(1, 200)
@@ -378,6 +408,7 @@ class Ui_listtask(object):
         self.listtaskprioritevalue.setText(_translate("listtask", "Haute"))
         self.listtasketiquette.setText(_translate("listtask", "Etiquettes :"))
         self.listtasketiquettevalue.setText(_translate("listtask", "Etiquette A"))
+        self.listtasksupprimertask_3.setText(_translate("listtask", "X"))
         self.listtasknomtache_2.setText(_translate("listtask", "Nom"))
         self.listtaskdescriptiontache_2.setHtml(_translate("listtask", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
@@ -392,6 +423,7 @@ class Ui_listtask(object):
         self.listtaskprioritevalue_2.setText(_translate("listtask", "Haute"))
         self.listtasketiquette_2.setText(_translate("listtask", "Etiquettes :"))
         self.listtasketiquettevalue_2.setText(_translate("listtask", "Etiquette A"))
+        self.listtasksupprimertask_2.setText(_translate("listtask", "X"))
         self.listtasknomtache_3.setText(_translate("listtask", "Nom"))
         self.listtaskdescriptiontache_3.setHtml(_translate("listtask", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
@@ -406,6 +438,7 @@ class Ui_listtask(object):
         self.listtaskprioritevalue_3.setText(_translate("listtask", "Haute"))
         self.listtasketiquette_3.setText(_translate("listtask", "Etiquettes :"))
         self.listtasketiquettevalue_3.setText(_translate("listtask", "Etiquette A"))
+        self.listtasksupprimertask.setText(_translate("listtask", "X"))
         self.listtaskchampdescription.setHtml(_translate("listtask", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
