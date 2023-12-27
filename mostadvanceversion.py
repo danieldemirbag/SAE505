@@ -1498,26 +1498,29 @@ class MenuPrincipal(QWidget):
         self.listdl = QtWidgets.QToolButton(self.listtask)
         self.listdl.setGeometry(QtCore.QRect(1070, 10, 130, 130))
         self.listdl.setStyleSheet("")
-        self.listdl.setText("PDF")
+        self.listdl.setText("")
         self.listdl.setObjectName("listinfo")
         self.listinfo = QtWidgets.QToolButton(self.listtask)
         self.listinfo.setGeometry(QtCore.QRect(790, 10, 130, 130))
-        self.listinfo.setText("Afficher")
+        self.listinfo.setText("")
         self.listinfo.setObjectName("listdl")
         self.listmodifier = QtWidgets.QToolButton(self.listtask)
         self.listmodifier.setGeometry(QtCore.QRect(930, 10, 130, 130))
-        self.listmodifier.setText("Modifier")
+        self.listmodifier.setText("")
         self.listmodifier.setObjectName("listmodifier")
         self.listpoubelle = QtWidgets.QToolButton(self.listtask)
         self.listpoubelle.setGeometry(QtCore.QRect(1210, 10, 130, 130))
         self.listpoubelle.setStyleSheet("")
-        self.listpoubelle.setText("Supprimer")
+        self.listpoubelle.setText("")
         self.listpoubelle.setObjectName("listpoubelle")
         self.listpoubelleicon = QtWidgets.QLabel(self.listtask)
-        self.listpoubelleicon.setGeometry(QtCore.QRect(820, 40, 70, 70))
+        self.listpoubelleicon.setGeometry(QtCore.QRect(1240, 40, 70, 70))
         self.listpoubelleicon.setStyleSheet("border: 0px solid;\n"
                                             "background-color: rgba(0,0,0,0);\n"
                                             "image: url(:/img/img/poubelle.png);")
+        self.listpoubelleicon.setStyleSheet("border: 0px solid;\n"
+                                            "background-color: rgba(0,0,0,0);\n"
+                                            "image: url(./img/poubelle.png);")
         self.listpoubelleicon.setText("")
         self.listpoubelleicon.setObjectName("listpoubelleicon")
         self.listmodifiericon = QtWidgets.QLabel(self.listtask)
@@ -1525,26 +1528,36 @@ class MenuPrincipal(QWidget):
         self.listmodifiericon.setStyleSheet("border: 0px solid;\n"
                                             "background-color: rgba(0,0,0,0);\n"
                                             "image: url(:/img/img/edit.png);")
+        self.listmodifiericon.setStyleSheet("border: 0px solid;\n"
+                                            "background-color: rgba(0,0,0,0);\n"
+                                            "image: url(./img/edit.png);")
         self.listmodifiericon.setText("")
         self.listmodifiericon.setObjectName("listmodifiericon")
         self.listinfoicon = QtWidgets.QLabel(self.listtask)
-        self.listinfoicon.setGeometry(QtCore.QRect(1100, 40, 70, 70))
+        self.listinfoicon.setGeometry(QtCore.QRect(815, 40, 70, 70))
         self.listinfoicon.setStyleSheet("border: 0px solid;\n"
                                         "background-color: rgba(0,0,0,0);\n"
                                         "image: url(:/img/img/detail.png);")
+        self.listinfoicon.setStyleSheet("border: 0px solid;\n"
+                                        "background-color: rgba(0,0,0,0);\n"
+                                        "image: url(./img/detail.png);")
+
         self.listinfoicon.setText("")
         self.listinfoicon.setObjectName("listinfoicon")
         self.listdlicon = QtWidgets.QLabel(self.listtask)
-        self.listdlicon.setGeometry(QtCore.QRect(1240, 40, 70, 70))
+        self.listdlicon.setGeometry(QtCore.QRect(1100, 40, 70, 70))
         self.listdlicon.setStyleSheet("border: 0px solid;\n"
                                       "background-color: rgba(0,0,0,0);\n"
                                       "image: url(:/img/img/download.png);")
+        self.listdlicon.setStyleSheet("border: 0px solid;\n"
+                                      "background-color: rgba(0,0,0,0);\n"
+                                      "image: url(./img/download.png);")
 
 
 
         self.listpoubelle.clicked.connect(lambda: self.delete_todo_list(name))
-        self.listmodifier.clicked.connect(lambda: self.bouton_2(id))
-        self.listinfo.clicked.connect(self.bouton_afficher)
+        self.listmodifier.clicked.connect(self.bouton_2)
+        self.listinfo.clicked.connect(lambda: self.bouton_afficher(Todolist))
         self.listdl.clicked.connect(lambda: self.bouton_pdf(Todolist))
 
         self.listdlicon.setText("")
@@ -1689,35 +1702,9 @@ class MenuPrincipal(QWidget):
         # Définir le nouveau widget parent pour la QScrollArea
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
 
-        # ...
 
-    def bouton_2(self, id):
-        try:
-            # Créer une nouvelle connexion
-            conn = mysql.connector.connect(
-                host='sql11.freesqldatabase.com',
-                user='sql11647518',
-                password='LMHZDvz5me',
-                database='sql11647518'
-            )
-
-            # Créer un nouveau curseur avec la nouvelle connexion
-            cursor = conn.cursor(buffered=True)
-
-            # Recharger les ToDoLists
-            cursor.execute("SELECT * FROM Taches WHERE ToDoLists_idToDoLists = %s", (id,))
-
-            Taches = cursor.fetchall()
-            for Tache in Taches:
-                print(f"{Tache} OK")
-
-        except mysql.connector.Error as err:
-            print("Erreur MySQL :", err)
-
-        finally:
-            # Fermer le curseur et la connexion, même en cas d'erreur
-            cursor.close()
-            conn.close()
+    def bouton_2(self):
+        print("Modifier SOON")
 
 
     def bouton_pdf(self, todolist):
@@ -1725,8 +1712,7 @@ class MenuPrincipal(QWidget):
         # Appliquer une transformation à chaque élément de la liste
         todolist = [eval(element) if element.isdigit() else element.strip("'").capitalize() for element in elements]
 
-        todolist_id, todolist_name, todolist_description, todolist_taches = todolist[0], todolist[1], todolist[2], \
-            todolist[3]
+        todolist_id, todolist_name, todolist_description, todolist_taches = todolist[0], todolist[1], todolist[2], todolist[3]
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
         pdf_filename, _ = QFileDialog.getSaveFileName(self, "Enregistrer en PDF", f"Ticktask_{todolist_name}.pdf",
@@ -1793,9 +1779,46 @@ class MenuPrincipal(QWidget):
 
 
 
+    def bouton_afficher(self, todolist):
+        elements = todolist[1:-1].split(', ')
+        todolist = [eval(element) if element.isdigit() else element.strip("'").capitalize() for element in elements]
+        try:
+            # Créer une nouvelle connexion
+            conn = mysql.connector.connect(
+                host='sql11.freesqldatabase.com',
+                user='sql11647518',
+                password='LMHZDvz5me',
+                database='sql11647518'
+            )
 
-    def bouton_afficher(self):
-        print("Afficher soon")
+            # Créer un nouveau curseur avec la nouvelle connexion
+            cursor = conn.cursor(buffered=True)
+
+            # Recharger les ToDoLists
+            cursor.execute("SELECT * FROM Taches WHERE ToDoLists_idToDoLists = %s", (todolist[0],))
+
+            taches = cursor.fetchall()
+            taches = [list(tche) for tche in taches]
+            self.fenetreaddtodolist = Ui_listtask(taches, todolist)
+            geometry_ecran = QDesktopWidget().screenGeometry()
+            x = (geometry_ecran.width() - self.fenetreaddtodolist.width()) // 2
+            y = (geometry_ecran.height() - self.fenetreaddtodolist.height()) // 2
+            self.fenetreaddtodolist.setGeometry(x, y, self.fenetreaddtodolist.width(), self.fenetreaddtodolist.height())
+            self.fenetreaddtodolist.show()
+
+        except mysql.connector.Error as err:
+            print("Erreur MySQL :", err)
+
+        finally:
+
+            # Fermer le curseur et la connexion, même en cas d'erreur
+            cursor.close()
+            conn.close()
+
+
+
+
+
 
     def fenetre_add_to_dolist(self):
         self.fenetreaddtodolist = FenetreAddTodolist(username=self.username, menu_principal=self)
@@ -1804,6 +1827,260 @@ class MenuPrincipal(QWidget):
         y = (geometry_ecran.height() - self.fenetreaddtodolist.height()) // 2
         self.fenetreaddtodolist.setGeometry(x, y, self.fenetreaddtodolist.width(), self.fenetreaddtodolist.height())
         self.fenetreaddtodolist.show()
+
+
+
+
+
+
+class Ui_listtask(QWidget):
+    def __init__(self, taches, todolist):
+        super().__init__()
+        self.taches = taches
+        self.todolist = todolist
+        self.setupUi()
+
+    def setupUi(self):
+        self.setObjectName("listtask")
+        self.setEnabled(True)
+        self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
+        self.setAttribute(QtCore.Qt.WA_TranslucentBackground)
+        self.resize(700, 900)
+        self.listtaskmainwidget = QtWidgets.QWidget(self)
+        self.listtaskmainwidget.setGeometry(QtCore.QRect(25, 25, 650, 850))
+        self.listtaskmainwidget.setObjectName("listtaskmainwidget")
+        self.listtaskimgback = QtWidgets.QLabel(self.listtaskmainwidget)
+        self.listtaskimgback.setGeometry(QtCore.QRect(0, 0, 650, 850))
+        self.listtaskimgback.setStyleSheet("border-image: url(./img/cover.jpg);\n"
+                                           "border-radius: 20px;")
+        self.listtaskimgback.setText("")
+        self.listtaskimgback.setObjectName("listtaskimgback")
+        self.listtasktitre = QtWidgets.QLabel(self.listtaskmainwidget)
+        self.listtasktitre.setGeometry(QtCore.QRect(125, 75, 400, 70))
+        font = QtGui.QFont()
+        font.setPointSize(17)
+        font.setBold(True)
+        font.setUnderline(False)
+        font.setWeight(75)
+        font.setStrikeOut(False)
+        font.setStyleStrategy(QtGui.QFont.PreferDefault)
+        self.listtasktitre.setFont(font)
+        self.listtasktitre.setStyleSheet("background: rgba(255, 255, 255, .5);\n"
+                                         "border: 2px solid;\n"
+                                         "border-radius: 10px;")
+        self.listtasktitre.setAlignment(QtCore.Qt.AlignCenter)
+        self.listtasktitre.setObjectName("listtasktitre")
+        self.listtaskboutoncon = QtWidgets.QToolButton(self.listtaskmainwidget)
+        self.listtaskboutoncon.setGeometry(QtCore.QRect(200, 750, 250, 75))
+        font = QtGui.QFont()
+        font.setPointSize(16)
+        self.listtaskboutoncon.setFont(font)
+        self.listtaskboutoncon.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.listtaskboutoncon.setAutoFillBackground(False)
+        self.listtaskboutoncon.setStyleSheet("background: rgba(255, 255, 255, .5);\n"
+                                             "border: 2px solid;\n"
+                                             "border-radius: 10px;")
+        self.listtaskboutoncon.setCheckable(False)
+        self.listtaskboutoncon.setAutoExclusive(False)
+        self.listtaskboutoncon.setAutoRepeatInterval(100)
+        self.listtaskboutoncon.setObjectName("listtaskboutoncon")
+        self.listtaskcroix = QtWidgets.QToolButton(self.listtaskmainwidget)
+        self.listtaskcroix.setGeometry(QtCore.QRect(590, 20, 40, 30))
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        font.setBold(True)
+        font.setWeight(75)
+        self.listtaskcroix.setFont(font)
+        self.listtaskcroix.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.listtaskcroix.setStyleSheet("border:none;\n"
+                                         "background: rgba(255, 255, 255, 0);\n"
+                                         "border-bottom:2px solid rgba(105, 118, 132, 255);\n"
+                                         "color:rgba(255, 255, 255, .75);")
+        self.listtaskcroix.setObjectName("listtaskcroix")
+        self.listtaskpetit = QtWidgets.QToolButton(self.listtaskmainwidget)
+        self.listtaskpetit.setGeometry(QtCore.QRect(540, 20, 40, 30))
+        font = QtGui.QFont()
+        font.setPointSize(30)
+        self.listtaskpetit.setFont(font)
+        self.listtaskpetit.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.listtaskpetit.setStyleSheet("border:none;\n"
+                                         "background: rgba(255, 255, 255, 0);\n"
+                                         "border-bottom:2px solid rgba(105, 118, 132, 255);\n"
+                                         "color:rgba(255, 255, 255, .75);")
+        self.listtaskpetit.setObjectName("listtaskpetit")
+        self.listtaskwidgscroll = QtWidgets.QWidget(self.listtaskmainwidget)
+        self.listtaskwidgscroll.setGeometry(QtCore.QRect(50, 290, 550, 450))
+        self.listtaskwidgscroll.setObjectName("listtaskwidgscroll")
+        self.verticalLayout = QtWidgets.QVBoxLayout(self.listtaskwidgscroll)
+        self.verticalLayout.setContentsMargins(10, 10, 10, 10)
+        self.verticalLayout.setSpacing(5)
+        self.verticalLayout.setObjectName("verticalLayout")
+        self.listtaskcrollArea = QtWidgets.QScrollArea(self.listtaskwidgscroll)
+        self.listtaskcrollArea.setStyleSheet("background: rgb(255, 255, 255, 0;);\n"
+                                             "border-radius: 0px;")
+        self.listtaskcrollArea.setWidgetResizable(True)
+        self.listtaskcrollArea.setObjectName("listtaskcrollArea")
+        self.alisttaskscrollAreaWidgetContents_2 = QtWidgets.QWidget()
+        self.alisttaskscrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 513, 480))
+        self.alisttaskscrollAreaWidgetContents_2.setObjectName("alisttaskscrollAreaWidgetContents_2")
+        self.gridLayout_2 = QtWidgets.QGridLayout(self.alisttaskscrollAreaWidgetContents_2)
+        self.gridLayout_2.setContentsMargins(10, 10, 10, 10)
+        self.gridLayout_2.setSpacing(5)
+        self.gridLayout_2.setObjectName("gridLayout_2")
+
+
+        self.listtaskcrollArea.setWidget(self.alisttaskscrollAreaWidgetContents_2)
+        self.verticalLayout.addWidget(self.listtaskcrollArea)
+        self.listtaskchampdescription = QtWidgets.QTextBrowser(self.listtaskmainwidget)
+        self.listtaskchampdescription.setGeometry(QtCore.QRect(50, 200, 550, 75))
+        font = QtGui.QFont()
+        font.setPointSize(-1)
+        self.listtaskchampdescription.setFont(font)
+        self.listtaskchampdescription.setStyleSheet("font-size: 16px;\n"
+                                                     "border:none;\n"
+                                                     "border-bottom:2px solid rgba(105, 118, 132, 255);\n"
+                                                     "color: rgba(255, 255, 255);\n"
+                                                     "padding-bottom:7px;\n"
+                                                     "background: rgba(255, 255, 255, 0);")
+        self.listtaskchampdescription.setObjectName("listtaskchampdescription")
+        self.listtaskdescriptionlabel = QtWidgets.QLabel(self.listtaskmainwidget)
+        self.listtaskdescriptionlabel.setGeometry(QtCore.QRect(50, 175, 550, 21))
+        font = QtGui.QFont()
+        font.setPointSize(16)
+        self.listtaskdescriptionlabel.setFont(font)
+        self.listtaskdescriptionlabel.setStyleSheet("color: rgba(255, 255, 255, .80;);")
+        self.listtaskdescriptionlabel.setObjectName("listtaskdescriptionlabel")
+        self.listtaskcroix.clicked.connect(self.close)
+        self.listtaskpetit.clicked.connect(self.showMinimized)
+        self.retranslateUi()
+        QtCore.QMetaObject.connectSlotsByName(self)
+
+        for i, element in enumerate(self.taches):
+            self.create_task(i, element[3], element[7], element[2], element[4], element[6], element[5])
+
+    def create_task(self, index, nom, description, datefin, assignee_a, priorite, etiquette):
+        task_widget = QtWidgets.QWidget(self.alisttaskscrollAreaWidgetContents_2)
+        task_widget.setStyleSheet("background: rgba(255, 255, 255, .5);\n"
+                                  "border: 2px solid;\n"
+                                  "border-radius: 10px;")
+        task_widget.setObjectName(f"listtasktache_{nom}")
+
+        task_name = QtWidgets.QLineEdit(task_widget)
+        task_name.setGeometry(QtCore.QRect(10, 10, 200, 40))
+        task_name.setStyleSheet("font-size: 16px;")
+
+        task_description = QtWidgets.QTextEdit(task_widget)
+        task_description.setGeometry(QtCore.QRect(10, 60, 200, 80))
+
+        task_assigned_label = QtWidgets.QLabel(task_widget)
+        task_assigned_label.setGeometry(QtCore.QRect(220, 10, 80, 40))
+
+        task_assigned_label.setStyleSheet("background: rgba(255, 255, 255, .0);\n"
+                                          "border: 0px solid;\n"
+                                          "border-radius: 10px;\n"
+                                          "font-size: 14px;")
+
+        task_assigned_person = QtWidgets.QLabel(task_widget)
+        task_assigned_person.setGeometry(QtCore.QRect(300, 12, 125, 41))
+        task_assigned_person.setStyleSheet("font-size: 14px;")
+        task_assigned_person.setAlignment(QtCore.Qt.AlignCenter)
+
+        task_due_label = QtWidgets.QLabel(task_widget)
+        task_due_label.setGeometry(QtCore.QRect(220, 80, 80, 40))
+        task_due_label.setStyleSheet("background: rgba(255, 255, 255, .0);\n"
+                                     "border: 0px solid;\n"
+                                     "border-radius: 10px;\n"
+                                     "font-size: 14px;")
+
+        task_due_date = QtWidgets.QLabel(task_widget)
+        task_due_date.setGeometry(QtCore.QRect(300, 60, 125, 81))
+        task_due_date.setStyleSheet("font-size: 14px;")
+        task_due_date.setAlignment(QtCore.Qt.AlignCenter)
+
+        task_checkbox = QtWidgets.QCheckBox(task_widget)
+        task_checkbox.stateChanged.connect(lambda state, n=nom: self.on_checkbox_changed(state, n))
+        task_checkbox.setGeometry(QtCore.QRect(450, 60, 31, 31))
+        task_checkbox.setStyleSheet("background: rgba(255, 255, 255, .0);\n"
+                                    "border: 0px solid;\n"
+                                    "border-radius: 10px;\n"
+                                    "font-size: 14px;")
+
+        self.gridLayout_2.addWidget(task_widget, index, 0, 1, 1)
+        self.gridLayout_2.setAlignment(QtCore.Qt.AlignTop)
+        task_widget.setMinimumHeight(150)
+        task_widget.setMaximumHeight(150)
+
+        # Ajuster les données fictives pour chaque tâche
+        task_name.setText(f"{nom}")
+        task_description.setPlainText(f"{description}")
+        task_assigned_label.setText("Assignée à :")
+        task_assigned_person.setText(f"{assignee_a}")
+        task_due_label.setText("Date de fin :")
+        task_due_date.setText(f"{datefin}")
+
+        try:
+            conn = mysql.connector.connect(
+                host='sql11.freesqldatabase.com',
+                user='sql11647518',
+                password='LMHZDvz5me',
+                database='sql11647518'
+            )
+            cursor = conn.cursor()
+
+            cursor.execute("SELECT checked FROM Taches WHERE Nom = %s", (nom,))
+            result = cursor.fetchone()
+            if result:
+                checked = result[0]
+                task_checkbox.setChecked(checked)
+
+        except mysql.connector.Error as err:
+            print("Erreur MySQL :", err)
+        finally:
+            cursor.close()
+            conn.close()
+
+    def on_checkbox_changed(self, state, nom):
+        try:
+            conn = mysql.connector.connect(
+                host='sql11.freesqldatabase.com',
+                user='sql11647518',
+                password='LMHZDvz5me',
+                database='sql11647518'
+            )
+            cursor = conn.cursor()
+
+            if state == QtCore.Qt.Checked:
+                print("check")
+                cursor.execute("UPDATE Taches SET checked = 1 WHERE Nom = %s", (nom,))
+                print("check fait")
+            else:
+                print("uncheck")
+                cursor.execute("UPDATE Taches SET checked = 0 WHERE Nom = %s", (nom,))
+
+        except mysql.connector.Error as err:
+            print("Erreur MySQL :", err)
+        finally:
+            cursor.close()
+            conn.close()
+
+    def retranslateUi(self):
+        _translate = QtCore.QCoreApplication.translate
+        self.setWindowTitle(_translate("listtask", "Dialog"))
+        self.listtasktitre.setText(_translate("listtask", f"{self.todolist[1]}"))
+        self.listtaskboutoncon.setText(_translate("listtask", "Créer une tâche"))
+        self.listtaskcroix.setText(_translate("listtask", "X"))
+        self.listtaskpetit.setText(_translate("listtask", "-"))
+
+        self.listtaskchampdescription.setHtml(_translate("listtask", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+                                                                     "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+                                                                     "p, li { white-space: pre-wrap; }\n"
+                                                                     "</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:16px; font-weight:400; font-style:normal;\">\n"
+                                                                     f"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">{self.todolist[2]}</p></body></html>"))
+        self.listtaskdescriptionlabel.setText(_translate("listtask", "Description :"))
+
+
+
+
 
 
 if __name__ == '__main__':
