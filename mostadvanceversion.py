@@ -1,3 +1,4 @@
+from datetime import *
 import sys, qrc, re, os
 import mysql.connector
 from PyQt5.QtCore import *
@@ -1711,7 +1712,7 @@ class MenuPrincipal(QWidget):
         elements = todolist[1:-1].split(', ')
         # Appliquer une transformation à chaque élément de la liste
         todolist = [eval(element) if element.isdigit() else element.strip("'").capitalize() for element in elements]
-
+        print(todolist)
         todolist_id, todolist_name, todolist_description, todolist_taches = todolist[0], todolist[1], todolist[2], todolist[3]
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
@@ -1748,30 +1749,54 @@ class MenuPrincipal(QWidget):
             # Récupération des tâches liées à la ToDoList depuis la base de données
             cursor.execute("SELECT * FROM Taches WHERE ToDoLists_idToDoLists = %s", (todolist_id,))
             tasks = cursor.fetchall()
-
+            print(tasks)
             # Création de la structure du tableau
-            data = [['Nom', 'Date de fin', 'Assignation', 'Étiquette', 'Priorité']]
+            data = [['Nom', 'Description', 'Date de fin', 'Assignation', 'Étiquette', 'Priorité', 'Terminée']]
+
             for task in tasks:
-                task_id, todo_id, task_datefin, task_name, task_assignation, task_etiquette, task_priorite = task
-                data.append([task_name, task_datefin, task_assignation, task_etiquette, task_priorite])
+                task_id, todo_id, task_datefin, task_name, task_assignation, task_etiquette, task_priorite, task_desc, task_checked = task
+                # Gestion de la date de fin sur plusieurs lignes si nécessaire
+                task_datefin_paragraphs = [Paragraph(line, styles['Normal']) for line in
+                                           task_datefin.strftime("Le %d/%m/%y à %H:%M").split('\n')]
+
+                # Gestion des sauts de ligne pour tous les champs
+                task_name_paragraphs = [Paragraph(line, styles['Normal']) for line in task_name.split('\n')]
+                task_assignation_paragraphs = [Paragraph(line, styles['Normal']) for line in
+                                               task_assignation.split('\n')]
+                task_etiquette_paragraphs = [Paragraph(line, styles['Normal']) for line in task_etiquette.split('\n')]
+                task_priorite_paragraphs = [Paragraph(line, styles['Normal']) for line in task_priorite.split('\n')]
+
+                # La description peut être sur plusieurs lignes
+                task_desc_paragraphs = [Paragraph(line, styles['Normal']) for line in task_desc.split('\n')]
+
+                # Remplacement du champ 'Faites' par une case à cocher
+                checkbox = 'Oui' if task_checked == 1 else 'Non'
+
+                data.append([
+                    task_name_paragraphs,
+                    task_desc_paragraphs,
+                    task_datefin_paragraphs,  # Notez que la date de fin n'est pas transformée en paragraphes
+                    task_assignation_paragraphs,
+                    task_etiquette_paragraphs,
+                    task_priorite_paragraphs,
+                    checkbox
+                ])
 
             # Calculate the width of the table to span the whole page
-            table_width = len(data[0]) * 1.5 * inch  # Assuming 1.5 inches per column
-
-            # Création du tableau et définition du style
-            table = Table(data, colWidths=[table_width / len(data[0])] * len(data[0]))
+            col_widths = [1 * inch, 2 * inch, 1 * inch, 1 * inch, 1 * inch, 0.8 * inch, 0.8 * inch]
+            table = Table(data, colWidths=col_widths)
             table.setStyle(TableStyle([
                 ('BACKGROUND', (0, 0), (-1, 0), (0.8, 0.8, 0.8)),
                 ('TEXTCOLOR', (0, 0), (-1, 0), (0, 0, 0)),
-                ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                ('ALIGN', (0, 0), (-1, -1), 'CENTER'),  # Centrer le texte dans toutes les cellules
+                ('VALIGN', (0, 0), (-1, -1), 'TOP'),
                 ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
                 ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
                 ('BACKGROUND', (0, 1), (-1, -1), (0.9, 0.9, 0.9)),
-                ('GRID', (0, 0), (-1, -1), 1, (0.8, 0.8, 0.8))
+                ('GRID', (0, 0), (-1, -1), 1, (0.8, 0.8, 0.8)),
+                ('WORDWRAP', (0, 0), (-1, -1), 'CJK')  # Permet aux lignes de se diviser
             ]))
-
             story.append(table)
-
             # Construction du PDF
             pdf.build(story)
             cursor.close()
