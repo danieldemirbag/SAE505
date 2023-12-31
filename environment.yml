@@ -1,0 +1,7 @@
+name: SAE505
+channels:
+  - defaults
+dependencies:
+  - pyqt
+  - mysql-connector-python
+  - reportlab
