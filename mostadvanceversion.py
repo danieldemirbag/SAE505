@@ -262,285 +262,6 @@ class LoginWindow(QWidget):
         self.fenetreaccueil.show()
 
 
-class FenetreAccueil(QWidget):
-    def __init__(self, cursor, username):
-        super().__init__()
-        self.cursor = cursor
-        self.username = username
-        self.fenetreaccueil()
-
-
-    def fenetreaccueil(self):
-        self.setWindowTitle("Accueil - TickTask")
-        self.setGeometry(500, 500, 700, 900)
-        top_label = QLabel("Bienvenue " + self.username + " !", self)
-        top_label.setAlignment(QtCore.Qt.AlignTop | QtCore.Qt.AlignHCenter)
-        self.layout = QVBoxLayout()
-        self.cursor.execute("SELECT * FROM ToDoLists WHERE AuthorizedUsers LIKE %s", ('%' + self.username + '%',))
-        ToDoLists = self.cursor.fetchall()
-        self.todo_widgets = []
-        self.todo_widgets2 = []
-        self.descTask_labels = []
-        self.TDLlabs = []
-        for ToDoList in ToDoLists:
-            todo_layout = QHBoxLayout()
-            idlabel = QLabel(str(ToDoList[0]))
-            label = QLabel("Nom de ToDolist : " + ToDoList[1])
-            title_desc_layout = QVBoxLayout()
-            label2 = QLabel("Description : " + ToDoList[2])
-            label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
-            label2.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
-            title_desc_layout.addWidget(idlabel)
-            idlabel.hide()
-            title_desc_layout.addWidget(label)
-            title_desc_layout.addWidget(label2)
-            todo_layout.addLayout(title_desc_layout)
-            openButton = QPushButton("Open")
-            openButton.clicked.connect(lambda checked, widget=title_desc_layout: self.show_only_selected(widget))
-            todo_layout.addWidget(openButton)
-
-            modifyButton = QPushButton("Modifier")
-            modifyButton.clicked.connect(lambda checked, widget=title_desc_layout: self.modify_todo_list(widget))
-            todo_layout.addWidget(modifyButton)
-
-            delete_btn = QPushButton("Supprimer")
-            delete_btn.clicked.connect(lambda checked, widget=title_desc_layout: self.delete_todo_list(widget))
-            todo_layout.addWidget(delete_btn)
-
-            download_pdf_btn = QPushButton("Télécharger en PDF")
-            download_pdf_btn.clicked.connect(lambda checked, todolist=ToDoList: self.download_todo_list_pdf(todolist))
-            todo_layout.addWidget(download_pdf_btn)
-
-            self.layout.addWidget(top_label)
-            self.layout.addLayout(todo_layout)
-            self.todo_widgets.append(todo_layout)
-            self.todo_widgets2.append(title_desc_layout)
-
-
-        self.bouton = QPushButton("Ajouter une ToDoList")
-        self.bouton.clicked.connect(self.fenetre_add_to_dolist)
-        self.layout.addWidget(self.bouton)
-
-        self.deconnexion = QPushButton("Deconnexion")
-        self.deconnexion.clicked.connect(self.fct_deconnexion)
-        self.layout.addWidget(self.deconnexion)
-
-        self.setLayout(self.layout)
-
-    def fct_deconnexion(self):
-        self.close()
-        self.retour_login = LoginWindow()
-        geometry_ecran = QDesktopWidget().screenGeometry()
-        x = (geometry_ecran.width() - self.retour_login.width()) // 2
-        y = (geometry_ecran.height() - self.retour_login.height()) // 2
-        self.retour_login.setGeometry(x, y, self.retour_login.width(), self.retour_login.height())
-        self.retour_login.show()
-
-
-    def modify_todo_list(self, selected_widget):
-        self.bouton.hide()
-        self.deconnexion.hide()
-        idlabel = selected_widget.itemAt(0).widget()
-        self.idlab = idlabel.text()
-        for widget in self.todo_widgets:
-            widget.itemAt(1).widget().hide()
-            widget.itemAt(2).widget().hide()
-            widget.itemAt(3).widget().hide()
-            widget.itemAt(4).widget().hide()
-        for widget in self.todo_widgets2:
-            widget.itemAt(1).widget().hide()
-            widget.itemAt(2).widget().hide()
-        try:
-            conn = mysql.connector.connect(
-                host='sql11.freesqldatabase.com',
-                user='sql11647518',
-                password='LMHZDvz5me',
-                database='sql11647518'
-            )
-            cursor = conn.cursor()
-
-            cursor.execute("SELECT * FROM ToDoLists WHERE idToDoLists = %s", (self.idlab,))
-            ToDoList = cursor.fetchall()
-            for tdl in ToDoList:
-                nameTDL = QLabel('Modifier le nom de la To-do list :', self)
-                self.modTDL = QLineEdit(tdl[1], self)
-                taskLayout = QHBoxLayout()
-                taskLayout.addWidget(nameTDL)
-                taskLayout.addWidget(self.modTDL)
-                self.modTDL.setMaxLength(100)
-                self.modTDL.setAlignment(Qt.AlignTop)
-                self.descTask_labels.append(nameTDL)
-                self.descTask_labels.append(self.modTDL)
-                self.layout.addLayout(taskLayout)
-                nameDTDL = QLabel('Modifier la description de la To-do list : ', self)
-                self.modDTDL = QTextEdit(tdl[2], self)
-                self.modDTDL.setWordWrapMode(QTextOption.WrapAtWordBoundaryOrAnywhere)
-                self.modDTDL.setLineWrapMode(QTextEdit.WidgetWidth)
-                self.modDTDL.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-                self.modDTDL.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-                self.modDTDL.setMaximumHeight(100)
-                self.modDTDL.textChanged.connect(self.check_max_chars)
-                self.max_chars = 1000
-                self.modDTDL.setAlignment(Qt.AlignTop)  # Aligner le texte vers le haut
-                dtasklayout = QHBoxLayout()
-                dtasklayout.addWidget(nameDTDL)
-                dtasklayout.addWidget(self.modDTDL)
-                self.descTask_labels.append(nameDTDL)
-                self.descTask_labels.append(self.modDTDL)
-                self.layout.addLayout(dtasklayout)
-            confirmLayout = QHBoxLayout()
-            confirmLayout.addStretch()
-            self.confirmBtn = QPushButton("Confirmer")
-            confirmLayout.addWidget(self.confirmBtn)
-            confirmLayout.addStretch()
-            self.confirmBtn.clicked.connect(self.sendModifications)
-            self.layout.addLayout(confirmLayout)
-            self.backBtn = QPushButton("Retour")
-            self.layout.addWidget(self.backBtn)
-            self.backBtn.clicked.connect(self.show_all_elements)
-            cursor.close()
-            conn.close()
-        except:
-            pass
-
-    def check_max_chars(self):
-        if len(self.modDTDL.toPlainText()) > self.max_chars:
-            QMessageBox.warning(self, 'Erreur', '1000 caractères maximum')
-            truncated_text = self.modDTDL.toPlainText()[:self.max_chars]
-            self.modDTDL.setPlainText(truncated_text)
-    def sendModifications(self):
-        newTitle = self.modTDL.text()
-        newDesc = self.modDTDL.toPlainText()
-        if not newTitle and not newDesc:
-            QMessageBox.warning(self, 'Erreur', 'Les champs ne peuvent pas être vides.')
-        else:
-            try:
-                conn = mysql.connector.connect(
-                    host='sql11.freesqldatabase.com',
-                    user='sql11647518',
-                    password='LMHZDvz5me',
-                    database='sql11647518'
-                )
-                cursor = conn.cursor()
-                cursor.execute("UPDATE ToDoLists SET Nom = %s, Description = %s WHERE idToDoLists = %s", (newTitle, newDesc, self.idlab,))
-                conn.commit()
-                cursor.close()
-                conn.close()
-                info_box = QMessageBox()
-                info_box.setWindowTitle('Succès')
-                info_box.setText('Les modifications ont été enregistrées avec succès.')
-                info_box.setStandardButtons(QMessageBox.Ok)
-                info_box.finished.connect(self.show_all_elements)
-                info_box.exec_()
-
-            except mysql.connector.Error as err:
-                QMessageBox.warning(self, 'Erreur MySQL', str(err))
-    def show_only_selected(self, selected_widget):
-        self.bouton.hide()
-        self.deconnexion.hide()
-        idlabel = selected_widget.itemAt(0).widget()
-        idlabtxt = idlabel.text()
-        for widget in self.todo_widgets:
-            widget.itemAt(1).widget().hide()
-            widget.itemAt(2).widget().hide()
-            widget.itemAt(3).widget().hide()
-            widget.itemAt(4).widget().hide()
-        for widget in self.todo_widgets2:
-            if widget != selected_widget:
-                widget.itemAt(1).widget().hide()
-                widget.itemAt(2).widget().hide()
-
-        try:
-            conn = mysql.connector.connect(
-                host='sql11.freesqldatabase.com',
-                user='sql11647518',
-                password='LMHZDvz5me',
-                database='sql11647518'
-            )
-            cursor = conn.cursor()
-
-            cursor.execute("SELECT * FROM Taches WHERE ToDoLists_idToDoLists = %s", (idlabtxt,))
-            Taches = cursor.fetchall()
-            for task in Taches:
-                descTask = QLabel('Tache : ' + task[3])
-                self.descTask_labels.append(descTask)
-                self.layout.addWidget(descTask)
-            cursor.close()
-            conn.close()
-        except:
-            pass
-        self.backBtn = QPushButton("Retour")
-        self.layout.addWidget(self.backBtn)
-        self.backBtn.clicked.connect(self.show_all_elements)
-
-
-    def show_all_elements(self):
-        self.bouton.show()
-        self.deconnexion.show()
-        try:
-            self.confirmBtn.hide()
-            self.backBtn.hide()
-            for widget in self.todo_widgets:
-                widget.itemAt(1).widget().show()
-                widget.itemAt(2).widget().show()
-                widget.itemAt(3).widget().show()
-                widget.itemAt(4).widget().show()
-            for widget in self.todo_widgets2:
-                widget.itemAt(1).widget().show()
-                widget.itemAt(2).widget().show()
-            for label in self.descTask_labels:
-                label.hide()
-            self.layout.removeWidget(self.sender())
-        except:
-            self.backBtn.hide()
-            for widget in self.todo_widgets:
-                widget.itemAt(1).widget().show()
-                widget.itemAt(2).widget().show()
-                widget.itemAt(3).widget().show()
-                widget.itemAt(4).widget().show()
-            for widget in self.todo_widgets2:
-                widget.itemAt(1).widget().show()
-                widget.itemAt(2).widget().show()
-            for label in self.descTask_labels:
-                label.hide()
-            self.layout.removeWidget(self.sender())
-
-    def fenetre_add_to_dolist(self):
-        self.fenetreaddtodolist = FenetreAddTodolist(username=self.username)
-        geometry_ecran = QDesktopWidget().screenGeometry()
-        x = (geometry_ecran.width() - self.fenetreaddtodolist.width()) // 2
-        y = (geometry_ecran.height() - self.fenetreaddtodolist.height()) // 2
-        self.fenetreaddtodolist.setGeometry(x, y, self.fenetreaddtodolist.width(), self.fenetreaddtodolist.height())
-        self.fenetreaddtodolist.show()
-
-    def delete_todo_list(self, widget):
-        reply = QMessageBox.question(self, 'Confirmation', 'Êtes-vous sûr de vouloir supprimer cette ToDoList?',
-                                     QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
-
-        if reply == QMessageBox.Yes:
-            try:
-                conn = mysql.connector.connect(
-                host='sql11.freesqldatabase.com',
-                user='sql11647518',
-                password='LMHZDvz5me',
-                database='sql11647518'
-                )
-                cursor = conn.cursor()
-                todo_id = widget.itemAt(0).widget()
-                todo_id = todo_id.text()
-                cursor.execute("DELETE FROM `ToDoLists` WHERE `idToDoLists` = %s", (todo_id,))
-                conn.commit()
-                cursor.close()
-                conn.close()
-
-                print("ToDoList supprimée avec succès.")
-
-
-            except mysql.connector.Error as err:
-                print("Erreur MySQL :", err)
-
-
-
 
 class FenetreAddTodolist(QWidget):
     def __init__(self, username, menu_principal):
@@ -772,12 +493,13 @@ class FenetreAddTodolist(QWidget):
                 )
                 cursor = conn.cursor()
 
-                cursor.execute("SELECT COUNT(*) FROM `ToDoLists` WHERE `Nom` = %s", (nom,))
+                cursor.execute("SELECT COUNT(*) FROM `ToDoLists` WHERE `Nom` = %s AND `AuthorizedUsers` LIKE %s", (nom, f"%{self.username}%",))
+
                 result = cursor.fetchone()
                 count = result[0]
                 if count > 0:
                     QtWidgets.QMessageBox.critical(self, "Erreur",
-                                                   "Ce nom de ToDoList existe déjà dans la base de données.")
+                                                   "Ce nom de ToDoList existe déjà dans votre liste.")
                 else:
                     cursor.execute("INSERT INTO `ToDoLists`(`Nom`, `Description`, `AuthorizedUsers`) VALUES (%s, %s, %s)",
                                    (nom, desc, users))
@@ -787,7 +509,6 @@ class FenetreAddTodolist(QWidget):
                     cursor.close()
                     conn.close()
                     self.close()
-                    print("ToDoList ajoutée avec succès.")
                     self.menu_principal.refresh_interface()
                     self.fenetreaddtodolist()
 
@@ -1062,6 +783,8 @@ class ResetMDP(QWidget):
         self.resetimgback.setGeometry(QtCore.QRect(0, 0, 650, 850))
         self.resetimgback.setStyleSheet("border-image: url(:/img/img/cover.jpg);\n"
 "border-radius: 20px;")
+        self.resetimgback.setStyleSheet("border-image: url(./img/cover.jpg);\n"
+                                        "border-radius: 20px;")
         self.resetimgback.setText("")
         self.resetimgback.setObjectName("resetimgback")
         self.resettitre = QtWidgets.QLabel(self.widget)
@@ -1331,6 +1054,8 @@ class MenuPrincipal(QWidget):
         self.listbackground = QtWidgets.QLabel(self.widget)
         self.listbackground.setGeometry(QtCore.QRect(4, 6, 1475, 725))
         # Change the image path to your correct path
+        self.listbackground.setStyleSheet("border-image: url(:/img/img/cover.jpg);\n"
+                                         "border-radius: 20px;")
         self.listbackground.setStyleSheet("border-image: url(./img/cover.jpg);\n"
                                          "border-radius: 20px;")
         self.listbackground.setText("")
@@ -1389,15 +1114,25 @@ class MenuPrincipal(QWidget):
         self.gridLayout_3.setContentsMargins(10, 10, 10, 10)
         self.gridLayout_3.setSpacing(5)
         self.gridLayout_3.setObjectName("gridLayout_3")
-
         self.cursor.execute("SELECT * FROM ToDoLists WHERE AuthorizedUsers LIKE %s", ('%' + self.username + '%',))
         ToDoLists = self.cursor.fetchall()
         i=0
         for ToDoList in ToDoLists:
             i+=1
-            self.add_todo_list(f"{ToDoList}",f"{ToDoList[0]}",f"{ToDoList[1]}", f"{ToDoList[2]}", row=i, task_rest=f"X", task_fait=f"X")
-
-
+            todolist_id = ToDoList[0]
+            self.cursor.execute("""
+                SELECT COUNT(*) AS count_checked_tasks
+                FROM Taches
+                WHERE ToDoLists_idToDoLists = %s AND checked = 1
+                """, (todolist_id,))
+            faites = self.cursor.fetchone()
+            self.cursor.execute("""
+                SELECT COUNT(*) AS count_checked_tasks
+                FROM Taches
+                WHERE ToDoLists_idToDoLists = %s
+                """, (todolist_id,))
+            totale = self.cursor.fetchone()
+            self.add_todo_list(f"{ToDoList}",f"{ToDoList[0]}",f"{ToDoList[1]}", f"{ToDoList[2]}", row=i, task_rest=f"{faites[0]}", task_fait=f"{totale[0]}")
 
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
 
@@ -1557,7 +1292,7 @@ class MenuPrincipal(QWidget):
 
 
         self.listpoubelle.clicked.connect(lambda: self.delete_todo_list(name))
-        self.listmodifier.clicked.connect(self.bouton_2)
+        self.listmodifier.clicked.connect(lambda: self.bouton_2(Todolist))
         self.listinfo.clicked.connect(lambda: self.bouton_afficher(Todolist))
         self.listdl.clicked.connect(lambda: self.bouton_pdf(Todolist))
 
@@ -1636,10 +1371,10 @@ class MenuPrincipal(QWidget):
                 cursor.execute("DELETE FROM ToDoLists WHERE Nom = %s AND AuthorizedUsers LIKE %s",
                                (todo_list_name, '%' + self.username + '%'))
 
+
                 # Commit pour sauvegarder les changements
                 conn.commit()
 
-                print(f"ToDoList '{todo_list_name}' supprimée avec succès.")
                 # Rafraîchir l'interface après la suppression
                 self.refresh_interface()
 
@@ -1687,7 +1422,21 @@ class MenuPrincipal(QWidget):
             i = 0
             for ToDoList in ToDoLists:
                 i += 1
-                self.add_todo_list(f"{ToDoList}",f"{ToDoList[0]}",f"{ToDoList[1]}", f"{ToDoList[2]}", row=i, task_rest=f"X", task_fait=f"X")
+                todolist_id = ToDoList[0]
+                cursor.execute("""
+                    SELECT COUNT(*) AS count_checked_tasks
+                    FROM Taches
+                    WHERE ToDoLists_idToDoLists = %s AND checked = 1
+                    """, (todolist_id,))
+                faites = cursor.fetchone()
+                cursor.execute("""
+                    SELECT COUNT(*) AS count_checked_tasks
+                    FROM Taches
+                    WHERE ToDoLists_idToDoLists = %s
+                    """, (todolist_id,))
+                totale = cursor.fetchone()
+                self.add_todo_list(f"{ToDoList}", f"{ToDoList[0]}", f"{ToDoList[1]}", f"{ToDoList[2]}", row=i,
+                                   task_rest=f"{faites[0]}", task_fait=f"{totale[0]}")
 
             # Forcer la mise à jour du layout
             self.gridLayout_3.update()
@@ -1704,15 +1453,22 @@ class MenuPrincipal(QWidget):
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
 
 
-    def bouton_2(self):
-        print("Modifier SOON")
+    def bouton_2(self, todolist):
+        elements = todolist[1:-1].split(', ')
+        # Appliquer une transformation à chaque élément de la liste
+        todolist = [eval(element) if element.isdigit() else element.strip("'").capitalize() for element in elements]
+        self.fenetreupdatetodolist = FenetreUpdateTodolist(username=self.username, menu_principal=self, todolist=todolist)
+        geometry_ecran = QDesktopWidget().screenGeometry()
+        x = (geometry_ecran.width() - self.fenetreupdatetodolist.width()) // 2
+        y = (geometry_ecran.height() - self.fenetreupdatetodolist.height()) // 2
+        self.fenetreupdatetodolist.setGeometry(x, y, self.fenetreupdatetodolist.width(), self.fenetreupdatetodolist.height())
+        self.fenetreupdatetodolist.show()
 
 
     def bouton_pdf(self, todolist):
         elements = todolist[1:-1].split(', ')
         # Appliquer une transformation à chaque élément de la liste
         todolist = [eval(element) if element.isdigit() else element.strip("'").capitalize() for element in elements]
-        print(todolist)
         todolist_id, todolist_name, todolist_description, todolist_taches = todolist[0], todolist[1], todolist[2], todolist[3]
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
@@ -1749,11 +1505,16 @@ class MenuPrincipal(QWidget):
             # Récupération des tâches liées à la ToDoList depuis la base de données
             cursor.execute("SELECT * FROM Taches WHERE ToDoLists_idToDoLists = %s", (todolist_id,))
             tasks = cursor.fetchall()
-            print(tasks)
-            # Création de la structure du tableau
-            data = [['Nom', 'Description', 'Date de fin', 'Assignation', 'Étiquette', 'Priorité', 'Terminée']]
 
+            # Création de la structure du tableau
+            #data = [['Nom', 'Description', 'Date de fin', 'Assignation', 'Étiquette', 'Priorité', 'Terminée']]
+            data = []
+
+            if not tasks:
+                no_task_text = "Cette TodoList ne contient aucune tâche."
+                data.append([no_task_text])
             for task in tasks:
+                data.append(['Nom', 'Description', 'Date de fin', 'Assignation', 'Étiquette', 'Priorité', 'Terminée'])
                 task_id, todo_id, task_datefin, task_name, task_assignation, task_etiquette, task_priorite, task_desc, task_checked = task
                 # Gestion de la date de fin sur plusieurs lignes si nécessaire
                 task_datefin_paragraphs = [Paragraph(line, styles['Normal']) for line in
@@ -1784,6 +1545,8 @@ class MenuPrincipal(QWidget):
 
             # Calculate the width of the table to span the whole page
             col_widths = [1 * inch, 2 * inch, 1 * inch, 1 * inch, 1 * inch, 0.8 * inch, 0.8 * inch]
+            if not tasks:
+                col_widths = [6 * inch]
             table = Table(data, colWidths=col_widths)
             table.setStyle(TableStyle([
                 ('BACKGROUND', (0, 0), (-1, 0), (0.8, 0.8, 0.8)),
@@ -1824,18 +1587,17 @@ class MenuPrincipal(QWidget):
 
             taches = cursor.fetchall()
             taches = [list(tche) for tche in taches]
-            self.fenetreaddtodolist = Ui_listtask(taches, todolist)
+            self.fenetrelisttask = Ui_listtask(taches, todolist, self.username)
             geometry_ecran = QDesktopWidget().screenGeometry()
-            x = (geometry_ecran.width() - self.fenetreaddtodolist.width()) // 2
-            y = (geometry_ecran.height() - self.fenetreaddtodolist.height()) // 2
-            self.fenetreaddtodolist.setGeometry(x, y, self.fenetreaddtodolist.width(), self.fenetreaddtodolist.height())
-            self.fenetreaddtodolist.show()
+            x = (geometry_ecran.width() - self.fenetrelisttask.width()) // 2
+            y = (geometry_ecran.height() - self.fenetrelisttask.height()) // 2
+            self.fenetrelisttask.setGeometry(x, y, self.fenetrelisttask.width(), self.fenetrelisttask.height())
+            self.fenetrelisttask.show()
 
         except mysql.connector.Error as err:
             print("Erreur MySQL :", err)
 
         finally:
-
             # Fermer le curseur et la connexion, même en cas d'erreur
             cursor.close()
             conn.close()
@@ -1856,13 +1618,12 @@ class MenuPrincipal(QWidget):
 
 
 
-
-
 class Ui_listtask(QWidget):
-    def __init__(self, taches, todolist):
+    def __init__(self, taches, todolist, username):
         super().__init__()
         self.taches = taches
         self.todolist = todolist
+        self.username = username
         self.setupUi()
 
     def setupUi(self):
@@ -1876,6 +1637,8 @@ class Ui_listtask(QWidget):
         self.listtaskmainwidget.setObjectName("listtaskmainwidget")
         self.listtaskimgback = QtWidgets.QLabel(self.listtaskmainwidget)
         self.listtaskimgback.setGeometry(QtCore.QRect(0, 0, 650, 850))
+        self.listtaskimgback.setStyleSheet("border-image: url(:/img/img/cover.jpg);\n"
+"border-radius: 20px;")
         self.listtaskimgback.setStyleSheet("border-image: url(./img/cover.jpg);\n"
                                            "border-radius: 20px;")
         self.listtaskimgback.setText("")
@@ -1891,24 +1654,24 @@ class Ui_listtask(QWidget):
         font.setStyleStrategy(QtGui.QFont.PreferDefault)
         self.listtasktitre.setFont(font)
         self.listtasktitre.setStyleSheet("background: rgba(255, 255, 255, .5);\n"
-                                         "border: 2px solid;\n"
-                                         "border-radius: 10px;")
+"border: 2px solid;\n"
+"border-radius: 10px;")
         self.listtasktitre.setAlignment(QtCore.Qt.AlignCenter)
         self.listtasktitre.setObjectName("listtasktitre")
-        self.listtaskboutoncon = QtWidgets.QToolButton(self.listtaskmainwidget)
-        self.listtaskboutoncon.setGeometry(QtCore.QRect(200, 750, 250, 75))
+        self.listtaskboutoncreer = QtWidgets.QToolButton(self.listtaskmainwidget)
+        self.listtaskboutoncreer.setGeometry(QtCore.QRect(420, 760, 200, 50))
         font = QtGui.QFont()
         font.setPointSize(16)
-        self.listtaskboutoncon.setFont(font)
-        self.listtaskboutoncon.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-        self.listtaskboutoncon.setAutoFillBackground(False)
-        self.listtaskboutoncon.setStyleSheet("background: rgba(255, 255, 255, .5);\n"
-                                             "border: 2px solid;\n"
-                                             "border-radius: 10px;")
-        self.listtaskboutoncon.setCheckable(False)
-        self.listtaskboutoncon.setAutoExclusive(False)
-        self.listtaskboutoncon.setAutoRepeatInterval(100)
-        self.listtaskboutoncon.setObjectName("listtaskboutoncon")
+        self.listtaskboutoncreer.setFont(font)
+        self.listtaskboutoncreer.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.listtaskboutoncreer.setAutoFillBackground(False)
+        self.listtaskboutoncreer.setStyleSheet("background: rgba(255, 255, 255, .5);\n"
+"border: 2px solid;\n"
+"border-radius: 10px;")
+        self.listtaskboutoncreer.setCheckable(False)
+        self.listtaskboutoncreer.setAutoExclusive(False)
+        self.listtaskboutoncreer.setAutoRepeatInterval(100)
+        self.listtaskboutoncreer.setObjectName("listtaskboutoncreer")
         self.listtaskcroix = QtWidgets.QToolButton(self.listtaskmainwidget)
         self.listtaskcroix.setGeometry(QtCore.QRect(590, 20, 40, 30))
         font = QtGui.QFont()
@@ -1918,9 +1681,9 @@ class Ui_listtask(QWidget):
         self.listtaskcroix.setFont(font)
         self.listtaskcroix.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.listtaskcroix.setStyleSheet("border:none;\n"
-                                         "background: rgba(255, 255, 255, 0);\n"
-                                         "border-bottom:2px solid rgba(105, 118, 132, 255);\n"
-                                         "color:rgba(255, 255, 255, .75);")
+"background: rgba(255, 255, 255, 0);\n"
+"border-bottom:2px solid rgba(105, 118, 132, 255);\n"
+"color:rgba(255, 255, 255, .75);")
         self.listtaskcroix.setObjectName("listtaskcroix")
         self.listtaskpetit = QtWidgets.QToolButton(self.listtaskmainwidget)
         self.listtaskpetit.setGeometry(QtCore.QRect(540, 20, 40, 30))
@@ -1929,9 +1692,9 @@ class Ui_listtask(QWidget):
         self.listtaskpetit.setFont(font)
         self.listtaskpetit.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.listtaskpetit.setStyleSheet("border:none;\n"
-                                         "background: rgba(255, 255, 255, 0);\n"
-                                         "border-bottom:2px solid rgba(105, 118, 132, 255);\n"
-                                         "color:rgba(255, 255, 255, .75);")
+"background: rgba(255, 255, 255, 0);\n"
+"border-bottom:2px solid rgba(105, 118, 132, 255);\n"
+"color:rgba(255, 255, 255, .75);")
         self.listtaskpetit.setObjectName("listtaskpetit")
         self.listtaskwidgscroll = QtWidgets.QWidget(self.listtaskmainwidget)
         self.listtaskwidgscroll.setGeometry(QtCore.QRect(50, 290, 550, 450))
@@ -1942,11 +1705,11 @@ class Ui_listtask(QWidget):
         self.verticalLayout.setObjectName("verticalLayout")
         self.listtaskcrollArea = QtWidgets.QScrollArea(self.listtaskwidgscroll)
         self.listtaskcrollArea.setStyleSheet("background: rgb(255, 255, 255, 0;);\n"
-                                             "border-radius: 0px;")
+"border-radius: 0px;")
         self.listtaskcrollArea.setWidgetResizable(True)
         self.listtaskcrollArea.setObjectName("listtaskcrollArea")
         self.alisttaskscrollAreaWidgetContents_2 = QtWidgets.QWidget()
-        self.alisttaskscrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 513, 480))
+        self.alisttaskscrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 513, 630))
         self.alisttaskscrollAreaWidgetContents_2.setObjectName("alisttaskscrollAreaWidgetContents_2")
         self.gridLayout_2 = QtWidgets.QGridLayout(self.alisttaskscrollAreaWidgetContents_2)
         self.gridLayout_2.setContentsMargins(10, 10, 10, 10)
@@ -1962,149 +1725,887 @@ class Ui_listtask(QWidget):
         font.setPointSize(-1)
         self.listtaskchampdescription.setFont(font)
         self.listtaskchampdescription.setStyleSheet("font-size: 16px;\n"
-                                                     "border:none;\n"
-                                                     "border-bottom:2px solid rgba(105, 118, 132, 255);\n"
-                                                     "color: rgba(255, 255, 255);\n"
-                                                     "padding-bottom:7px;\n"
-                                                     "background: rgba(255, 255, 255, 0);")
+"border:none;\n"
+"border-bottom:2px solid rgba(105, 118, 132, 255);\n"
+"color: rgba(255, 255, 255);\n"
+"padding-bottom:7px;\n"
+"background: rgba(255, 255, 255, 0);")
         self.listtaskchampdescription.setObjectName("listtaskchampdescription")
         self.listtaskdescriptionlabel = QtWidgets.QLabel(self.listtaskmainwidget)
-        self.listtaskdescriptionlabel.setGeometry(QtCore.QRect(50, 175, 550, 21))
+        self.listtaskdescriptionlabel.setGeometry(QtCore.QRect(50, 170, 550, 31))
         font = QtGui.QFont()
         font.setPointSize(16)
         self.listtaskdescriptionlabel.setFont(font)
         self.listtaskdescriptionlabel.setStyleSheet("color: rgba(255, 255, 255, .80;);")
         self.listtaskdescriptionlabel.setObjectName("listtaskdescriptionlabel")
+        self.listtaskboutonretour = QtWidgets.QToolButton(self.listtaskmainwidget)
+        self.listtaskboutonretour.setGeometry(QtCore.QRect(30, 760, 200, 50))
+        font = QtGui.QFont()
+        font.setPointSize(16)
+        self.listtaskboutonretour.setFont(font)
+        self.listtaskboutonretour.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.listtaskboutonretour.setAutoFillBackground(False)
+        self.listtaskboutonretour.setStyleSheet("background: rgba(255, 255, 255, .5);\n"
+"border: 2px solid;\n"
+"border-radius: 10px;")
+        self.listtaskboutonretour.setCheckable(False)
+        self.listtaskboutonretour.setAutoExclusive(False)
+        self.listtaskboutonretour.setAutoRepeatInterval(100)
+        self.listtaskboutonretour.setObjectName("listtaskboutonretour")
         self.listtaskcroix.clicked.connect(self.close)
         self.listtaskpetit.clicked.connect(self.showMinimized)
+        self.listtaskboutonretour.clicked.connect(self.close)
+        self.listtaskboutoncreer.clicked.connect(self.add_task)
+        self.listtaskimgback.raise_()
+        self.listtasktitre.raise_()
+        self.listtaskcroix.raise_()
+        self.listtaskpetit.raise_()
+        self.listtaskboutoncreer.raise_()
+        self.listtaskwidgscroll.raise_()
+        self.listtaskchampdescription.raise_()
+        self.listtaskdescriptionlabel.raise_()
+        self.listtaskboutonretour.raise_()
+
         self.retranslateUi()
         QtCore.QMetaObject.connectSlotsByName(self)
 
         for i, element in enumerate(self.taches):
-            self.create_task(i, element[3], element[7], element[2], element[4], element[6], element[5])
+           self.create_task(i, element[3], element[7], element[2], element[4], element[6], element[5], element[8])
 
-    def create_task(self, index, nom, description, datefin, assignee_a, priorite, etiquette):
-        task_widget = QtWidgets.QWidget(self.alisttaskscrollAreaWidgetContents_2)
-        task_widget.setStyleSheet("background: rgba(255, 255, 255, .5);\n"
-                                  "border: 2px solid;\n"
-                                  "border-radius: 10px;")
-        task_widget.setObjectName(f"listtasktache_{nom}")
 
-        task_name = QtWidgets.QLineEdit(task_widget)
-        task_name.setGeometry(QtCore.QRect(10, 10, 200, 40))
-        task_name.setStyleSheet("font-size: 16px;")
 
-        task_description = QtWidgets.QTextEdit(task_widget)
-        task_description.setGeometry(QtCore.QRect(10, 60, 200, 80))
+    def create_task(self, index, nom, description, datefin, assignee_a, priorite, etiquette, checked):
+        listtasktache = QtWidgets.QWidget(self.alisttaskscrollAreaWidgetContents_2)
+        listtasktache.setStyleSheet("background: rgba(255, 255, 255, .5);\n"
+        "border: 2px solid;\n"
+        "border-radius: 10px;")
+        listtasktache.setObjectName(f"listtasktache{index}")
+        listtasknomtache = QtWidgets.QLabel(listtasktache)
+        listtasknomtache.setGeometry(QtCore.QRect(10, 10, 175, 40))
+        listtasknomtache.setStyleSheet("font-size: 16px;")
+        listtasknomtache.setObjectName("listtasknomtache")
 
-        task_assigned_label = QtWidgets.QLabel(task_widget)
-        task_assigned_label.setGeometry(QtCore.QRect(220, 10, 80, 40))
+        listtaskdescriptiontache = QtWidgets.QTextBrowser(listtasktache)
+        listtaskdescriptiontache.setGeometry(QtCore.QRect(10, 60, 175, 80))
+        listtaskdescriptiontache.setObjectName("listtaskdescriptiontache")
 
-        task_assigned_label.setStyleSheet("background: rgba(255, 255, 255, .0);\n"
-                                          "border: 0px solid;\n"
-                                          "border-radius: 10px;\n"
-                                          "font-size: 14px;")
 
-        task_assigned_person = QtWidgets.QLabel(task_widget)
-        task_assigned_person.setGeometry(QtCore.QRect(300, 12, 125, 41))
-        task_assigned_person.setStyleSheet("font-size: 14px;")
-        task_assigned_person.setAlignment(QtCore.Qt.AlignCenter)
-
-        task_due_label = QtWidgets.QLabel(task_widget)
-        task_due_label.setGeometry(QtCore.QRect(220, 80, 80, 40))
-        task_due_label.setStyleSheet("background: rgba(255, 255, 255, .0);\n"
-                                     "border: 0px solid;\n"
-                                     "border-radius: 10px;\n"
-                                     "font-size: 14px;")
-
-        task_due_date = QtWidgets.QLabel(task_widget)
-        task_due_date.setGeometry(QtCore.QRect(300, 60, 125, 81))
-        task_due_date.setStyleSheet("font-size: 14px;")
-        task_due_date.setAlignment(QtCore.Qt.AlignCenter)
-
-        task_checkbox = QtWidgets.QCheckBox(task_widget)
-        task_checkbox.stateChanged.connect(lambda state, n=nom: self.on_checkbox_changed(state, n))
-        task_checkbox.setGeometry(QtCore.QRect(450, 60, 31, 31))
-        task_checkbox.setStyleSheet("background: rgba(255, 255, 255, .0);\n"
-                                    "border: 0px solid;\n"
-                                    "border-radius: 10px;\n"
-                                    "font-size: 14px;")
-
-        self.gridLayout_2.addWidget(task_widget, index, 0, 1, 1)
+        listtaskassigne_a = QtWidgets.QLabel(listtasktache)
+        listtaskassigne_a.setGeometry(QtCore.QRect(20, 150, 80, 40))
+        listtaskassigne_a.setStyleSheet("background: rgba(255, 255, 255, .0);\n"
+        "border: 0px solid;\n"
+        "border-radius: 10px;\n"
+        "font-size: 14px;")
+        listtaskassigne_a.setObjectName("listtaskassigne_a")
+        listtasknompersonne = QtWidgets.QLabel(listtasktache)
+        listtasknompersonne.setGeometry(QtCore.QRect(100, 150, 381, 41))
+        listtasknompersonne.setStyleSheet("font-size: 14px;")
+        listtasknompersonne.setAlignment(QtCore.Qt.AlignCenter)
+        listtasknompersonne.setObjectName("listtasknompersonne")
+        listtaskdatedefin = QtWidgets.QLabel(listtasktache)
+        listtaskdatedefin.setGeometry(QtCore.QRect(190, 100, 80, 40))
+        listtaskdatedefin.setStyleSheet("background: rgba(255, 255, 255, .0);\n"
+        "border: 0px solid;\n"
+        "border-radius: 10px;\n"
+        "font-size: 14px;")
+        listtaskdatedefin.setObjectName("listtaskdatedefin")
+        listtaskdatedefinvalue = QtWidgets.QLabel(listtasktache)
+        listtaskdatedefinvalue.setGeometry(QtCore.QRect(270, 100, 165, 40))
+        listtaskdatedefinvalue.setStyleSheet("font-size: 14px;")
+        listtaskdatedefinvalue.setAlignment(QtCore.Qt.AlignCenter)
+        listtaskdatedefinvalue.setObjectName("listtaskdatedefinvalue")
+        listtaskcheckBox = QtWidgets.QCheckBox(listtasktache)
+        listtaskcheckBox.setGeometry(QtCore.QRect(450, 60, 31, 31))
+        listtaskcheckBox.setStyleSheet("background: rgba(255, 255, 255, .0);\n"
+        "border: 0px solid;\n"
+        "border-radius: 10px;\n"
+        "font-size: 14px;")
+        listtaskcheckBox.setText("")
+        listtaskcheckBox.setObjectName("listtaskcheckBox")
+        listtaskcheckBox.setChecked(checked)
+        listtaskpriorite = QtWidgets.QLabel(listtasktache)
+        listtaskpriorite.setGeometry(QtCore.QRect(190, 10, 80, 40))
+        listtaskpriorite.setStyleSheet("background: rgba(255, 255, 255, .0);\n"
+        "border: 0px solid;\n"
+        "border-radius: 10px;\n"
+        "font-size: 14px;")
+        listtaskpriorite.setObjectName("listtaskpriorite")
+        listtaskprioritevalue = QtWidgets.QLabel(listtasktache)
+        listtaskprioritevalue.setGeometry(QtCore.QRect(270, 10, 165, 40))
+        listtaskprioritevalue.setStyleSheet("font-size: 14px;")
+        listtaskprioritevalue.setAlignment(QtCore.Qt.AlignCenter)
+        listtaskprioritevalue.setObjectName("listtaskprioritevalue")
+        listtasketiquette = QtWidgets.QLabel(listtasktache)
+        listtasketiquette.setGeometry(QtCore.QRect(190, 55, 80, 40))
+        listtasketiquette.setStyleSheet("background: rgba(255, 255, 255, .0);\n"
+        "border: 0px solid;\n"
+        "border-radius: 10px;\n"
+        "font-size: 14px;")
+        listtasketiquette.setObjectName("listtasketiquette")
+        listtasketiquettevalue = QtWidgets.QLabel(listtasktache)
+        listtasketiquettevalue.setGeometry(QtCore.QRect(270, 55, 165, 40))
+        listtasketiquettevalue.setStyleSheet("font-size: 14px;")
+        listtasketiquettevalue.setAlignment(QtCore.Qt.AlignCenter)
+        listtasketiquettevalue.setObjectName("listtasketiquettevalue")
+        listtasksupprimertask = QtWidgets.QToolButton(listtasktache)
+        listtasksupprimertask.setGeometry(QtCore.QRect(450, 10, 30, 20))
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        font.setBold(True)
+        font.setWeight(75)
+        listtasksupprimertask.setFont(font)
+        listtasksupprimertask.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        listtasksupprimertask.setStyleSheet("")
+        listtasksupprimertask.setObjectName("listtasksupprimertask_3")
+        self.gridLayout_2.addWidget(listtasktache, index, 0, 1, 1)
+        listtaskcheckBox.stateChanged.connect(lambda state, nom=nom: self.checkbox_changed(state, nom))
         self.gridLayout_2.setAlignment(QtCore.Qt.AlignTop)
-        task_widget.setMinimumHeight(150)
-        task_widget.setMaximumHeight(150)
+        listtasktache.setMinimumHeight(200)
+        listtasktache.setMaximumHeight(200)
 
-        # Ajuster les données fictives pour chaque tâche
-        task_name.setText(f"{nom}")
-        task_description.setPlainText(f"{description}")
-        task_assigned_label.setText("Assignée à :")
-        task_assigned_person.setText(f"{assignee_a}")
-        task_due_label.setText("Date de fin :")
-        task_due_date.setText(f"{datefin}")
+        listtasknomtache.setText(f"{nom}")
+        listtaskdescriptiontache.setText(f"{description}")
+        listtaskassigne_a.setText("Assignée à :")
+        listtasknompersonne.setText(f"{assignee_a}")
+        listtaskdatedefin.setText("Date de fin :")
+        listtaskdatedefinvalue.setText(f"{datefin}")
+        listtaskpriorite.setText("Priorité :")
+        listtaskprioritevalue.setText(f"{priorite}")
+        listtasketiquette.setText("Etiquettes :")
+        listtasketiquettevalue.setText(f"{etiquette}")
+        listtasksupprimertask.setText("X")
+        listtasksupprimertask.clicked.connect(lambda: self.remove_task(nom))
 
+    def checkbox_changed(self, state, task_name):
         try:
+            # Connectez-vous à la base de données
             conn = mysql.connector.connect(
                 host='sql11.freesqldatabase.com',
                 user='sql11647518',
                 password='LMHZDvz5me',
                 database='sql11647518'
             )
+
+            # Créez un curseur avec la connexion
             cursor = conn.cursor()
 
-            cursor.execute("SELECT checked FROM Taches WHERE Nom = %s", (nom,))
-            result = cursor.fetchone()
-            if result:
-                checked = result[0]
-                task_checkbox.setChecked(checked)
+            # Convertissez l'état de la case à cocher en 1 (coché) ou 0 (décoché)
+            checked_value = 1 if state == QtCore.Qt.Checked else 0
+
+            # Mise à jour de la colonne "checked" dans la base de données
+            cursor.execute("UPDATE Taches SET checked = %s WHERE Nom = %s", (checked_value, task_name))
+
+            # Commit pour sauvegarder les changements
+            conn.commit()
 
         except mysql.connector.Error as err:
             print("Erreur MySQL :", err)
+
         finally:
+            # Fermez le curseur et la connexion
             cursor.close()
             conn.close()
 
-    def on_checkbox_changed(self, state, nom):
-        try:
-            conn = mysql.connector.connect(
-                host='sql11.freesqldatabase.com',
-                user='sql11647518',
-                password='LMHZDvz5me',
-                database='sql11647518'
-            )
-            cursor = conn.cursor()
-
-            if state == QtCore.Qt.Checked:
-                print("check")
-                cursor.execute("UPDATE Taches SET checked = 1 WHERE Nom = %s", (nom,))
-                print("check fait")
-            else:
-                print("uncheck")
-                cursor.execute("UPDATE Taches SET checked = 0 WHERE Nom = %s", (nom,))
-
-        except mysql.connector.Error as err:
-            print("Erreur MySQL :", err)
-        finally:
-            cursor.close()
-            conn.close()
 
     def retranslateUi(self):
         _translate = QtCore.QCoreApplication.translate
         self.setWindowTitle(_translate("listtask", "Dialog"))
         self.listtasktitre.setText(_translate("listtask", f"{self.todolist[1]}"))
-        self.listtaskboutoncon.setText(_translate("listtask", "Créer une tâche"))
+        self.listtaskboutoncreer.setText(_translate("listtask", "Créer une tâche"))
         self.listtaskcroix.setText(_translate("listtask", "X"))
         self.listtaskpetit.setText(_translate("listtask", "-"))
-
-        self.listtaskchampdescription.setHtml(_translate("listtask", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-                                                                     "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
-                                                                     "p, li { white-space: pre-wrap; }\n"
-                                                                     "</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:16px; font-weight:400; font-style:normal;\">\n"
-                                                                     f"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">{self.todolist[2]}</p></body></html>"))
+        self.listtaskchampdescription.setHtml(_translate("listtask",
+                                                         "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+                                                         "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+                                                             "p, li { white-space: pre-wrap; }\n"
+                                                             "</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:16px; font-weight:400; font-style:normal;\">\n"
+                                                             f"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:16pt;\">{self.todolist[2]}</span></p></body></html>"))
         self.listtaskdescriptionlabel.setText(_translate("listtask", "Description :"))
+        self.listtaskboutonretour.setText(_translate("listtask", "Retour"))
+
+    def add_task(self):
+        self.add_task = Ui_addtask(self.username, self.todolist[0], menu_principal2=self)
+        geometry_ecran = QDesktopWidget().screenGeometry()
+        x = (geometry_ecran.width() - self.add_task.width()) // 2
+        y = (geometry_ecran.height() - self.add_task.height()) // 2
+        self.add_task.setGeometry(x, y, self.add_task.width(), self.add_task.height())
+        self.add_task.show()
+
+
+    def remove_task(self, task_name):
+        reply = QMessageBox.question(self, 'Confirmation',
+                                     f"Êtes-vous sûr de vouloir supprimer la tâche '{task_name}'?",
+                                     QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+
+        if reply == QMessageBox.Yes:
+            try:
+                # Créer une nouvelle connexion
+                conn = mysql.connector.connect(
+                    host='sql11.freesqldatabase.com',
+                    user='sql11647518',
+                    password='LMHZDvz5me',
+                    database='sql11647518'
+                )
+
+                # Créer un nouveau curseur avec la nouvelle connexion
+                cursor = conn.cursor(buffered=True)
+
+                # Exécuter la requête de suppression
+                cursor.execute("DELETE FROM Taches WHERE Nom = %s",(task_name,))
+
+                # Commit pour sauvegarder les changements
+                conn.commit()
+
+                # Rafraîchir l'interface après la suppression
+                self.refresh_tasks(self.todolist[0])
+
+            except mysql.connector.Error as err:
+                print("Erreur MySQL :", err)
+
+            finally:
+                # Fermer le curseur et la connexion, même en cas d'erreur
+                cursor.close()
+                conn.close()
+
+    def clear_tasks(self):
+        # Supprimer tous les widgets enfants de self.alisttaskscrollAreaWidgetContents_2
+        for i in reversed(range(self.gridLayout_2.count())):
+            widget = self.gridLayout_2.itemAt(i).widget()
+            if widget is not None:
+                widget.setParent(None)
+
+    def refresh_tasks(self, todolist_id):
+        # Appeler la méthode pour supprimer les tâches existantes
+        self.clear_tasks()
+
+        try:
+            # Connectez-vous à la base de données et récupérez les nouvelles tâches
+            conn = mysql.connector.connect(
+                host='sql11.freesqldatabase.com',
+                user='sql11647518',
+                password='LMHZDvz5me',
+                database='sql11647518'
+            )
+            cursor = conn.cursor(buffered=True)
+            cursor.execute("SELECT * FROM Taches WHERE ToDoLists_idToDoLists = %s", (todolist_id,))
+            tasks = cursor.fetchall()
+
+            # Ajoutez les nouvelles tâches à l'interface
+            for i, element in enumerate(tasks):
+                self.create_task(i, element[3], element[7], element[2], element[4], element[6], element[5], element[8])
+
+        except mysql.connector.Error as err:
+            print("Erreur MySQL :", err)
+
+        finally:
+            # Fermer le curseur et la connexion, même en cas d'erreur
+            cursor.close()
+            conn.close()
+
+        # Mise à jour de l'affichage
+        self.gridLayout_2.update()
 
 
 
+class FenetreUpdateTodolist(QWidget):
+    def __init__(self, username, menu_principal, todolist):
+        super().__init__()
+        self.username = username
+        self.todolist = todolist
+        self.menu_principal = menu_principal
+        self.fenetreupdatetodolist()
+
+    def fenetreupdatetodolist(self):
+        todolist_id, todolist_name, todolist_description, todolist_users = self.todolist[0], self.todolist[1], self.todolist[2], self.todolist[3]
+        self.setObjectName("addtodolist")
+        self.setEnabled(True)
+        self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
+        self.setAttribute(QtCore.Qt.WA_TranslucentBackground)
+        self.resize(700, 900)
+        self.widget = QtWidgets.QWidget(self)
+        self.widget.setGeometry(QtCore.QRect(25, 25, 650, 850))
+        self.widget.setObjectName("widget")
+        self.addtodoimgback = QtWidgets.QLabel(self.widget)
+        self.addtodoimgback.setGeometry(QtCore.QRect(0, 0, 650, 850))
+        self.addtodoimgback.setStyleSheet("border-image: url(:/img/img/cover.jpg);\n"
+                                          "border-radius: 20px;")
+        self.addtodoimgback.setStyleSheet("border-image: url(./img/cover.jpg);\n"
+                                         "border-radius: 20px;")
+        self.addtodoimgback.setText("")
+        self.addtodoimgback.setObjectName("addtodoimgback")
+        self.addtodotitre = QtWidgets.QLabel(self.widget)
+        self.addtodotitre.setGeometry(QtCore.QRect(125, 75, 400, 70))
+        font = QtGui.QFont()
+        font.setPointSize(18)
+        font.setBold(True)
+        font.setUnderline(False)
+        font.setWeight(75)
+        self.addtodotitre.setFont(font)
+        self.addtodotitre.setStyleSheet("background: rgba(255, 255, 255, .5);\n"
+"border: 2px solid;\n"
+"border-radius: 10px;")
+        self.addtodotitre.setAlignment(QtCore.Qt.AlignCenter)
+        self.addtodotitre.setObjectName("addtodotitre")
+        self.addtodoboutoncon = QtWidgets.QToolButton(self.widget)
+        self.addtodoboutoncon.setGeometry(QtCore.QRect(200, 675, 250, 75))
+        font = QtGui.QFont()
+        font.setPointSize(16)
+        self.addtodoboutoncon.setFont(font)
+        self.addtodoboutoncon.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.addtodoboutoncon.setAutoFillBackground(False)
+        self.addtodoboutoncon.setStyleSheet("background: rgba(255, 255, 255, .5);\n"
+"border: 2px solid;\n"
+"border-radius: 10px;")
+        self.addtodoboutoncon.setCheckable(False)
+        self.addtodoboutoncon.setAutoExclusive(False)
+        self.addtodoboutoncon.setAutoRepeatInterval(100)
+        self.addtodoboutoncon.setObjectName("addtodoboutoncon")
+        self.addtodoboutoncon.clicked.connect(self.update_todo_list)
+
+        self.shortcut_open = QShortcut(QKeySequence('Return'), self)
+        self.shortcut_open.activated.connect(self.update_todo_list)
+        self.shortcut_open2 = QShortcut(QKeySequence('Enter'), self)
+        self.shortcut_open2.activated.connect(self.update_todo_list)
+
+        self.addtodocroix = QtWidgets.QToolButton(self.widget)
+        self.addtodocroix.setGeometry(QtCore.QRect(590, 20, 40, 30))
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        font.setBold(True)
+        font.setWeight(75)
+        self.addtodocroix.setFont(font)
+        self.addtodocroix.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.addtodocroix.setStyleSheet("border:none;\n"
+"background: rgba(255, 255, 255, 0);\n"
+"border-bottom:2px solid rgba(105, 118, 132, 255);\n"
+"color:rgba(255, 255, 255, .75);")
+        self.addtodocroix.setObjectName("addtodocroix")
+        self.addtodopetit = QtWidgets.QToolButton(self.widget)
+        self.addtodopetit.setGeometry(QtCore.QRect(540, 20, 40, 30))
+        font = QtGui.QFont()
+        font.setPointSize(30)
+        self.addtodopetit.setFont(font)
+        self.addtodopetit.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.addtodopetit.setStyleSheet("border:none;\n"
+"background: rgba(255, 255, 255, 0);\n"
+"border-bottom:2px solid rgba(105, 118, 132, 255);\n"
+"color:rgba(255, 255, 255, .75);")
+        self.addtodopetit.setObjectName("addtodopetit")
+        self.addtodofondnoir = QtWidgets.QLabel(self.widget)
+        self.addtodofondnoir.setGeometry(QtCore.QRect(25, 175, 600, 450))
+        self.addtodofondnoir.setStyleSheet("background: rgba(0, 0, 0, .33);\n"
+"border-radius: 30px;")
+        self.addtodofondnoir.setText("")
+        self.addtodofondnoir.setObjectName("addtodofondnoir")
+        self.addtodowidgscroll = QtWidgets.QWidget(self.widget)
+        self.addtodowidgscroll.setGeometry(QtCore.QRect(60, 400, 525, 200))
+        self.addtodowidgscroll.setObjectName("addtodowidgscroll")
+        self.gridLayout = QtWidgets.QGridLayout(self.addtodowidgscroll)
+        self.gridLayout.setContentsMargins(10, 10, 10, 10)
+        self.gridLayout.setSpacing(5)
+        self.gridLayout.setObjectName("gridLayout")
+        self.addtodoscrollArea = QtWidgets.QScrollArea(self.addtodowidgscroll)
+        self.addtodoscrollArea.setStyleSheet("background: rgb(255, 255, 255, 0;);\n"
+"border-radius: 0px;")
+        self.addtodoscrollArea.setWidgetResizable(True)
+        self.addtodoscrollArea.setObjectName("addtodoscrollArea")
+        self.addtodoscrollAreaWidgetContents_2 = QtWidgets.QWidget()
+        self.addtodoscrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 505, 180))
+        self.addtodoscrollAreaWidgetContents_2.setObjectName("addtodoscrollAreaWidgetContents_2")
+        self.gridLayout_2 = QtWidgets.QGridLayout(self.addtodoscrollAreaWidgetContents_2)
+        self.gridLayout_2.setContentsMargins(10, 10, 10, 10)
+        self.gridLayout_2.setSpacing(5)
+        self.gridLayout_2.setObjectName("gridLayout_2")
+
+        self.user_checkboxes = []  # Liste pour stocker les cases à cocher des utilisateurs
+
+        try:
+            conn = mysql.connector.connect(
+                host='sql11.freesqldatabase.com',
+                user='sql11647518',
+                password='LMHZDvz5me',
+                database='sql11647518'
+            )
+            cursor = conn.cursor()
+
+            cursor.execute("SELECT Username FROM Users WHERE Username != %s", (self.username,))
+            users = cursor.fetchall()
+            for index in range(len(users)):
+                user = str(users[index][0])  # Convertir en chaîne
+                checkbox = QtWidgets.QCheckBox(self.addtodoscrollAreaWidgetContents_2)
+                checkbox.setStyleSheet(" height: 32px;")
+                checkbox.setText("")
+                checkbox.setObjectName(f"addtodocheckBox_{user}")
+                if user in todolist_users:
+                    checkbox.setChecked(True)
+                self.user_checkboxes.append(checkbox)  # Ajouter la case à cocher à la liste
+                self.gridLayout_2.addWidget(checkbox, index, 0, 1, 1)
+
+                label = QtWidgets.QLabel(self.addtodoscrollAreaWidgetContents_2)
+                font = QtGui.QFont()
+                font.setPointSize(16)
+                label.setFont(font)
+                label.setStyleSheet("color: rgba(255, 255, 255, .60);")
+                label.setObjectName(f"addtodonom_{user}")
+                label.setText(f"{user}")
+                self.gridLayout_2.addWidget(label, index, 1, 1, 1)
+            cursor.close()
+            conn.close()
+
+        except mysql.connector.Error as err:
+            print("Erreur MySQL :", err)
+
+        self.gridLayout_2.setColumnStretch(1, 1)
+        self.addtodoscrollArea.setWidget(self.addtodoscrollAreaWidgetContents_2)
+        self.gridLayout.addWidget(self.addtodoscrollArea, 0, 0, 1, 1)
+
+        self.addtodonom_3 = QtWidgets.QLineEdit(self.widget)
+        self.addtodonom_3.setGeometry(QtCore.QRect(75, 200, 500, 50))
+        font = QtGui.QFont()
+        font.setPointSize(16)
+        self.addtodonom_3.setFont(font)
+        self.addtodonom_3.setText(todolist_name)
+        self.addtodonom_3.setStyleSheet("border:none;\n"
+"border-bottom:2px solid rgba(105, 118, 132, 255);\n"
+"color: rgba(255, 255, 255);\n"
+"padding-bottom:7px;\n"
+"background: rgba(255, 255, 255, 0);")
+        self.addtodonom_3.setObjectName("addtodonom_3")
+
+        self.addtododescription = QtWidgets.QTextEdit(self.widget)
+        self.addtododescription.setGeometry(QtCore.QRect(75, 275, 500, 100))
+        font = QtGui.QFont()
+        font.setPointSize(16)
+        self.addtododescription.setFont(font)
+        self.addtododescription.setText(todolist_description)
+        self.addtododescription.setStyleSheet("\n"
+"border:none;\n"
+"border-bottom:2px solid rgba(105, 118, 132, 255);\n"
+"color: rgba(255, 255, 255);\n"
+"padding-bottom:7px;\n"
+"background: rgba(255, 255, 255, 0);")
+        self.addtododescription.setObjectName("addtododescription")
+
+        self.addtodocroix.clicked.connect(self.close)
+        self.addtodopetit.clicked.connect(self.showMinimized)
+
+
+        self.addtodoimgback.raise_()
+        self.addtodotitre.raise_()
+        self.addtodocroix.raise_()
+        self.addtodopetit.raise_()
+        self.addtodoboutoncon.raise_()
+        self.addtodofondnoir.raise_()
+        self.addtodowidgscroll.raise_()
+        self.addtodonom_3.raise_()
+        self.addtododescription.raise_()
+
+        self.retranslateUi()
+        QtCore.QMetaObject.connectSlotsByName(self)
+
+
+
+
+    def retranslateUi(self):
+        _translate = QtCore.QCoreApplication.translate
+        self.setWindowTitle(_translate("addtodolist", "Dialog"))
+        self.addtodotitre.setText(_translate("addtodolist", "Modification ToDoList"))
+        self.addtodoboutoncon.setText(_translate("addtodolist", "Modifier la ToDoList"))
+        self.addtodocroix.setText(_translate("addtodolist", "X"))
+        self.addtodopetit.setText(_translate("addtodolist", "-"))
+        self.addtodonom_3.setPlaceholderText(_translate("addtodolist", "Nom"))
+        self.addtododescription.setPlaceholderText(_translate("addtodolist", "Description"))
+
+
+    def check_max_chars(self):
+        if len(self.addtododescription.toPlainText()) > self.max_chars:
+            QMessageBox.warning(self, 'Erreur', '1000 caractères maximum')
+            truncated_text = self.addtododescription.toPlainText()[:self.max_chars]
+            self.addtododescription.setPlainText(truncated_text)
+
+    def update_todo_list(self):
+        todolist_id, todolist_name, todolist_description, todolist_users = self.todolist[0], self.todolist[1], self.todolist[2], self.todolist[3]
+        nom = self.addtodonom_3.text()
+        desc = self.addtododescription.toPlainText()
+        if nom != "" and desc != "":
+            # Collecte des utilisateurs cochés
+            selected_users = [checkbox.objectName().split("_")[1] for checkbox in self.user_checkboxes if checkbox.isChecked()]
+            users = self.username + ","
+            users += ",".join(selected_users)  # Convertir la liste en une chaîne avec des virgules
+
+            try:
+                conn = mysql.connector.connect(
+                    host='sql11.freesqldatabase.com',
+                    user='sql11647518',
+                    password='LMHZDvz5me',
+                    database='sql11647518'
+                )
+                cursor = conn.cursor()
+                cursor.execute("SELECT COUNT(*) FROM `ToDoLists` WHERE `Nom` = %s AND `AuthorizedUsers` LIKE %s", (nom, f"%{self.username}%",))
+
+                result = cursor.fetchone()
+                count = result[0]
+                if count > 0 and nom != todolist_name:
+                    QtWidgets.QMessageBox.critical(self, "Erreur",
+                                                   "Ce nom de ToDoList existe déjà dans votre base.")
+                else:
+                    cursor.execute("UPDATE ToDoLists SET Nom = %s, Description = %s, AuthorizedUsers = %s WHERE idToDoLists = %s",(nom, desc, users, todolist_id,))
+                    conn.commit()
+                    cursor.close()
+                    conn.close()
+                    self.close()
+                    self.menu_principal.refresh_interface()
+                    self.fenetreupdatetodolist()
+
+            except mysql.connector.Error as err:
+                print("Erreur MySQL :", err)
+        else:
+            QtWidgets.QMessageBox.critical(self, "Erreur",
+                                           "Le nom ou la description de la ToDoList ne peut pas être vide.")
+
+
+
+
+
+
+class Ui_addtask(QWidget):
+    def __init__(self, username, todoid, menu_principal2):
+        super().__init__()
+        self.username = username
+        self.menu_principal2 = menu_principal2
+        self.todoid = todoid
+        self.setupUi()
+
+    def setupUi(self):
+        self.setObjectName("addtask")
+        self.setEnabled(True)
+        self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
+        self.setAttribute(QtCore.Qt.WA_TranslucentBackground)
+        self.resize(700, 900)
+        self.addtaskmainwidget = QtWidgets.QWidget(self)
+        self.addtaskmainwidget.setGeometry(QtCore.QRect(25, 25, 650, 850))
+        self.addtaskmainwidget.setObjectName("addtaskmainwidget")
+        self.addtaskimgback = QtWidgets.QLabel(self.addtaskmainwidget)
+        self.addtaskimgback.setGeometry(QtCore.QRect(0, 0, 650, 850))
+        self.addtaskimgback.setStyleSheet("border-image: url(:/img/img/cover.jpg);\n"
+"border-radius: 20px;")
+        self.addtaskimgback.setStyleSheet("border-image: url(./img/cover.jpg);\n"
+                                          "border-radius: 20px;")
+        self.addtaskimgback.setText("")
+        self.addtaskimgback.setObjectName("addtaskimgback")
+        self.addtasktitre = QtWidgets.QLabel(self.addtaskmainwidget)
+        self.addtasktitre.setGeometry(QtCore.QRect(125, 75, 400, 70))
+        font = QtGui.QFont()
+        font.setPointSize(17)
+        font.setBold(True)
+        font.setUnderline(False)
+        font.setWeight(75)
+        font.setStrikeOut(False)
+        font.setStyleStrategy(QtGui.QFont.PreferDefault)
+        self.addtasktitre.setFont(font)
+        self.addtasktitre.setStyleSheet("background: rgba(255, 255, 255, .5);\n"
+"border: 2px solid;\n"
+"border-radius: 10px;")
+        self.addtasktitre.setAlignment(QtCore.Qt.AlignCenter)
+        self.addtasktitre.setObjectName("addtasktitre")
+        self.addtasknomuser = QtWidgets.QLineEdit(self.addtaskmainwidget)
+        self.addtasknomuser.setGeometry(QtCore.QRect(75, 200, 500, 50))
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.addtasknomuser.sizePolicy().hasHeightForWidth())
+        self.addtasknomuser.setSizePolicy(sizePolicy)
+        font = QtGui.QFont()
+        font.setFamily("MS Shell Dlg 2")
+        font.setPointSize(16)
+        font.setBold(False)
+        font.setItalic(False)
+        font.setWeight(50)
+        font.setKerning(True)
+        font.setStyleStrategy(QtGui.QFont.PreferDefault)
+        self.addtasknomuser.setFont(font)
+        self.addtasknomuser.setCursor(QtGui.QCursor(QtCore.Qt.IBeamCursor))
+        self.addtasknomuser.setFocusPolicy(QtCore.Qt.StrongFocus)
+        self.addtasknomuser.setAcceptDrops(True)
+        self.addtasknomuser.setLayoutDirection(QtCore.Qt.LeftToRight)
+        self.addtasknomuser.setAutoFillBackground(False)
+        self.addtasknomuser.setStyleSheet("border:none;\n"
+"border-bottom:2px solid rgba(105, 118, 132, 255);\n"
+"color: rgba(255, 255, 255);\n"
+"padding-bottom:7px;\n"
+"background: rgba(255, 255, 255, 0);")
+        self.addtasknomuser.setText("")
+        self.addtasknomuser.setCursorPosition(0)
+        self.addtasknomuser.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
+        self.addtasknomuser.setCursorMoveStyle(QtCore.Qt.LogicalMoveStyle)
+        self.addtasknomuser.setObjectName("addtasknomuser")
+        self.addtaskboutoncon = QtWidgets.QToolButton(self.addtaskmainwidget)
+        self.addtaskboutoncon.setGeometry(QtCore.QRect(200, 750, 250, 75))
+        font = QtGui.QFont()
+        font.setPointSize(16)
+        self.addtaskboutoncon.setFont(font)
+        self.addtaskboutoncon.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.addtaskboutoncon.setAutoFillBackground(False)
+        self.addtaskboutoncon.setStyleSheet("background: rgba(255, 255, 255, .5);\n"
+"border: 2px solid;\n"
+"border-radius: 10px;")
+        self.addtaskboutoncon.setCheckable(False)
+        self.addtaskboutoncon.setAutoExclusive(False)
+        self.addtaskboutoncon.setAutoRepeatInterval(100)
+        self.addtaskboutoncon.setObjectName("addtaskboutoncon")
+        self.addtaskcroix = QtWidgets.QToolButton(self.addtaskmainwidget)
+        self.addtaskcroix.setGeometry(QtCore.QRect(590, 20, 40, 30))
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        font.setBold(True)
+        font.setWeight(75)
+        self.addtaskcroix.setFont(font)
+        self.addtaskcroix.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.addtaskcroix.setStyleSheet("border:none;\n"
+"background: rgba(255, 255, 255, 0);\n"
+"border-bottom:2px solid rgba(105, 118, 132, 255);\n"
+"color:rgba(255, 255, 255, .75);")
+        self.addtaskcroix.setObjectName("addtaskcroix")
+        self.addtaskpetit = QtWidgets.QToolButton(self.addtaskmainwidget)
+        self.addtaskpetit.setGeometry(QtCore.QRect(540, 20, 40, 30))
+        font = QtGui.QFont()
+        font.setPointSize(30)
+        self.addtaskpetit.setFont(font)
+        self.addtaskpetit.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.addtaskpetit.setStyleSheet("border:none;\n"
+"background: rgba(255, 255, 255, 0);\n"
+"border-bottom:2px solid rgba(105, 118, 132, 255);\n"
+"color:rgba(255, 255, 255, .75);")
+        self.addtaskpetit.setObjectName("addtaskpetit")
+        self.addtaskfondnoir = QtWidgets.QLabel(self.addtaskmainwidget)
+        self.addtaskfondnoir.setGeometry(QtCore.QRect(25, 175, 600, 550))
+        self.addtaskfondnoir.setStyleSheet("background: rgba(0, 0, 0, .33);\n"
+"border-radius: 30px;")
+        self.addtaskfondnoir.setText("")
+        self.addtaskfondnoir.setObjectName("addtaskfondnoir")
+        self.addtaskwidgscroll = QtWidgets.QWidget(self.addtaskmainwidget)
+        self.addtaskwidgscroll.setGeometry(QtCore.QRect(60, 585, 525, 150))
+        self.addtaskwidgscroll.setObjectName("addtaskwidgscroll")
+        self.gridLayout = QtWidgets.QGridLayout(self.addtaskwidgscroll)
+        self.gridLayout.setContentsMargins(10, 10, 10, 10)
+        self.gridLayout.setSpacing(5)
+        self.gridLayout.setObjectName("gridLayout")
+        self.addtaskcrollArea = QtWidgets.QScrollArea(self.addtaskwidgscroll)
+        self.addtaskcrollArea.setStyleSheet("background: rgb(255, 255, 255, 0;);\n"
+"border-radius: 0px;")
+        self.addtaskcrollArea.setWidgetResizable(True)
+        self.addtaskcrollArea.setObjectName("addtaskcrollArea")
+        self.addtaskscrollAreaWidgetContents_2 = QtWidgets.QWidget()
+        self.addtaskscrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 505, 180))
+        self.addtaskscrollAreaWidgetContents_2.setObjectName("addtaskscrollAreaWidgetContents_2")
+        self.gridLayout_2 = QtWidgets.QGridLayout(self.addtaskscrollAreaWidgetContents_2)
+        self.gridLayout_2.setContentsMargins(10, 10, 10, 10)
+        self.gridLayout_2.setSpacing(5)
+        self.gridLayout_2.setObjectName("gridLayout_2")
+        self.addtaskcheckBox = QtWidgets.QCheckBox(self.addtaskscrollAreaWidgetContents_2)
+        self.addtaskcheckBox.setStyleSheet(" height: 32px;")
+        self.addtaskcheckBox.setText("")
+        self.addtaskcheckBox.setObjectName("addtaskcheckBox")
+        self.gridLayout_2.addWidget(self.addtaskcheckBox, 4, 0, 1, 1)
+        self.addtasknom = QtWidgets.QLabel(self.addtaskscrollAreaWidgetContents_2)
+        font = QtGui.QFont()
+        font.setPointSize(16)
+        self.addtasknom.setFont(font)
+        self.addtasknom.setStyleSheet("color: rgba(255, 255, 255, .60;);")
+        self.addtasknom.setObjectName("addtasknom")
+        self.gridLayout_2.addWidget(self.addtasknom, 4, 1, 1, 1)
+        self.addtaskcheckBox_2 = QtWidgets.QCheckBox(self.addtaskscrollAreaWidgetContents_2)
+        self.addtaskcheckBox_2.setStyleSheet(" height: 32px;")
+        self.addtaskcheckBox_2.setText("")
+        self.addtaskcheckBox_2.setIconSize(QtCore.QSize(16, 16))
+        self.addtaskcheckBox_2.setObjectName("addtaskcheckBox_2")
+        self.gridLayout_2.addWidget(self.addtaskcheckBox_2, 3, 0, 1, 1)
+        self.addtasknom_2 = QtWidgets.QLabel(self.addtaskscrollAreaWidgetContents_2)
+        font = QtGui.QFont()
+        font.setPointSize(16)
+        self.addtasknom_2.setFont(font)
+        self.addtasknom_2.setStyleSheet("color: rgba(255, 255, 255, .60;);")
+        self.addtasknom_2.setObjectName("addtasknom_2")
+        self.gridLayout_2.addWidget(self.addtasknom_2, 3, 1, 1, 1)
+        self.gridLayout_2.setColumnStretch(1, 1)
+        self.addtaskcrollArea.setWidget(self.addtaskscrollAreaWidgetContents_2)
+        self.gridLayout.addWidget(self.addtaskcrollArea, 0, 0, 1, 1)
+        self.addtaskprio = QtWidgets.QComboBox(self.addtaskmainwidget)
+        self.addtaskprio.setGeometry(QtCore.QRect(75, 375, 500, 50))
+        font = QtGui.QFont()
+        font.setPointSize(14)
+        self.addtaskprio.setFont(font)
+        self.addtaskprio.setStyleSheet("border:none;\n"
+"border-bottom:2px solid rgba(105, 118, 132, 255);\n"
+"color: rgba(255, 255, 255, .60;);\n"
+"padding-bottom:7px;\n"
+"background: rgba(255, 255, 255, 0);")
+        self.addtaskprio.setObjectName("addtaskprio")
+        self.addtaskprio.addItem("")
+        self.addtaskprio.addItem("")
+        self.addtaskprio.addItem("")
+        self.addtaskprio.addItem("")
+
+        self.addtasktime = QtWidgets.QDateTimeEdit(self.addtaskmainwidget)
+        self.addtasktime.setGeometry(QtCore.QRect(75, 450, 500, 50))
+        font = QtGui.QFont()
+        font.setPointSize(14)
+        self.addtasktime.setFont(font)
+        self.addtasktime.setLayoutDirection(QtCore.Qt.LeftToRight)
+        self.addtasktime.setStyleSheet("border:none;\n"
+"border-bottom:2px solid rgba(105, 118, 132, 255);\n"
+"color: rgba(255, 255, 255, .60;);\n"
+"padding-bottom:7px;\n"
+"background: rgba(255, 255, 255, 0);")
+        self.addtasktime.setLocale(QtCore.QLocale(QtCore.QLocale.English, QtCore.QLocale.UnitedStates))
+        self.addtasktime.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
+        self.addtasktime.setDateTime(QtCore.QDateTime(QtCore.QDate(2023, 1, 1), QtCore.QTime(0, 0, 0)))
+        self.addtasktime.setCurrentSection(QtWidgets.QDateTimeEdit.YearSection)
+        self.addtasktime.setTimeSpec(QtCore.Qt.LocalTime)
+        self.addtasktime.setObjectName("addtasktime")
+        self.addtasketiquette = QtWidgets.QLineEdit(self.addtaskmainwidget)
+        self.addtasketiquette.setGeometry(QtCore.QRect(75, 525, 500, 50))
+        font = QtGui.QFont()
+        font.setPointSize(14)
+        self.addtasketiquette.setFont(font)
+        self.addtasketiquette.setStyleSheet("border:none;\n"
+                                            "border-bottom:2px solid rgba(105, 118, 132, 255);\n"
+                                            "color: rgba(255, 255, 255, .60;);\n"
+                                            "padding-bottom:7px;\n"
+                                            "background: rgba(255, 255, 255, 0);")
+        self.addtasketiquette.setObjectName("addtasketiquette")
+        self.textEdit = QtWidgets.QTextEdit(self.addtaskmainwidget)
+        self.textEdit.setGeometry(QtCore.QRect(75, 260, 500, 100))
+        font = QtGui.QFont()
+        font.setPointSize(-1)
+        self.textEdit.setFont(font)
+        self.textEdit.setLayoutDirection(QtCore.Qt.LeftToRight)
+        self.textEdit.setStyleSheet("font-size: 20px;\n"
+                                    "border:none;\n"
+                                    "border-bottom:2px solid rgba(105, 118, 132, 255);\n"
+                                    "color: rgba(255, 255, 255);\n"
+                                    "padding-bottom:7px;\n"
+                                    "background: rgba(255, 255, 255, 0);\n"
+                                    "")
+        self.textEdit.setObjectName("textEdit")
+
+        self.addtaskcroix.clicked.connect(self.close)
+        self.addtaskpetit.clicked.connect(self.showMinimized)
+        self.addtaskboutoncon.clicked.connect(self.create_tache)
+
+        self.user_checkboxes = []
+
+        try:
+            conn = mysql.connector.connect(
+                host='sql11.freesqldatabase.com',
+                user='sql11647518',
+                password='LMHZDvz5me',
+                database='sql11647518'
+            )
+            cursor = conn.cursor()
+
+            cursor.execute("SELECT Username FROM Users")
+            users = cursor.fetchall()
+            for index, user in enumerate(users):
+                user = str(user[0])  # Convertir en chaîne
+                checkbox = QtWidgets.QCheckBox(self.addtaskscrollAreaWidgetContents_2)
+                checkbox.setStyleSheet(" height: 32px;")
+                checkbox.setText("")
+                checkbox.setObjectName(f"addtaskcheckBox_{user}")
+                self.user_checkboxes.append(checkbox)
+                self.gridLayout_2.addWidget(checkbox, index, 0, 1, 1)
+
+                label = QtWidgets.QLabel(self.addtaskscrollAreaWidgetContents_2)
+                font = QtGui.QFont()
+                font.setPointSize(16)
+                label.setFont(font)
+                label.setStyleSheet("color: rgba(255, 255, 255, .60);")
+                label.setObjectName(f"addtasknom_{user}")
+                label.setText(f"{user}")
+                self.gridLayout_2.addWidget(label, index, 1, 1, 1)
+
+        except mysql.connector.Error as err:
+            print("Erreur MySQL :", err)
+        finally:
+            cursor.close()
+            conn.close()
+
+
+
+        self.addtaskimgback.raise_()
+        self.addtasktitre.raise_()
+        self.addtaskcroix.raise_()
+        self.addtaskpetit.raise_()
+        self.addtaskboutoncon.raise_()
+        self.addtaskfondnoir.raise_()
+        self.addtasknomuser.raise_()
+        self.addtaskwidgscroll.raise_()
+        self.addtaskprio.raise_()
+        self.addtasktime.raise_()
+        self.addtasketiquette.raise_()
+        self.textEdit.raise_()
+
+        self.retranslateUi()
+        QtCore.QMetaObject.connectSlotsByName(self)
+
+    def retranslateUi(self):
+        _translate = QtCore.QCoreApplication.translate
+        self.setWindowTitle(_translate("addtask", "Dialog"))
+        self.addtasktitre.setText(_translate("addtask", "Nouvelle tâche"))
+        self.addtasknomuser.setPlaceholderText(_translate("addtask", "Nom"))
+        self.textEdit.setPlaceholderText(_translate("addtask", "Description"))
+        self.addtaskboutoncon.setText(_translate("addtask", "Créer la tâche"))
+        self.addtaskcroix.setText(_translate("addtask", "X"))
+        self.addtaskpetit.setText(_translate("addtask", "-"))
+        self.addtaskprio.setItemText(0, _translate("addtask", "Selectionner une prioritée"))
+        self.addtaskprio.setItemText(1, _translate("addtask", "Haute"))
+        self.addtaskprio.setItemText(2, _translate("addtask", "Moyenne"))
+        self.addtaskprio.setItemText(3, _translate("addtask", "Basse"))
+        self.addtasktime.setDisplayFormat(_translate("addtask", "yyyy/MM/dd HH:mm:ss"))
+        self.addtasketiquette.setPlaceholderText(_translate("addtask", "Selectionner une etiquette"))
+
+    def create_tache(self):
+
+        nom = self.addtasknomuser.text().strip()
+        desc = self.textEdit.toPlainText()
+        prio = self.addtaskprio.currentText()
+        date = self.addtasktime.dateTime().toString("yyyy/MM/dd HH:mm:ss")
+        etiquette = self.addtasketiquette.text().strip()
+
+        selected_users = [checkbox.objectName().split("_")[1] for checkbox in self.user_checkboxes if
+                          checkbox.isChecked()]
+        users = ""
+        users += ",".join(selected_users)
+
+
+        # Vérification des champs
+        if not (nom and prio != "Selectionner une prioritée" and etiquette and date and desc and users):
+            QMessageBox.critical(self, "Erreur", "Veuillez remplir tous les champs.")
+            return
+
+        # Si tous les champs sont remplis, ferme la fenêtre et imprime les informations
+        checked= 0
+
+        try:
+            conn = mysql.connector.connect(
+                host='sql11.freesqldatabase.com',
+                user='sql11647518',
+                password='LMHZDvz5me',
+                database='sql11647518'
+            )
+            cursor = conn.cursor()
+
+            cursor.execute("INSERT INTO `Taches`(`ToDoLists_idToDoLists`, `DateFin`, `Nom`, `Assignation`, `Etiquette`, `Priorite`, `checked`, `description`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
+                           (self.todoid, date, nom, users, etiquette, prio, checked, desc))
+            conn.commit()
+
+        except mysql.connector.Error as err:
+            print("Erreur MySQL :", err)
+        finally:
+            cursor.close()
+            conn.close()
+            self.close()
+            self.menu_principal2.refresh_tasks(self.todoid)
 
 
 
